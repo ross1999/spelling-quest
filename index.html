@@ -1097,11 +1097,21 @@
     let isCloudReady = false;
     let stateDocRef = null;
 
-    // Optional: You can paste your Firebase Config object here directly if you prefer
-    const INLINE_FIREBASE_CONFIG = null;
+    // Put your Firebase config here so both Mac & iPad sync automatically without typing
+    const INLINE_FIREBASE_CONFIG = {
+      apiKey: "PUT_YOUR_REAL_API_KEY_HERE",
+      authDomain: "spellingapp-95686.firebaseapp.com",
+      projectId: "spellingapp-95686",
+      storageBucket: "spellingapp-95686.firebasestorage.app",
+      messagingSenderId: "621552619032",
+      appId: "1:621552619032:web:6debc68057cd3f20a13d6d"
+    };
 
     function getFirebaseConfig() {
-      if (INLINE_FIREBASE_CONFIG) return INLINE_FIREBASE_CONFIG;
+      // Use inline config if a valid apiKey is provided
+      if (INLINE_FIREBASE_CONFIG && INLINE_FIREBASE_CONFIG.apiKey && !INLINE_FIREBASE_CONFIG.apiKey.startsWith("PUT_YOUR")) {
+        return INLINE_FIREBASE_CONFIG;
+      }
       const stored = localStorage.getItem('imogen_firebase_config');
       if (stored) {
         try { return JSON.parse(stored); } catch (e) { console.warn("Invalid stored firebase config", e); }
@@ -1833,6 +1843,31 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
+    function extractFirebaseConfig(input) {
+      // 1. Try direct JSON parse
+      try {
+        const direct = JSON.parse(input);
+        if (direct && direct.apiKey && direct.projectId) return direct;
+      } catch (e) {}
+
+      // 2. Extract key-value pairs using regex (immune to import lines, comments, and URLs)
+      const cleanText = input.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+      const result = {};
+
+      for (const key of keys) {
+        const match = cleanText.match(new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`));
+        if (match) {
+          result[key] = match[1];
+        }
+      }
+
+      if (result.apiKey && result.projectId) {
+        return result;
+      }
+      throw new Error("Missing required Firebase fields (apiKey, projectId)");
+    }
+
     function saveCustomCloudConfig() {
       const raw = document.getElementById('firebase-config-input').value.trim();
       if (!raw) {
@@ -1840,20 +1875,12 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         return;
       }
       try {
-        let parsed;
-        if (raw.includes('{')) {
-          const jsonStr = raw.substring(raw.indexOf('{'), raw.lastIndexOf('}') + 1)
-            .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":')
-            .replace(/'/g, '"');
-          parsed = JSON.parse(jsonStr);
-        } else {
-          parsed = JSON.parse(raw);
-        }
+        const parsed = extractFirebaseConfig(raw);
         localStorage.setItem('imogen_firebase_config', JSON.stringify(parsed));
         showToast("Cloud configuration saved! Connecting...");
         initCloudSync();
       } catch (e) {
-        showToast("Invalid JSON format. Check brackets and quotes.");
+        showToast("Could not read configuration. Check that apiKey and projectId are present.");
       }
     }
 
