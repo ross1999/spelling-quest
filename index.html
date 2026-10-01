@@ -880,7 +880,7 @@
         <label>Selected Voice (UK Natural voices prioritized):</label>
         <select id="voice-select" onchange="onVoiceChange()"></select>
 
-        <label style="margin-top: 10px;">Gemini API Key (Saved locally to your browser):</label>
+        <label style="margin-top: 10px;">Gemini API Key (Shared across devices via Cloud):</label>
         <input type="password" id="gemini-key" placeholder="AIzaSy...">
         
         <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -889,8 +889,22 @@
         </div>
 
         <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
-          <label>Multi-Device Cloud Sync Status:</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin-bottom: 0;">Multi-Device Cloud Sync:</label>
+            <button class="action-btn btn-clear" style="padding: 4px 10px; font-size: 0.78rem;" onclick="toggleCloudConfigUI()">⚙️ Cloud Setup</button>
+          </div>
           <div id="cloud-status-detail" style="font-size: 0.85rem; color: #0284C7; font-weight: 600;">Connecting to real-time cloud data...</div>
+          
+          <div id="cloud-setup-panel" style="display: none; margin-top: 10px; background: #FFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 10px;">
+            <p style="font-size: 0.8rem; color: #475569; margin-bottom: 6px;">
+              Paste your free Firebase Config JSON here to sync words, stars, and the API key between your Mac & iPad:
+            </p>
+            <textarea id="firebase-config-input" style="width: 100%; height: 85px; font-family: monospace; font-size: 0.75rem; padding: 6px; border: 1px solid #CBD5E1; border-radius: 6px;" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}'></textarea>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.82rem;" onclick="saveCustomCloudConfig()">Connect Cloud</button>
+              <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.82rem;" onclick="resetToLocalSync()">Reset to Local</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1083,29 +1097,37 @@
     let isCloudReady = false;
     let stateDocRef = null;
 
+    // Optional: You can paste your Firebase Config object here directly if you prefer
+    const INLINE_FIREBASE_CONFIG = null;
+
+    function getFirebaseConfig() {
+      if (INLINE_FIREBASE_CONFIG) return INLINE_FIREBASE_CONFIG;
+      const stored = localStorage.getItem('imogen_firebase_config');
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) { console.warn("Invalid stored firebase config", e); }
+      }
+      if (typeof __firebase_config !== 'undefined') {
+        try { return JSON.parse(__firebase_config); } catch (e) {}
+      }
+      return null;
+    }
+
     async function initCloudSync() {
       const badge = document.getElementById('cloud-sync-badge');
       const detail = document.getElementById('cloud-status-detail');
       
       const appId = typeof __app_id !== 'undefined' ? __app_id : 'spelling-quest-imogen';
-      let firebaseConfig = null;
-
-      try {
-        if (typeof __firebase_config !== 'undefined') {
-          firebaseConfig = JSON.parse(__firebase_config);
-        }
-      } catch (e) {
-        console.warn("Could not parse environment Firebase configuration:", e);
-      }
+      const firebaseConfig = getFirebaseConfig();
 
       if (!firebaseConfig) {
-        if (badge) badge.innerText = "☁️ Local Mode";
-        if (detail) detail.innerText = "Running single-device session. In-memory sync ready.";
+        if (badge) badge.innerText = "☁️️ Local Mode";
+        if (detail) detail.innerHTML = "Running single-device session. Tap <strong>⚙️ Cloud Setup</strong> above to connect Mac & iPad.";
         renderUIState();
         return;
       }
 
       try {
+        if (detail) detail.innerText = "Connecting to real-time cloud data...";
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
@@ -1120,13 +1142,13 @@
         const user = auth.currentUser;
         if (!user) {
           if (badge) badge.innerText = "☁️ Offline";
+          if (detail) detail.innerText = "Could not authenticate with cloud.";
           return;
         }
 
-        // RULE 1: Strict public path for family shared data across devices
+        // Shared document reference (syncs words, stats, and API key across devices)
         stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'spelling_app', 'shared_state');
 
-        // Real-time synchronization listener
         onSnapshot(stateDocRef, (snap) => {
           if (snap.exists()) {
             const cloudData = snap.data();
@@ -1138,7 +1160,11 @@
               if (typeof cloudData.streak === 'number') appState.streak = cloudData.streak;
               if (Array.isArray(cloudData.unlockedStickers)) appState.unlockedStickers = cloudData.unlockedStickers;
               if (cloudData.stats) appState.stats = cloudData.stats;
-              if (cloudData.apiKey) appState.apiKey = cloudData.apiKey;
+              if (cloudData.apiKey) {
+                appState.apiKey = cloudData.apiKey;
+                const keyInp = document.getElementById('gemini-key');
+                if (keyInp && !keyInp.value) keyInp.value = cloudData.apiKey;
+              }
               if (cloudData.preferredVoice) appState.preferredVoice = cloudData.preferredVoice;
             }
           } else {
@@ -1147,19 +1173,19 @@
 
           isCloudReady = true;
           if (badge) badge.innerText = "☁️ Synced Live";
-          if (detail) detail.innerText = `Connected! Syncing across devices (User: ${user.uid})`;
+          if (detail) detail.innerText = `Connected! Syncing live across devices (Project: ${firebaseConfig.projectId || 'Active'})`;
           renderUIState();
           setupCurrentWord();
         }, (err) => {
           console.error("Cloud sync snapshot error:", err);
-          if (badge) badge.innerText = "☁️️ Sync Error";
+          if (badge) badge.innerText = "☁️ Sync Error";
           if (detail) detail.innerText = "Could not sync: " + err.message;
         });
 
       } catch (err) {
         console.error("Failed to connect cloud storage:", err);
         if (badge) badge.innerText = "☁️ Local Mode";
-        if (detail) detail.innerText = "Running in local session.";
+        if (detail) detail.innerText = "Could not connect: " + err.message;
         renderUIState();
       }
     }
@@ -1797,6 +1823,46 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       if (row) row.remove();
     }
 
+    function toggleCloudConfigUI() {
+      const panel = document.getElementById('cloud-setup-panel');
+      if (!panel) return;
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      const stored = localStorage.getItem('imogen_firebase_config');
+      if (stored) {
+        document.getElementById('firebase-config-input').value = stored;
+      }
+    }
+
+    function saveCustomCloudConfig() {
+      const raw = document.getElementById('firebase-config-input').value.trim();
+      if (!raw) {
+        showToast("Please paste your Firebase configuration.");
+        return;
+      }
+      try {
+        let parsed;
+        if (raw.includes('{')) {
+          const jsonStr = raw.substring(raw.indexOf('{'), raw.lastIndexOf('}') + 1)
+            .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":')
+            .replace(/'/g, '"');
+          parsed = JSON.parse(jsonStr);
+        } else {
+          parsed = JSON.parse(raw);
+        }
+        localStorage.setItem('imogen_firebase_config', JSON.stringify(parsed));
+        showToast("Cloud configuration saved! Connecting...");
+        initCloudSync();
+      } catch (e) {
+        showToast("Invalid JSON format. Check brackets and quotes.");
+      }
+    }
+
+    function resetToLocalSync() {
+      localStorage.removeItem('imogen_firebase_config');
+      showToast("Reset to single-device local mode.");
+      location.reload();
+    }
+
     function handleClearAllWords() {
       const container = document.getElementById('word-inputs-container');
       container.innerHTML = '';
@@ -1855,6 +1921,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.generateAITips = generateAITips;
     window.onVoiceChange = onVoiceChange;
     window.closeCertificate = closeCertificate;
+    window.toggleCloudConfigUI = toggleCloudConfigUI;
+    window.saveCustomCloudConfig = saveCustomCloudConfig;
+    window.resetToLocalSync = resetToLocalSync;
 
     renderUIState();
     setupCurrentWord();
