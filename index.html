@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Imogen's Spelling Quest</title>
+  <!-- Google Fonts: Fredoka & Comic Neue for child-friendly infant letterforms -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <!-- Confetti library for celebrations -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
   <style>
     :root {
       --bg: #F4F7FB;
@@ -19,11 +21,9 @@
       --success: #10B981;
       --danger: #EF4444;
       --purple: #8B5CF6;
-      --curtain-start: #7C2D12;
-      --curtain-end: #991B1B;
-      --gold: #F59E0B;
       --text: #1E293B;
       --text-muted: #64748B;
+      --curtain-bg: #4338CA;
       --radius: 20px;
     }
 
@@ -33,7 +33,7 @@
       -webkit-user-select: none;
       margin: 0;
       padding: 0;
-      font-family: 'Fredoka', 'Comic Neue', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Comic Sans MS", sans-serif;
+      font-family: 'Fredoka', 'Comic Neue', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
@@ -67,7 +67,7 @@
       background: #FFF;
       padding: 8px 14px;
       border-radius: 999px;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 0.95rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       display: flex;
@@ -75,14 +75,21 @@
       gap: 6px;
     }
 
+    .badge-cloud {
+      color: #0284C7;
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      font-size: 0.88rem;
+    }
+
     .sticker-nav-btn {
       background: linear-gradient(135deg, #6366F1, #8B5CF6);
       color: #FFF;
       border: none;
-      padding: 9px 16px;
+      padding: 8px 16px;
       border-radius: 999px;
-      font-weight: 800;
-      font-size: 0.95rem;
+      font-weight: 600;
+      font-size: 0.92rem;
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
       display: flex;
       align-items: center;
@@ -92,7 +99,7 @@
     }
 
     .sticker-nav-btn:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
 
     .btn-icon {
@@ -100,15 +107,19 @@
       border: none;
       padding: 10px 14px;
       border-radius: 999px;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: transform 0.1s ease;
     }
 
-    /* 4-Mode Navigation */
+    .btn-icon:active {
+      transform: scale(0.94);
+    }
+
     .mode-nav {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 16px;
       width: 100%;
       max-width: 680px;
@@ -116,15 +127,15 @@
     }
 
     .mode-tab {
-      flex: 1 1 calc(25% - 6px);
-      min-width: 120px;
+      flex: 1 1 calc(25% - 8px);
+      min-width: 110px;
       padding: 10px 6px;
       border: 2px solid transparent;
       background: #E2E8F0;
       color: var(--text-muted);
       border-radius: 14px;
-      font-weight: 700;
-      font-size: 0.88rem;
+      font-weight: 500;
+      font-size: 0.9rem;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s ease;
@@ -136,14 +147,13 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    /* Main Card Container */
     .card {
       background: var(--card-bg);
       width: 100%;
       max-width: 680px;
       border-radius: var(--radius);
       box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-      padding: 24px 20px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -152,9 +162,9 @@
 
     .word-counter {
       color: var(--text-muted);
-      font-weight: 700;
+      font-weight: 500;
       margin-bottom: 8px;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
 
     .listen-btn {
@@ -162,13 +172,13 @@
       color: var(--primary);
       border: 2px solid var(--primary);
       border-radius: 50px;
-      padding: 11px 22px;
+      padding: 10px 22px;
       font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 16px;
       transition: transform 0.1s ease;
     }
@@ -177,52 +187,38 @@
       transform: scale(0.96);
     }
 
-    /* --- LOOK, COVER, WRITE, CHECK (LCWC) SYSTEM --- */
-    #view-lcwc {
-      width: 100%;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .lcwc-steps-bar {
+    .lcwc-stepper {
       display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
       width: 100%;
-      max-width: 480px;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      background: #F1F5F9;
-      border-radius: 999px;
-      padding: 4px;
+      max-width: 440px;
+      justify-content: center;
     }
 
     .lcwc-step-pill {
       flex: 1;
       text-align: center;
       padding: 6px 4px;
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #F1F5F9;
+      border-radius: 8px;
       color: var(--text-muted);
-      border-radius: 999px;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
 
     .lcwc-step-pill.active {
-      background: #FFF;
+      background: #E0E7FF;
       color: var(--primary);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      box-shadow: inset 0 0 0 1px var(--primary);
     }
 
-    .lcwc-step-pill.done {
-      color: var(--success);
-    }
-
-    /* The Theatre Curtain Stage */
     .stage-wrapper {
       position: relative;
       width: 100%;
       max-width: 460px;
-      height: 140px;
+      height: 130px;
       border-radius: 18px;
       background: #FFFBEB;
       border: 3px solid #FDE68A;
@@ -235,8 +231,8 @@
     }
 
     .stage-target-word {
-      font-size: 3.2rem;
-      font-weight: 900;
+      font-size: 3rem;
+      font-weight: 600;
       color: #92400E;
       letter-spacing: 4px;
       text-transform: lowercase;
@@ -245,35 +241,39 @@
       padding: 0 16px;
     }
 
-    /* The Animated Sliding Curtain */
-    .sliding-curtain {
+    .curtain-panel {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, var(--curtain-start) 0%, var(--curtain-end) 92%, #581C87 100%);
-      z-index: 5;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #4F46E5 0%, #3730A3 90%, #312E81 100%);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      z-index: 2;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #FDE68A;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      transform: translateY(-105%);
-      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(-100%);
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .sliding-curtain.closed {
+    .curtain-panel.pulled-down {
       transform: translateY(0%);
     }
 
-    .curtain-ribbon {
-      font-size: 2.2rem;
-      margin-bottom: 4px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    .curtain-fringe {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, #F59E0B, #F59E0B 12px, #D97706 12px, #D97706 24px);
+      box-shadow: 0 -1px 3px rgba(0,0,0,0.15);
     }
 
     .curtain-text {
-      font-size: 1rem;
-      font-weight: 800;
+      font-size: 0.95rem;
+      font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #FEF3C7;
@@ -283,40 +283,22 @@
       background: rgba(0, 0, 0, 0.2);
     }
 
-    .curtain-fringe {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 10px;
-      background: repeating-linear-gradient(90deg, #F59E0B 0px, #F59E0B 8px, #D97706 8px, #D97706 16px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    /* LCWC Action & Writing Area */
-    .lcwc-write-area {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .lcwc-display-slots {
+    .slots-container {
       display: flex;
       gap: 6px;
+      margin: 14px 0 18px 0;
       min-height: 56px;
-      margin-bottom: 14px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
-    .lcwc-slot {
+    .slot {
       width: 44px;
       height: 54px;
       border: 2px dashed #CBD5E1;
       border-radius: 12px;
       font-size: 2rem;
-      font-weight: 800;
+      font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -324,51 +306,56 @@
       text-transform: lowercase;
     }
 
-    .lcwc-slot.filled {
+    .slot.filled {
       border: 2px solid var(--primary);
       background: #FFF;
       color: var(--primary);
+      animation: popIn 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .lcwc-slot.correct {
+    .slot.correct-slot {
       border: 2px solid var(--success);
       background: #ECFDF5;
-      color: var(--success);
+      color: #065F46;
     }
 
-    .lcwc-slot.wrong {
+    .slot.wrong-slot {
       border: 2px solid var(--danger);
       background: #FEF2F2;
-      color: var(--danger);
+      color: #991B1B;
     }
 
-    /* Built-In Lowercase Virtual Keyboard */
-    .virtual-keyboard {
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .keyboard-box {
+      width: 100%;
+      max-width: 460px;
+      margin: 12px 0 8px 0;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      width: 100%;
-      max-width: 480px;
-      margin-top: 6px;
     }
 
     .kb-row {
       display: flex;
-      gap: 5px;
       justify-content: center;
+      gap: 4px;
       width: 100%;
     }
 
     .kb-key {
       flex: 1;
-      max-width: 42px;
-      height: 48px;
+      max-width: 40px;
+      height: 46px;
       background: #F1F5F9;
       border: 2px solid #E2E8F0;
       box-shadow: 0 3px 0 #CBD5E1;
       border-radius: 10px;
-      font-size: 1.4rem;
-      font-weight: 800;
+      font-size: 1.3rem;
+      font-weight: 600;
       color: var(--text);
       display: flex;
       align-items: center;
@@ -384,79 +371,10 @@
     }
 
     .kb-key.action-key {
-      max-width: 64px;
-      font-size: 1rem;
+      flex: 1.4;
+      max-width: 58px;
       background: #E2E8F0;
-    }
-
-    .kb-key.check-key {
-      max-width: 80px;
-      font-size: 0.95rem;
-      background: var(--success);
-      color: #FFF;
-      border-color: #059669;
-      box-shadow: 0 3px 0 #047857;
-    }
-
-    /* Comparison Banner (Check Step) */
-    .comparison-banner {
-      width: 100%;
-      max-width: 460px;
-      border-radius: 14px;
-      padding: 12px 16px;
-      margin-bottom: 14px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 700;
-    }
-
-    .comparison-banner.success {
-      background: #DCFCE7;
-      border: 2px solid #86EFAC;
-      color: #166534;
-    }
-
-    .comparison-banner.retry {
-      background: #FEE2E2;
-      border: 2px solid #FCA5A5;
-      color: #991B1B;
-    }
-
-    /* --- TILES MODE --- */
-    .slots-container {
-      display: flex;
-      gap: 8px;
-      margin: 16px 0 20px 0;
-      min-height: 64px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .slot {
-      width: 48px;
-      height: 58px;
-      border: 2px dashed #CBD5E1;
-      border-radius: 12px;
-      font-size: 2.2rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #F8FAFC;
-      text-transform: lowercase;
-    }
-
-    .slot.filled {
-      border: 2px solid var(--primary);
-      background: #FFF;
-      color: var(--primary);
-      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.6); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      font-size: 1.15rem;
     }
 
     .tile-grid {
@@ -465,40 +383,39 @@
       gap: 8px;
       justify-content: center;
       max-width: 520px;
-      margin: 10px 0 20px 0;
+      margin: 10px 0 18px 0;
     }
 
     .tile-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       background: #F1F5F9;
       border: 2px solid #E2E8F0;
-      box-shadow: 0 4px 0 #CBD5E1;
-      font-size: 1.85rem;
-      font-weight: 800;
+      box-shadow: 0 3px 0 #CBD5E1;
+      font-size: 1.7rem;
+      font-weight: 600;
       color: var(--text);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       text-transform: lowercase;
-      transition: all 0.1s ease;
+      transition: all 0.08s ease;
     }
 
     .tile-btn:active {
-      transform: translateY(3px);
+      transform: translateY(2px);
       box-shadow: 0 1px 0 #CBD5E1;
     }
 
     .tile-btn.disabled {
       opacity: 0.25;
       pointer-events: none;
-      transform: translateY(3px);
+      transform: translateY(2px);
       box-shadow: none;
     }
 
-    /* --- TRACE CANVAS MODE --- */
     #trace-canvas {
       border: 2px dashed #CBD5E1;
       border-radius: 16px;
@@ -509,16 +426,16 @@
 
     .trace-actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       margin-top: 14px;
     }
 
     .action-btn {
-      padding: 10px 18px;
+      padding: 9px 18px;
       border: none;
       border-radius: 12px;
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 600;
+      font-size: 0.92rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -532,24 +449,24 @@
 
     .btn-clear { background: #E2E8F0; color: var(--text); }
     .btn-done { background: var(--success); color: #FFF; }
+    .btn-primary { background: var(--primary); color: #FFF; }
     .btn-gemini { background: var(--purple); color: #FFF; }
+    .btn-danger { background: #FEE2E2; color: #DC2626; }
 
-    /* --- TYPE INPUT MODE --- */
     #type-input {
-      font-size: 2rem;
+      font-size: 1.8rem;
       letter-spacing: 4px;
       text-transform: lowercase;
       text-align: center;
-      padding: 10px 16px;
-      width: 280px;
+      padding: 8px 16px;
+      width: 260px;
       border: 3px solid var(--primary);
       border-radius: 14px;
       outline: none;
-      font-weight: 800;
+      font-weight: 600;
       margin: 16px 0;
     }
 
-    /* Hint / Tip Drawer */
     .tip-box {
       width: 100%;
       background: #FEF3C7;
@@ -557,7 +474,7 @@
       padding: 12px 16px;
       border-radius: 10px;
       margin-top: 16px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       line-height: 1.4;
       display: none;
     }
@@ -566,13 +483,13 @@
       color: var(--primary);
       background: none;
       border: none;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       text-decoration: underline;
       margin-top: 10px;
+      font-size: 0.9rem;
     }
 
-    /* Shared Modal Styles */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -605,17 +522,83 @@
     .close-btn {
       background: #F1F5F9;
       border: none;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       border-radius: 50%;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Sticker Album */
+    .config-section {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .config-section label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .config-section input, .config-section select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      background: #FFF;
+      outline: none;
+    }
+
+    .word-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 36px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .word-row input {
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .btn-row-del {
+      background: #FEE2E2;
+      color: #EF4444;
+      border: none;
+      height: 36px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.88rem;
+    }
+
+    .progress-table th, .progress-table td {
+      border: 1px solid #E2E8F0;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .progress-table th { background: #F8FAFC; }
+
     .sticker-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -643,12 +626,8 @@
       cursor: pointer;
     }
 
-    .sticker-card.unlocked:hover {
-      transform: translateY(-2px);
-    }
-
     .sticker-card .icon {
-      font-size: 3rem;
+      font-size: 2.8rem;
       margin-bottom: 6px;
     }
 
@@ -658,7 +637,7 @@
     }
 
     .sticker-name {
-      font-weight: 700;
+      font-weight: 600;
       font-size: 0.85rem;
       margin-bottom: 6px;
     }
@@ -667,7 +646,7 @@
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 0.8rem;
-      font-weight: 700;
+      font-weight: 600;
       border: none;
       cursor: pointer;
     }
@@ -687,94 +666,31 @@
     .sticker-badge {
       font-size: 0.75rem;
       color: var(--success);
-      font-weight: 800;
-    }
-
-    /* Certificate Modal */
-    .certificate-card {
-      border: 8px double #F59E0B;
-      background: #FFFDF7;
-      border-radius: 20px;
-      padding: 32px 20px;
-      text-align: center;
-      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
-    }
-
-    .certificate-title {
-      font-size: 1.8rem;
-      color: #92400E;
-      margin-bottom: 8px;
-      font-weight: 800;
-    }
-
-    .certificate-sub {
-      color: #B45309;
-      font-size: 1.05rem;
-      margin-bottom: 20px;
-    }
-
-    .certificate-name {
-      font-size: 2.4rem;
-      color: var(--primary);
-      font-weight: 900;
-      text-decoration: underline;
-      margin-bottom: 16px;
-    }
-
-    /* Parent Settings Inputs */
-    .config-section {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 16px;
-    }
-
-    .config-section label {
-      display: block;
-      font-size: 0.85rem;
       font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--text-muted);
     }
 
-    .config-section input, .config-section select {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      background: #FFF;
+    .toast-box {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1E293B;
+      color: #FFF;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 10000;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .word-row {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 10px;
-      margin-bottom: 8px;
+    .toast-box.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
-
-    .word-row input {
-      padding: 8px 12px;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      font-size: 0.95rem;
-    }
-
-    .progress-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      font-size: 0.9rem;
-    }
-
-    .progress-table th, .progress-table td {
-      border: 1px solid #E2E8F0;
-      padding: 8px;
-      text-align: left;
-    }
-
-    .progress-table th { background: #F8FAFC; }
 
     .shake { animation: shake 0.3s ease-in-out; }
     @keyframes shake {
@@ -790,14 +706,14 @@
     <div class="badge-bar">
       <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
       <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
+      <div class="badge badge-cloud" id="cloud-sync-badge" title="Multi-device live sync status">☁️ Connecting...</div>
       <button class="sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
         📖 Sticker Book (<span id="sticker-badge-count">1/12</span>)
       </button>
     </div>
-    <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
+    <button class="btn-icon" onclick="openParentAuthModal()" title="Parent Settings">⚙️</button>
   </header>
 
-  <!-- Navigation with Look, Cover, Write, Check -->
   <nav class="mode-nav">
     <div class="mode-tab active" onclick="switchMode('lcwc')">🙈 Look & Cover</div>
     <div class="mode-tab" onclick="switchMode('tiles')">🧩 Tiles</div>
@@ -812,90 +728,84 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: LOOK, COVER, WRITE, CHECK (UK KS1) -->
-    <div id="view-lcwc">
-      <div class="lcwc-steps-bar">
-        <div class="lcwc-step-pill active" id="pill-look">1. Look 👁️</div>
-        <div class="lcwc-step-pill" id="pill-cover">2. Cover 🙈</div>
-        <div class="lcwc-step-pill" id="pill-write">3. Write ✍️</div>
-        <div class="lcwc-step-pill" id="pill-check">4. Check 🔍</div>
+    <div id="view-lcwc" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <div class="lcwc-stepper">
+        <div class="lcwc-step-pill" id="pill-step-look">1. Look 👁️</div>
+        <div class="lcwc-step-pill" id="pill-step-cover">2. Cover 🙈</div>
+        <div class="lcwc-step-pill" id="pill-step-write">3. Write ✍️</div>
+        <div class="lcwc-step-pill" id="pill-step-check">4. Check 🔍</div>
       </div>
 
-      <!-- The Sliding Curtain Theatre Stage -->
       <div class="stage-wrapper">
-        <div class="stage-target-word" id="lcwc-stage-word">because</div>
-        <div class="sliding-curtain" id="sliding-curtain">
-          <div class="curtain-ribbon">🙈</div>
-          <div class="curtain-text">HIDDEN FROM VIEW</div>
+        <div class="stage-target-word" id="lcwc-target-word">word</div>
+        <div class="curtain-panel" id="curtain-panel">
+          <div class="curtain-text">Hidden from view</div>
           <div class="curtain-fringe"></div>
         </div>
       </div>
 
-      <!-- Comparison Feedback Banner on Step 4 -->
-      <div class="comparison-banner" id="lcwc-banner">
-        <span id="lcwc-banner-text">Super spelling! Perfect match! 🎉</span>
-        <button class="action-btn btn-done" id="lcwc-next-btn" onclick="advanceLCWCToNextWord()">Next Word ➔</button>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;" id="lcwc-stage-actions">
+        <button class="action-btn btn-primary" id="btn-cover-word" onclick="startCoverPhase()">
+          🙈 Cover & Spell!
+        </button>
       </div>
 
-      <!-- Child Writing Area -->
-      <div class="lcwc-write-area">
-        <!-- Action Buttons for Look Step -->
-        <div id="lcwc-ready-btn-container" style="margin-bottom: 12px;">
-          <button class="action-btn btn-done" style="font-size: 1.1rem; padding: 12px 24px;" onclick="startCoverPhase()">
-            🙈 Ready to Cover & Write!
-          </button>
-        </div>
+      <div class="slots-container" id="lcwc-slots"></div>
 
-        <!-- Word Spelled Letter Slots -->
-        <div class="lcwc-display-slots" id="lcwc-display-slots"></div>
-
-        <!-- In-App Lowercase Keyboard (Eliminates iPad Autocorrect) -->
-        <div class="virtual-keyboard" id="lcwc-keyboard">
-          <div class="kb-row">
-            <button class="kb-key" onclick="handleLCWCKey('q')">q</button>
-            <button class="kb-key" onclick="handleLCWCKey('w')">w</button>
-            <button class="kb-key" onclick="handleLCWCKey('e')">e</button>
-            <button class="kb-key" onclick="handleLCWCKey('r')">r</button>
-            <button class="kb-key" onclick="handleLCWCKey('t')">t</button>
-            <button class="kb-key" onclick="handleLCWCKey('y')">y</button>
-            <button class="kb-key" onclick="handleLCWCKey('u')">u</button>
-            <button class="kb-key" onclick="handleLCWCKey('i')">i</button>
-            <button class="kb-key" onclick="handleLCWCKey('o')">o</button>
-            <button class="kb-key" onclick="handleLCWCKey('p')">p</button>
-          </div>
-          <div class="kb-row">
-            <button class="kb-key" onclick="handleLCWCKey('a')">a</button>
-            <button class="kb-key" onclick="handleLCWCKey('s')">s</button>
-            <button class="kb-key" onclick="handleLCWCKey('d')">d</button>
-            <button class="kb-key" onclick="handleLCWCKey('f')">f</button>
-            <button class="kb-key" onclick="handleLCWCKey('g')">g</button>
-            <button class="kb-key" onclick="handleLCWCKey('h')">h</button>
-            <button class="kb-key" onclick="handleLCWCKey('j')">j</button>
-            <button class="kb-key" onclick="handleLCWCKey('k')">k</button>
-            <button class="kb-key" onclick="handleLCWCKey('l')">l</button>
-          </div>
-          <div class="kb-row">
-            <button class="kb-key action-key" onclick="handleLCWCBackspace()" title="Delete letter">⌫</button>
-            <button class="kb-key" onclick="handleLCWCKey('z')">z</button>
-            <button class="kb-key" onclick="handleLCWCKey('x')">x</button>
-            <button class="kb-key" onclick="handleLCWCKey('c')">c</button>
-            <button class="kb-key" onclick="handleLCWCKey('v')">v</button>
-            <button class="kb-key" onclick="handleLCWCKey('b')">b</button>
-            <button class="kb-key" onclick="handleLCWCKey('n')">n</button>
-            <button class="kb-key" onclick="handleLCWCKey('m')">m</button>
-            <button class="kb-key check-key" onclick="checkLCWCAttempt()">Check ✓</button>
-          </div>
+      <div class="keyboard-box" id="lcwc-keyboard">
+        <div class="kb-row">
+          <button class="kb-key" onclick="handleLCWCKey('q')">q</button>
+          <button class="kb-key" onclick="handleLCWCKey('w')">w</button>
+          <button class="kb-key" onclick="handleLCWCKey('e')">e</button>
+          <button class="kb-key" onclick="handleLCWCKey('r')">r</button>
+          <button class="kb-key" onclick="handleLCWCKey('t')">t</button>
+          <button class="kb-key" onclick="handleLCWCKey('y')">y</button>
+          <button class="kb-key" onclick="handleLCWCKey('u')">u</button>
+          <button class="kb-key" onclick="handleLCWCKey('i')">i</button>
+          <button class="kb-key" onclick="handleLCWCKey('o')">o</button>
+          <button class="kb-key" onclick="handleLCWCKey('p')">p</button>
         </div>
+        <div class="kb-row">
+          <button class="kb-key" onclick="handleLCWCKey('a')">a</button>
+          <button class="kb-key" onclick="handleLCWCKey('s')">s</button>
+          <button class="kb-key" onclick="handleLCWCKey('d')">d</button>
+          <button class="kb-key" onclick="handleLCWCKey('f')">f</button>
+          <button class="kb-key" onclick="handleLCWCKey('g')">g</button>
+          <button class="kb-key" onclick="handleLCWCKey('h')">h</button>
+          <button class="kb-key" onclick="handleLCWCKey('j')">j</button>
+          <button class="kb-key" onclick="handleLCWCKey('k')">k</button>
+          <button class="kb-key" onclick="handleLCWCKey('l')">l</button>
+        </div>
+        <div class="kb-row">
+          <button class="kb-key" onclick="handleLCWCKey('z')">z</button>
+          <button class="kb-key" onclick="handleLCWCKey('x')">x</button>
+          <button class="kb-key" onclick="handleLCWCKey('c')">c</button>
+          <button class="kb-key" onclick="handleLCWCKey('v')">v</button>
+          <button class="kb-key" onclick="handleLCWCKey('b')">b</button>
+          <button class="kb-key" onclick="handleLCWCKey('n')">n</button>
+          <button class="kb-key" onclick="handleLCWCKey('m')">m</button>
+          <button class="kb-key action-key" onclick="handleLCWCBackspace()">⌫</button>
+        </div>
+      </div>
+
+      <div style="display: none; gap: 10px; margin-top: 10px;" id="lcwc-check-actions">
+        <button class="action-btn btn-done" id="btn-check-attempt" onclick="checkLCWCAttempt()">
+          🔍 Check My Spelling!
+        </button>
+      </div>
+
+      <div style="display: none; gap: 10px; margin-top: 10px;" id="lcwc-next-actions">
+        <button class="action-btn btn-primary" onclick="advanceLCWCToNextWord()">
+          ➡️ Next Word
+        </button>
       </div>
     </div>
 
-    <!-- MODE 2: TAP TILES -->
-    <div id="view-tiles" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+    <div id="view-tiles" style="display: none; width: 100%; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
     </div>
 
-    <!-- MODE 3: TRACING CANVAS -->
     <div id="view-trace" style="display: none;" class="trace-container">
       <canvas id="trace-canvas" width="460" height="180"></canvas>
       <div class="trace-actions">
@@ -904,7 +814,6 @@
       </div>
     </div>
 
-    <!-- MODE 4: DIRECT TYPING -->
     <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
       <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="15" placeholder="type here">
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
@@ -914,7 +823,6 @@
     <div class="tip-box" id="tip-box"></div>
   </main>
 
-  <!-- STICKER ALBUM MODAL -->
   <div id="sticker-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
@@ -928,17 +836,15 @@
     </div>
   </div>
 
-  <!-- CERTIFICATE CELEBRATION MODAL -->
   <div id="certificate-modal" class="modal-backdrop">
-    <div class="modal-content certificate-card">
+    <div class="modal-content" style="border: 8px double #F59E0B; background: #FFFDF7; text-align: center; padding: 30px;">
       <div style="font-size: 3.5rem; margin-bottom: 8px;">🏆</div>
-      <h1 class="certificate-title">Spelling Superstar Award!</h1>
-      <p class="certificate-sub">This certificate is proudly awarded to:</p>
-      <div class="certificate-name">Imogen</div>
-      <p style="font-size: 1.1rem; color: #475569; margin-bottom: 24px; line-height: 1.5;">
-        For fantastic effort and mastering all 10 weekly spelling words!
+      <h1 style="color: #92400E; margin-bottom: 8px; font-weight: 600;">Spelling Superstar Award!</h1>
+      <p style="color: #B45309; font-size: 1.05rem; margin-bottom: 16px;">This certificate is proudly awarded to:</p>
+      <div style="font-size: 2.5rem; color: var(--primary); font-weight: 600; text-decoration: underline; margin-bottom: 16px;">Imogen</div>
+      <p style="font-size: 1.05rem; color: #475569; margin-bottom: 24px; line-height: 1.5;">
+        For fantastic effort and mastering all your weekly spelling words!
       </p>
-      
       <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
         <button class="action-btn btn-done" onclick="window.print()">🖨️ Print Award</button>
         <button class="action-btn btn-clear" onclick="closeCertificate()">Practice Again</button>
@@ -946,11 +852,27 @@
     </div>
   </div>
 
-  <!-- PARENT ADMIN MODAL -->
+  <div id="parent-auth-modal" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <div class="modal-header">
+        <h3 style="font-weight: 600;">Parents Only</h3>
+        <button class="close-btn" onclick="closeParentAuthModal()">✕</button>
+      </div>
+      <p style="font-size: 0.95rem; color: #64748B; margin-bottom: 16px;">Please solve to unlock settings:</p>
+      <div style="font-size: 1.8rem; font-weight: 600; color: var(--primary); margin-bottom: 20px;">4 + 3 = ?</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(5)">5</button>
+        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(6)">6</button>
+        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(7)">7</button>
+        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(8)">8</button>
+      </div>
+    </div>
+  </div>
+
   <div id="parent-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Weekly 10 Words Setup</h2>
+        <h2>Weekly Words Setup</h2>
         <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
       
@@ -965,16 +887,27 @@
           <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips with Gemini</button>
           <span id="gemini-status" style="font-size: 0.85rem; color: #64748B; align-self: center;"></span>
         </div>
+
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
+          <label>Multi-Device Cloud Sync Status:</label>
+          <div id="cloud-status-detail" style="font-size: 0.85rem; color: #0284C7; font-weight: 600;">Connecting to real-time cloud data...</div>
+        </div>
+      </div>
+
+      <!-- Action buttons for clearing and adding words -->
+      <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+        <button class="action-btn btn-primary" onclick="handleAddWordClick()">➕ Add Word</button>
+        <button class="action-btn btn-danger" onclick="handleClearAllWords()">🗑️ Clear All Words</button>
       </div>
 
       <div id="word-inputs-container"></div>
 
-      <div style="display: flex; gap: 10px; margin-top: 14px;">
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
         <button class="action-btn btn-done" onclick="saveParentSettings()">Save Settings & Words</button>
         <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
       </div>
 
-      <h3 style="margin-top: 24px;">Progress Record</h3>
+      <h3 style="margin-top: 24px; font-weight: 600;">Progress Record</h3>
       <table class="progress-table">
         <thead>
           <tr>
@@ -989,7 +922,14 @@
     </div>
   </div>
 
-  <script>
+  <!-- Toast Notification Box -->
+  <div id="toast-box" class="toast-box">Notification</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
     /* --- 1. WEB AUDIO API SYNTHESIZER --- */
     let audioCtx = null;
     function getAudioContext() {
@@ -1018,29 +958,6 @@
       } catch(e) {}
     }
 
-    function playCurtainSound(open = false) {
-      try {
-        const ctx = getAudioContext();
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        if (open) {
-          osc.frequency.setValueAtTime(260, now);
-          osc.frequency.exponentialRampToValueAtTime(650, now + 0.45);
-        } else {
-          osc.frequency.setValueAtTime(550, now);
-          osc.frequency.exponentialRampToValueAtTime(200, now + 0.45);
-        }
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.45);
-      } catch(e) {}
-    }
-
     function playCorrectChime() {
       try {
         const ctx = getAudioContext();
@@ -1051,7 +968,7 @@
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, now + idx * 0.07);
-          gain.gain.setValueAtTime(0.15, now + idx * 0.07);
+          gain.gain.setValueAtTime(0.14, now + idx * 0.07);
           gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -1106,7 +1023,24 @@
       } catch(e) {}
     }
 
-    /* --- 2. STICKER CATALOG --- */
+    function playCurtainSlideSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.35);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      } catch(e) {}
+    }
+
     const STICKER_CATALOG = [
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
@@ -1122,7 +1056,6 @@
       { id: "crown", icon: "👑", name: "Spelling Queen", cost: 20 }
     ];
 
-    /* --- 3. PERSISTENT APP STATE --- */
     const defaultData = {
       apiKey: "",
       preferredVoice: "",
@@ -1144,27 +1077,134 @@
       unlockedStickers: ["unicorn"]
     };
 
-    let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
-    if (!Array.isArray(appState.unlockedStickers)) appState.unlockedStickers = ["unicorn"];
-    if (typeof appState.stars !== 'number') appState.stars = 0;
-    if (typeof appState.streak !== 'number') appState.streak = 1;
+    let appState = { ...defaultData };
+    let db = null;
+    let auth = null;
+    let isCloudReady = false;
+    let stateDocRef = null;
+
+    async function initCloudSync() {
+      const badge = document.getElementById('cloud-sync-badge');
+      const detail = document.getElementById('cloud-status-detail');
+      
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'spelling-quest-imogen';
+      let firebaseConfig = null;
+
+      try {
+        if (typeof __firebase_config !== 'undefined') {
+          firebaseConfig = JSON.parse(__firebase_config);
+        }
+      } catch (e) {
+        console.warn("Could not parse environment Firebase configuration:", e);
+      }
+
+      if (!firebaseConfig) {
+        if (badge) badge.innerText = "☁️ Local Mode";
+        if (detail) detail.innerText = "Running single-device session. In-memory sync ready.";
+        renderUIState();
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // RULE 3: Authenticate before queries
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        const user = auth.currentUser;
+        if (!user) {
+          if (badge) badge.innerText = "☁️ Offline";
+          return;
+        }
+
+        // RULE 1: Strict public path for family shared data across devices
+        stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'spelling_app', 'shared_state');
+
+        // Real-time synchronization listener
+        onSnapshot(stateDocRef, (snap) => {
+          if (snap.exists()) {
+            const cloudData = snap.data();
+            if (cloudData) {
+              if (Array.isArray(cloudData.words) && cloudData.words.length > 0) {
+                appState.words = cloudData.words;
+              }
+              if (typeof cloudData.stars === 'number') appState.stars = cloudData.stars;
+              if (typeof cloudData.streak === 'number') appState.streak = cloudData.streak;
+              if (Array.isArray(cloudData.unlockedStickers)) appState.unlockedStickers = cloudData.unlockedStickers;
+              if (cloudData.stats) appState.stats = cloudData.stats;
+              if (cloudData.apiKey) appState.apiKey = cloudData.apiKey;
+              if (cloudData.preferredVoice) appState.preferredVoice = cloudData.preferredVoice;
+            }
+          } else {
+            setDoc(stateDocRef, appState).catch(console.error);
+          }
+
+          isCloudReady = true;
+          if (badge) badge.innerText = "☁️ Synced Live";
+          if (detail) detail.innerText = `Connected! Syncing across devices (User: ${user.uid})`;
+          renderUIState();
+          setupCurrentWord();
+        }, (err) => {
+          console.error("Cloud sync snapshot error:", err);
+          if (badge) badge.innerText = "☁️️ Sync Error";
+          if (detail) detail.innerText = "Could not sync: " + err.message;
+        });
+
+      } catch (err) {
+        console.error("Failed to connect cloud storage:", err);
+        if (badge) badge.innerText = "☁️ Local Mode";
+        if (detail) detail.innerText = "Running in local session.";
+        renderUIState();
+      }
+    }
 
     let currentIndex = 0;
-    let currentMode = 'lcwc'; // Default to UK standard Look, Cover, Write, Check
+    let currentMode = 'lcwc';
     let currentTileInput = [];
     let lcwcInputLetters = [];
-    let lcwcStep = 'look'; // 'look', 'cover', 'write', 'check'
+    let lcwcStep = 'look';
     let firstAttempt = true;
     let availableVoices = [];
 
-    function saveState() {
-      localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
+    function renderUIState() {
       document.getElementById('star-count').innerText = appState.stars;
       document.getElementById('streak-count').innerText = appState.streak;
       document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    /* --- 4. SPEECH ENGINE --- */
+    async function saveState() {
+      renderUIState();
+      if (isCloudReady && stateDocRef && auth && auth.currentUser) {
+        try {
+          await setDoc(stateDocRef, {
+            words: appState.words,
+            stats: appState.stats,
+            stars: appState.stars,
+            streak: appState.streak,
+            unlockedStickers: appState.unlockedStickers,
+            apiKey: appState.apiKey,
+            preferredVoice: appState.preferredVoice,
+            lastUpdated: new Date().toISOString()
+          });
+        } catch (err) {
+          console.error("Error writing state to cloud:", err);
+        }
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast-box');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -1212,6 +1252,7 @@
     function onVoiceChange() {
       appState.preferredVoice = document.getElementById('voice-select').value;
       saveState();
+      
       const utterance = new SpeechSynthesisUtterance("Voice ready!");
       const selected = availableVoices.find(v => v.name === appState.preferredVoice);
       if (selected) utterance.voice = selected;
@@ -1219,7 +1260,10 @@
     }
 
     function currentWordObj() {
-      return appState.words[currentIndex] || { word: "test", tip: "" };
+      if (!appState.words || appState.words.length === 0) {
+        return { word: "spelling", tip: "" };
+      }
+      return appState.words[currentIndex] || appState.words[0];
     }
 
     function speakCurrentWord() {
@@ -1227,6 +1271,7 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
+        
         let voice = availableVoices.find(v => v.name === appState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
@@ -1237,30 +1282,32 @@
       }
     }
 
-    /* --- 5. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const key = document.getElementById('gemini-key').value.trim();
       const status = document.getElementById('gemini-status');
       
       if (!key) {
-        alert("Please paste your Gemini API key first.");
+        showToast("Please enter your Gemini API key first.");
         return;
       }
 
+      const rows = document.querySelectorAll('.word-row');
       const wordsToGenerate = [];
-      for (let i = 0; i < 10; i++) {
-        const val = document.getElementById(`p-word-${i}`).value.trim().toLowerCase();
-        if (val) wordsToGenerate.push(val);
-      }
+      rows.forEach(r => {
+        const wInp = r.querySelector('.row-word-input');
+        if (wInp && wInp.value.trim()) {
+          wordsToGenerate.push(wInp.value.trim().toLowerCase());
+        }
+      });
 
       if (wordsToGenerate.length === 0) {
-        alert("Please enter at least one word first.");
+        showToast("Please add at least one word first.");
         return;
       }
 
       status.innerText = "Generating tips...";
 
-      const promptText = `You are a teacher helping a 6-year-old UK Key Stage 1 pupil learn spellings.
+      const promptText = `You are an expert UK Key Stage 1 teacher helping a 6-year-old pupil learn spellings.
 Generate a memorable spelling tip or mnemonic for each of these words: ${wordsToGenerate.join(', ')}.
 Rules:
 - Keep tips very short (1 sentence maximum).
@@ -1285,28 +1332,31 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         const parsedTips = JSON.parse(rawJson);
 
         parsedTips.forEach(item => {
-          for (let i = 0; i < 10; i++) {
-            const wordInput = document.getElementById(`p-word-${i}`);
-            if (wordInput.value.trim().toLowerCase() === item.word.toLowerCase()) {
-              document.getElementById(`p-tip-${i}`).value = item.tip;
+          rows.forEach(r => {
+            const wInp = r.querySelector('.row-word-input');
+            const tInp = r.querySelector('.row-tip-input');
+            if (wInp && tInp && wInp.value.trim().toLowerCase() === item.word.toLowerCase()) {
+              tInp.value = item.tip;
             }
-          }
+          });
         });
 
         appState.apiKey = key;
         saveState();
         status.innerText = "✨ Tips generated successfully!";
+        showToast("✨ AI Tips Generated!");
       } catch (err) {
         console.error(err);
         status.innerText = "Error generating tips. Check API key.";
+        showToast("Error generating tips. Check your API key.");
       }
     }
 
-    /* --- 6. CORE GAMEPLAY ENGINE & MODES --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeTab = Array.from(document.querySelectorAll('.mode-tab')).find(t => t.getAttribute('onclick')?.includes(mode));
+      if (activeTab) activeTab.classList.add('active');
 
       document.getElementById('view-lcwc').style.display = (mode === 'lcwc') ? 'flex' : 'none';
       document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
@@ -1338,182 +1388,111 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* ========================================================
-       7. "LOOK, COVER, WRITE, CHECK" ROUTINE (UK KS1)
-       ======================================================== */
     function setupLCWCMode(word) {
-      lcwcStep = 'look';
       lcwcInputLetters = [];
+      lcwcStep = 'look';
+      updateLCWCPills();
 
-      // Update Step Indicators
-      updateLCWCPills('pill-look');
+      document.getElementById('lcwc-target-word').innerText = word;
+      const curtain = document.getElementById('curtain-panel');
+      curtain.classList.remove('pulled-down');
 
-      // Set target word text on stage
-      document.getElementById('lcwc-stage-word').innerText = word;
+      document.getElementById('lcwc-stage-actions').style.display = 'flex';
+      document.getElementById('lcwc-keyboard').style.display = 'none';
+      document.getElementById('lcwc-check-actions').style.display = 'none';
+      document.getElementById('lcwc-next-actions').style.display = 'none';
 
-      // Curtain is OPEN on Look step
-      const curtain = document.getElementById('sliding-curtain');
-      curtain.classList.remove('closed');
-
-      // Hide comparison feedback banner
-      document.getElementById('lcwc-banner').style.display = 'none';
-
-      // Show the Ready button, hide keyboard during Look
-      document.getElementById('lcwc-ready-btn-container').style.display = 'block';
-      document.getElementById('lcwc-keyboard').style.opacity = '0.4';
-      document.getElementById('lcwc-keyboard').style.pointerEvents = 'none';
-
-      // Render empty slots matching word length
       renderLCWCSlots(word.length);
-
-      // Auto-pronounce word on display
-      setTimeout(() => speakCurrentWord(), 250);
     }
 
-    function updateLCWCPills(activeId) {
-      const pills = ['pill-look', 'pill-cover', 'pill-write', 'pill-check'];
-      pills.forEach(p => {
-        const el = document.getElementById(p);
-        el.classList.remove('active', 'done');
-        if (p === activeId) el.classList.add('active');
+    function updateLCWCPills() {
+      ['look', 'cover', 'write', 'check'].forEach(s => {
+        const p = document.getElementById(`pill-step-${s}`);
+        if (p) p.classList.toggle('active', s === lcwcStep);
       });
-      if (activeId === 'pill-write' || activeId === 'pill-check') {
-        document.getElementById('pill-look').classList.add('done');
-        document.getElementById('pill-cover').classList.add('done');
-      }
-      if (activeId === 'pill-check') {
-        document.getElementById('pill-write').classList.add('done');
-      }
     }
 
     function renderLCWCSlots(length) {
-      const container = document.getElementById('lcwc-display-slots');
+      const container = document.getElementById('lcwc-slots');
       container.innerHTML = '';
       for (let i = 0; i < length; i++) {
         const slot = document.createElement('div');
-        slot.className = 'lcwc-slot';
+        slot.className = 'slot';
         slot.id = `lcwc-slot-${i}`;
+        if (lcwcInputLetters[i]) {
+          slot.innerText = lcwcInputLetters[i];
+          slot.classList.add('filled');
+        }
         container.appendChild(slot);
       }
     }
 
-    /* STEP 2: COVER -> STEP 3: WRITE */
     function startCoverPhase() {
+      playCurtainSlideSound();
+      const curtain = document.getElementById('curtain-panel');
+      curtain.classList.add('pulled-down');
+
+      document.getElementById('lcwc-stage-actions').style.display = 'none';
+      document.getElementById('lcwc-keyboard').style.display = 'flex';
+      document.getElementById('lcwc-check-actions').style.display = 'flex';
+
       lcwcStep = 'write';
-      updateLCWCPills('pill-cover');
-
-      playCurtainSound(false);
-
-      // Slide Curtain Down (Close)
-      const curtain = document.getElementById('sliding-curtain');
-      curtain.classList.add('closed');
-
-      // Hide "Ready" button
-      document.getElementById('lcwc-ready-btn-container').style.display = 'none';
-
-      // After 600ms curtain slide finishes, activate step 3 (write)
-      setTimeout(() => {
-        updateLCWCPills('pill-write');
-        const kb = document.getElementById('lcwc-keyboard');
-        kb.style.opacity = '1';
-        kb.style.pointerEvents = 'auto';
-      }, 650);
+      updateLCWCPills();
     }
 
-    /* In-App Keyboard Input Handlers */
     function handleLCWCKey(char) {
-      const targetWord = currentWordObj().word.toLowerCase();
-      if (lcwcInputLetters.length >= targetWord.length) return;
-
-      playTapChime();
-      lcwcInputLetters.push(char);
-
-      const slot = document.getElementById(`lcwc-slot-${lcwcInputLetters.length - 1}`);
-      if (slot) {
-        slot.innerText = char;
-        slot.classList.add('filled');
+      const word = currentWordObj().word.toLowerCase();
+      if (lcwcInputLetters.length < word.length) {
+        playTapChime();
+        lcwcInputLetters.push(char);
+        renderLCWCSlots(word.length);
       }
     }
 
     function handleLCWCBackspace() {
-      if (lcwcInputLetters.length === 0) return;
-      playTapChime();
-      const removeIndex = lcwcInputLetters.length - 1;
-      lcwcInputLetters.pop();
-
-      const slot = document.getElementById(`lcwc-slot-${removeIndex}`);
-      if (slot) {
-        slot.innerText = '';
-        slot.classList.remove('filled', 'correct', 'wrong');
+      if (lcwcInputLetters.length > 0) {
+        playTapChime();
+        lcwcInputLetters.pop();
+        renderLCWCSlots(currentWordObj().word.toLowerCase().length);
       }
     }
 
-    /* STEP 4: CHECK & COMPARE */
     function checkLCWCAttempt() {
-      const targetWord = currentWordObj().word.toLowerCase();
+      const word = currentWordObj().word.toLowerCase();
       if (lcwcInputLetters.length === 0) {
-        playWrongSound();
+        showToast("Spell the word using the keyboard first!");
         return;
       }
 
+      playCurtainSlideSound();
+      const curtain = document.getElementById('curtain-panel');
+      curtain.classList.remove('pulled-down');
+
+      document.getElementById('lcwc-keyboard').style.display = 'none';
+      document.getElementById('lcwc-check-actions').style.display = 'none';
+
       lcwcStep = 'check';
-      updateLCWCPills('pill-check');
+      updateLCWCPills();
 
-      // Disable keyboard during check
-      const kb = document.getElementById('lcwc-keyboard');
-      kb.style.pointerEvents = 'none';
-      kb.style.opacity = '0.5';
-
-      // Slide Curtain Open to reveal original word
-      playCurtainSound(true);
-      const curtain = document.getElementById('sliding-curtain');
-      curtain.classList.remove('closed');
-
-      // Compare letter by letter
-      const userSpelling = lcwcInputLetters.join('').toLowerCase();
-      const isExactMatch = userSpelling === targetWord;
-
-      setTimeout(() => {
-        // Highlight individual letter slots
-        for (let i = 0; i < targetWord.length; i++) {
-          const slot = document.getElementById(`lcwc-slot-${i}`);
-          if (slot) {
-            if (lcwcInputLetters[i] === targetWord[i]) {
-              slot.classList.add('correct');
-            } else {
-              slot.classList.add('wrong');
-            }
-          }
-        }
-
-        const banner = document.getElementById('lcwc-banner');
-        const bannerText = document.getElementById('lcwc-banner-text');
-        const nextBtn = document.getElementById('lcwc-next-btn');
-        banner.style.display = 'flex';
-
-        if (isExactMatch) {
-          playCorrectChime();
-          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-          banner.className = 'comparison-banner success';
-          bannerText.innerText = "✨ Brilliant! Perfect spelling match!";
-          nextBtn.innerText = "Next Word ➔";
-          nextBtn.onclick = advanceLCWCToNextWord;
-
-          recordAttempt(targetWord, firstAttempt);
-          appState.stars += firstAttempt ? 3 : 1;
-          saveState();
+      let isPerfect = true;
+      for (let i = 0; i < word.length; i++) {
+        const slot = document.getElementById(`lcwc-slot-${i}`);
+        if (!slot) continue;
+        if (lcwcInputLetters[i] === word[i]) {
+          slot.classList.add('correct-slot');
         } else {
-          firstAttempt = false;
-          playWrongSound();
-          banner.className = 'comparison-banner retry';
-          bannerText.innerText = `Keep trying! Look at the differences.`;
-          nextBtn.innerText = "Try Again 🔄";
-          nextBtn.onclick = () => {
-            // Reset for another attempt on this word
-            setupLCWCMode(targetWord);
-          };
+          slot.classList.add('wrong-slot');
+          isPerfect = false;
         }
-      }, 700);
+      }
+
+      if (isPerfect) {
+        triggerSuccess();
+      } else {
+        firstAttempt = false;
+        playWrongSound();
+        document.getElementById('lcwc-next-actions').style.display = 'flex';
+      }
     }
 
     function advanceLCWCToNextWord() {
@@ -1529,7 +1508,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 8. TILES MODE LOGIC --- */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -1541,7 +1519,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         slotsContainer.appendChild(slot);
       }
 
-      // Phonics confusions and lookalikes
       const confusions = {
         'b': ['d', 'p'], 'd': ['b', 'q'], 'p': ['q', 'b'], 'q': ['p', 'g'],
         'm': ['n', 'w'], 'n': ['m', 'u'], 'u': ['v', 'n'], 'w': ['v', 'm'],
@@ -1565,6 +1542,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       const alphabet = "abcdefghijklmnopqrstuvwxyz";
       const targetTotal = Math.max(wordLetters.length + 5, 10);
+      
       while (distractors.size + wordLetters.length < targetTotal) {
         const randChar = alphabet[Math.floor(Math.random() * alphabet.length)];
         distractors.add(randChar);
@@ -1605,7 +1583,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 9. TRACE CANVAS MODE LOGIC --- */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -1613,13 +1590,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const word = currentWordObj().word.toLowerCase();
-      ctx.font = 'bold 74px "Fredoka", "Comic Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.font = '500 70px "Fredoka", "Comic Neue", -apple-system, sans-serif';
       ctx.fillStyle = '#E2E8F0';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(word, canvas.width / 2, canvas.height / 2);
 
-      ctx.lineWidth = 10;
+      ctx.lineWidth = 9;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#4F46E5';
 
@@ -1632,7 +1609,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       triggerSuccess();
     }
 
-    /* --- 10. TYPE INPUT MODE LOGIC --- */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
@@ -1647,7 +1623,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 11. GENERAL SUCCESS & REWARDS --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
@@ -1684,7 +1659,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    /* --- 12. CERTIFICATE MODAL --- */
     function showCertificate() {
       document.getElementById('certificate-modal').style.display = 'block';
     }
@@ -1693,7 +1667,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('certificate-modal').style.display = 'none';
     }
 
-    /* --- 13. STICKER ALBUM MODAL --- */
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
       grid.innerHTML = '';
@@ -1737,7 +1710,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function unlockSticker(id, cost, canAfford) {
       if (!canAfford) {
         playWrongSound();
-        alert(`You need ${cost} stars for this sticker. Keep practicing!`);
+        showToast(`You need ${cost} stars for this sticker. Keep practicing!`);
         return;
       }
       appState.stars -= cost;
@@ -1748,26 +1721,33 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       openStickersModal();
     }
 
-    /* --- 14. PARENT MODAL CONTROLLER --- */
-    function openParentModal() {
-      const code = prompt("Parent check: What is 4 + 3?");
-      if (code !== "7") return;
+    function openParentAuthModal() {
+      document.getElementById('parent-auth-modal').style.display = 'block';
+    }
 
+    function closeParentAuthModal() {
+      document.getElementById('parent-auth-modal').style.display = 'none';
+    }
+
+    function checkParentAuthAnswer(ans) {
+      if (ans === 7) {
+        closeParentAuthModal();
+        openParentModal();
+      } else {
+        playWrongSound();
+        showToast("Incorrect answer. Please try again.");
+      }
+    }
+
+    function openParentModal() {
       document.getElementById('gemini-key').value = appState.apiKey || "";
       populateVoiceList();
 
       const container = document.getElementById('word-inputs-container');
       container.innerHTML = '';
-      for (let i = 0; i < 10; i++) {
-        const item = appState.words[i] || { word: "", tip: "" };
-        const row = document.createElement('div');
-        row.className = 'word-row';
-        row.innerHTML = `
-          <input type="text" id="p-word-${i}" value="${item.word.toLowerCase()}" placeholder="word ${i+1}">
-          <input type="text" id="p-tip-${i}" value="${item.tip}" placeholder="Memory Tip / Phonics">
-        `;
-        container.appendChild(row);
-      }
+      appState.words.forEach((item, index) => {
+        container.appendChild(createWordRow(index, item.word, item.tip));
+      });
 
       const tbody = document.getElementById('progress-table-body');
       tbody.innerHTML = '';
@@ -1794,6 +1774,36 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('parent-modal').style.display = 'none';
     }
 
+    function createWordRow(idx, word = "", tip = "") {
+      const row = document.createElement('div');
+      row.className = 'word-row';
+      row.innerHTML = `
+        <input type="text" class="row-word-input" value="${word.toLowerCase()}" placeholder="word">
+        <input type="text" class="row-tip-input" value="${tip}" placeholder="Memory Tip / Phonics">
+        <button class="btn-row-del" onclick="deleteWordRow(this)" title="Delete Word">✕</button>
+      `;
+      return row;
+    }
+
+    function handleAddWordClick() {
+      const container = document.getElementById('word-inputs-container');
+      const newRow = createWordRow(container.children.length, "", "");
+      container.appendChild(newRow);
+      newRow.querySelector('.row-word-input').focus();
+    }
+
+    function deleteWordRow(btn) {
+      const row = btn.closest('.word-row');
+      if (row) row.remove();
+    }
+
+    function handleClearAllWords() {
+      const container = document.getElementById('word-inputs-container');
+      container.innerHTML = '';
+      handleAddWordClick();
+      showToast("Cleared all words. Add your new list!");
+    }
+
     function saveParentSettings() {
       appState.apiKey = document.getElementById('gemini-key').value.trim();
       const voiceEl = document.getElementById('voice-select');
@@ -1801,24 +1811,54 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         appState.preferredVoice = voiceEl.value;
       }
 
+      const rows = document.querySelectorAll('.word-row');
       const newWords = [];
-      for (let i = 0; i < 10; i++) {
-        const w = document.getElementById(`p-word-${i}`).value.trim().toLowerCase();
-        const t = document.getElementById(`p-tip-${i}`).value.trim();
+      rows.forEach(r => {
+        const w = r.querySelector('.row-word-input').value.trim().toLowerCase();
+        const t = r.querySelector('.row-tip-input').value.trim();
         if (w) newWords.push({ word: w, tip: t });
-      }
+      });
+
       if (newWords.length > 0) {
         appState.words = newWords;
         currentIndex = 0;
         saveState();
         setupCurrentWord();
+        showToast("Words and settings saved!");
       }
       closeParentModal();
     }
 
-    // Initialize
-    saveState();
+    window.switchMode = switchMode;
+    window.speakCurrentWord = speakCurrentWord;
+    window.startCoverPhase = startCoverPhase;
+    window.handleLCWCKey = handleLCWCKey;
+    window.handleLCWCBackspace = handleLCWCBackspace;
+    window.checkLCWCAttempt = checkLCWCAttempt;
+    window.advanceLCWCToNextWord = advanceLCWCToNextWord;
+    window.initTraceCanvas = initTraceCanvas;
+    window.completeTrace = completeTrace;
+    window.checkTyping = checkTyping;
+    window.toggleTip = toggleTip;
+    window.openStickersModal = openStickersModal;
+    window.closeStickersModal = closeStickersModal;
+    window.unlockSticker = unlockSticker;
+    window.openParentAuthModal = openParentAuthModal;
+    window.closeParentAuthModal = closeParentAuthModal;
+    window.checkParentAuthAnswer = checkParentAuthAnswer;
+    window.openParentModal = openParentModal;
+    window.closeParentModal = closeParentModal;
+    window.handleAddWordClick = handleAddWordClick;
+    window.deleteWordRow = deleteWordRow;
+    window.handleClearAllWords = handleClearAllWords;
+    window.saveParentSettings = saveParentSettings;
+    window.generateAITips = generateAITips;
+    window.onVoiceChange = onVoiceChange;
+    window.closeCertificate = closeCertificate;
+
+    renderUIState();
     setupCurrentWord();
+    initCloudSync();
   </script>
 </body>
 </html>
