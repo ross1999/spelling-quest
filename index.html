@@ -16,6 +16,9 @@
       --success: #10B981;
       --danger: #EF4444;
       --purple: #8B5CF6;
+      --curtain-start: #7C2D12;
+      --curtain-end: #991B1B;
+      --gold: #F59E0B;
       --text: #1E293B;
       --text-muted: #64748B;
       --radius: 20px;
@@ -42,7 +45,7 @@
 
     header {
       width: 100%;
-      max-width: 650px;
+      max-width: 680px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -69,7 +72,6 @@
       gap: 6px;
     }
 
-    /* Unmissable, colorful Sticker Book Button */
     .sticker-nav-btn {
       background: linear-gradient(135deg, #6366F1, #8B5CF6);
       color: #FFF;
@@ -100,24 +102,26 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
 
-    /* Mode Navigation */
+    /* 4-Mode Navigation */
     .mode-nav {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 16px;
       width: 100%;
-      max-width: 650px;
+      max-width: 680px;
+      flex-wrap: wrap;
     }
 
     .mode-tab {
-      flex: 1;
-      padding: 12px 8px;
+      flex: 1 1 calc(25% - 6px);
+      min-width: 120px;
+      padding: 10px 6px;
       border: 2px solid transparent;
       background: #E2E8F0;
       color: var(--text-muted);
       border-radius: 14px;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s ease;
@@ -129,14 +133,14 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    /* Main Container */
+    /* Main Card Container */
     .card {
       background: var(--card-bg);
       width: 100%;
-      max-width: 650px;
+      max-width: 680px;
       border-radius: var(--radius);
       box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-      padding: 24px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -155,14 +159,14 @@
       color: var(--primary);
       border: 2px solid var(--primary);
       border-radius: 50px;
-      padding: 12px 24px;
-      font-size: 1.25rem;
+      padding: 11px 22px;
+      font-size: 1.15rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       transition: transform 0.1s ease;
     }
 
@@ -170,7 +174,253 @@
       transform: scale(0.96);
     }
 
-    /* Target slots (Lowercase) */
+    /* --- LOOK, COVER, WRITE, CHECK (LCWC) SYSTEM --- */
+    #view-lcwc {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lcwc-steps-bar {
+      display: flex;
+      width: 100%;
+      max-width: 480px;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      background: #F1F5F9;
+      border-radius: 999px;
+      padding: 4px;
+    }
+
+    .lcwc-step-pill {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 999px;
+      transition: all 0.25s ease;
+    }
+
+    .lcwc-step-pill.active {
+      background: #FFF;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .lcwc-step-pill.done {
+      color: var(--success);
+    }
+
+    /* The Theatre Curtain Stage */
+    .stage-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+      height: 140px;
+      border-radius: 18px;
+      background: #FFFBEB;
+      border: 3px solid #FDE68A;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .stage-target-word {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: #92400E;
+      letter-spacing: 4px;
+      text-transform: lowercase;
+      z-index: 1;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    /* The Animated Sliding Curtain */
+    .sliding-curtain {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--curtain-start) 0%, var(--curtain-end) 92%, #581C87 100%);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #FDE68A;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transform: translateY(-105%);
+      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sliding-curtain.closed {
+      transform: translateY(0%);
+    }
+
+    .curtain-ribbon {
+      font-size: 2.2rem;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .curtain-text {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #FEF3C7;
+      border: 2px dashed #F59E0B;
+      padding: 4px 14px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .curtain-fringe {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, #F59E0B 0px, #F59E0B 8px, #D97706 8px, #D97706 16px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* LCWC Action & Writing Area */
+    .lcwc-write-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lcwc-display-slots {
+      display: flex;
+      gap: 6px;
+      min-height: 56px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lcwc-slot {
+      width: 44px;
+      height: 54px;
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F8FAFC;
+      text-transform: lowercase;
+    }
+
+    .lcwc-slot.filled {
+      border: 2px solid var(--primary);
+      background: #FFF;
+      color: var(--primary);
+    }
+
+    .lcwc-slot.correct {
+      border: 2px solid var(--success);
+      background: #ECFDF5;
+      color: var(--success);
+    }
+
+    .lcwc-slot.wrong {
+      border: 2px solid var(--danger);
+      background: #FEF2F2;
+      color: var(--danger);
+    }
+
+    /* Built-In Lowercase Virtual Keyboard */
+    .virtual-keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 6px;
+    }
+
+    .kb-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .kb-key {
+      flex: 1;
+      max-width: 42px;
+      height: 48px;
+      background: #F1F5F9;
+      border: 2px solid #E2E8F0;
+      box-shadow: 0 3px 0 #CBD5E1;
+      border-radius: 10px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-transform: lowercase;
+      transition: all 0.08s ease;
+    }
+
+    .kb-key:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #CBD5E1;
+    }
+
+    .kb-key.action-key {
+      max-width: 64px;
+      font-size: 1rem;
+      background: #E2E8F0;
+    }
+
+    .kb-key.check-key {
+      max-width: 80px;
+      font-size: 0.95rem;
+      background: var(--success);
+      color: #FFF;
+      border-color: #059669;
+      box-shadow: 0 3px 0 #047857;
+    }
+
+    /* Comparison Banner (Check Step) */
+    .comparison-banner {
+      width: 100%;
+      max-width: 460px;
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+    }
+
+    .comparison-banner.success {
+      background: #DCFCE7;
+      border: 2px solid #86EFAC;
+      color: #166534;
+    }
+
+    .comparison-banner.retry {
+      background: #FEE2E2;
+      border: 2px solid #FCA5A5;
+      color: #991B1B;
+    }
+
+    /* --- TILES MODE --- */
     .slots-container {
       display: flex;
       gap: 8px;
@@ -206,7 +456,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Letter Tile Choices - Dense and Challenging */
     .tile-grid {
       display: flex;
       flex-wrap: wrap;
@@ -246,7 +495,7 @@
       box-shadow: none;
     }
 
-    /* Canvas Tracing */
+    /* --- TRACE CANVAS MODE --- */
     #trace-canvas {
       border: 2px dashed #CBD5E1;
       border-radius: 16px;
@@ -282,7 +531,7 @@
     .btn-done { background: var(--success); color: #FFF; }
     .btn-gemini { background: var(--purple); color: #FFF; }
 
-    /* Typing Input */
+    /* --- TYPE INPUT MODE --- */
     #type-input {
       font-size: 2rem;
       letter-spacing: 4px;
@@ -297,7 +546,7 @@
       margin: 16px 0;
     }
 
-    /* Hint / Tip Box */
+    /* Hint / Tip Drawer */
     .tip-box {
       width: 100%;
       background: #FEF3C7;
@@ -320,7 +569,7 @@
       margin-top: 10px;
     }
 
-    /* Shared Robust Modal Styles */
+    /* Shared Modal Styles */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -363,7 +612,7 @@
       justify-content: center;
     }
 
-    /* Sticker Album Grid */
+    /* Sticker Album */
     .sticker-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -538,7 +787,6 @@
     <div class="badge-bar">
       <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
       <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
-      <!-- Unmissable Sticker Book Button -->
       <button class="sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
         📖 Sticker Book (<span id="sticker-badge-count">1/12</span>)
       </button>
@@ -546,8 +794,10 @@
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
 
+  <!-- Navigation with Look, Cover, Write, Check -->
   <nav class="mode-nav">
-    <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
+    <div class="mode-tab active" onclick="switchMode('lcwc')">🙈 Look & Cover</div>
+    <div class="mode-tab" onclick="switchMode('tiles')">🧩 Tiles</div>
     <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
     <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
   </nav>
@@ -559,13 +809,90 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: Tap Tiles (Now Trickier!) -->
-    <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <!-- MODE 1: LOOK, COVER, WRITE, CHECK (UK KS1) -->
+    <div id="view-lcwc">
+      <div class="lcwc-steps-bar">
+        <div class="lcwc-step-pill active" id="pill-look">1. Look 👁️</div>
+        <div class="lcwc-step-pill" id="pill-cover">2. Cover 🙈</div>
+        <div class="lcwc-step-pill" id="pill-write">3. Write ✍️</div>
+        <div class="lcwc-step-pill" id="pill-check">4. Check 🔍</div>
+      </div>
+
+      <!-- The Sliding Curtain Theatre Stage -->
+      <div class="stage-wrapper">
+        <div class="stage-target-word" id="lcwc-stage-word">because</div>
+        <div class="sliding-curtain" id="sliding-curtain">
+          <div class="curtain-ribbon">🙈</div>
+          <div class="curtain-text">HIDDEN FROM VIEW</div>
+          <div class="curtain-fringe"></div>
+        </div>
+      </div>
+
+      <!-- Comparison Feedback Banner on Step 4 -->
+      <div class="comparison-banner" id="lcwc-banner">
+        <span id="lcwc-banner-text">Super spelling! Perfect match! 🎉</span>
+        <button class="action-btn btn-done" id="lcwc-next-btn" onclick="advanceLCWCToNextWord()">Next Word ➔</button>
+      </div>
+
+      <!-- Child Writing Area -->
+      <div class="lcwc-write-area">
+        <!-- Action Buttons for Look Step -->
+        <div id="lcwc-ready-btn-container" style="margin-bottom: 12px;">
+          <button class="action-btn btn-done" style="font-size: 1.1rem; padding: 12px 24px;" onclick="startCoverPhase()">
+            🙈 Ready to Cover & Write!
+          </button>
+        </div>
+
+        <!-- Word Spelled Letter Slots -->
+        <div class="lcwc-display-slots" id="lcwc-display-slots"></div>
+
+        <!-- In-App Lowercase Keyboard (Eliminates iPad Autocorrect) -->
+        <div class="virtual-keyboard" id="lcwc-keyboard">
+          <div class="kb-row">
+            <button class="kb-key" onclick="handleLCWCKey('q')">q</button>
+            <button class="kb-key" onclick="handleLCWCKey('w')">w</button>
+            <button class="kb-key" onclick="handleLCWCKey('e')">e</button>
+            <button class="kb-key" onclick="handleLCWCKey('r')">r</button>
+            <button class="kb-key" onclick="handleLCWCKey('t')">t</button>
+            <button class="kb-key" onclick="handleLCWCKey('y')">y</button>
+            <button class="kb-key" onclick="handleLCWCKey('u')">u</button>
+            <button class="kb-key" onclick="handleLCWCKey('i')">i</button>
+            <button class="kb-key" onclick="handleLCWCKey('o')">o</button>
+            <button class="kb-key" onclick="handleLCWCKey('p')">p</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" onclick="handleLCWCKey('a')">a</button>
+            <button class="kb-key" onclick="handleLCWCKey('s')">s</button>
+            <button class="kb-key" onclick="handleLCWCKey('d')">d</button>
+            <button class="kb-key" onclick="handleLCWCKey('f')">f</button>
+            <button class="kb-key" onclick="handleLCWCKey('g')">g</button>
+            <button class="kb-key" onclick="handleLCWCKey('h')">h</button>
+            <button class="kb-key" onclick="handleLCWCKey('j')">j</button>
+            <button class="kb-key" onclick="handleLCWCKey('k')">k</button>
+            <button class="kb-key" onclick="handleLCWCKey('l')">l</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key action-key" onclick="handleLCWCBackspace()" title="Delete letter">⌫</button>
+            <button class="kb-key" onclick="handleLCWCKey('z')">z</button>
+            <button class="kb-key" onclick="handleLCWCKey('x')">x</button>
+            <button class="kb-key" onclick="handleLCWCKey('c')">c</button>
+            <button class="kb-key" onclick="handleLCWCKey('v')">v</button>
+            <button class="kb-key" onclick="handleLCWCKey('b')">b</button>
+            <button class="kb-key" onclick="handleLCWCKey('n')">n</button>
+            <button class="kb-key" onclick="handleLCWCKey('m')">m</button>
+            <button class="kb-key check-key" onclick="checkLCWCAttempt()">Check ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE 2: TAP TILES -->
+    <div id="view-tiles" style="width: 100%; display: none; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
     </div>
 
-    <!-- MODE 2: Tracing Canvas -->
+    <!-- MODE 3: TRACING CANVAS -->
     <div id="view-trace" style="display: none;" class="trace-container">
       <canvas id="trace-canvas" width="460" height="180"></canvas>
       <div class="trace-actions">
@@ -574,7 +901,7 @@
       </div>
     </div>
 
-    <!-- MODE 3: Direct Typing -->
+    <!-- MODE 4: DIRECT TYPING -->
     <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
       <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="15" placeholder="type here">
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
@@ -594,7 +921,6 @@
         </div>
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
       </div>
-      
       <div class="sticker-grid" id="sticker-grid"></div>
     </div>
   </div>
@@ -686,6 +1012,29 @@
         gain.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.08);
+      } catch(e) {}
+    }
+
+    function playCurtainSound(open = false) {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        if (open) {
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(650, now + 0.45);
+        } else {
+          osc.frequency.setValueAtTime(550, now);
+          osc.frequency.exponentialRampToValueAtTime(200, now + 0.45);
+        }
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.45);
       } catch(e) {}
     }
 
@@ -798,8 +1147,10 @@
     if (typeof appState.streak !== 'number') appState.streak = 1;
 
     let currentIndex = 0;
-    let currentMode = 'tiles';
+    let currentMode = 'lcwc'; // Default to UK standard Look, Cover, Write, Check
     let currentTileInput = [];
+    let lcwcInputLetters = [];
+    let lcwcStep = 'look'; // 'look', 'cover', 'write', 'check'
     let firstAttempt = true;
     let availableVoices = [];
 
@@ -810,7 +1161,7 @@
       document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    /* --- 4. SPEECH SYNTHESIS ENGINE --- */
+    /* --- 4. SPEECH ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -858,7 +1209,6 @@
     function onVoiceChange() {
       appState.preferredVoice = document.getElementById('voice-select').value;
       saveState();
-      
       const utterance = new SpeechSynthesisUtterance("Voice ready!");
       const selected = availableVoices.find(v => v.name === appState.preferredVoice);
       if (selected) utterance.voice = selected;
@@ -874,7 +1224,6 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
-        
         let voice = availableVoices.find(v => v.name === appState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
@@ -950,12 +1299,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 6. CORE GAMEPLAY ENGINE --- */
+    /* --- 6. CORE GAMEPLAY ENGINE & MODES --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
       event.target.classList.add('active');
 
+      document.getElementById('view-lcwc').style.display = (mode === 'lcwc') ? 'flex' : 'none';
       document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
       document.getElementById('view-trace').style.display = (mode === 'trace') ? 'flex' : 'none';
       document.getElementById('view-type').style.display = (mode === 'type') ? 'flex' : 'none';
@@ -972,7 +1322,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       tipBox.innerText = currentWordObj().tip || "Listen carefully to each sound!";
       tipBox.style.display = 'none';
 
-      if (currentMode === 'tiles') {
+      if (currentMode === 'lcwc') {
+        setupLCWCMode(word);
+      } else if (currentMode === 'tiles') {
         setupTiles(word);
       } else if (currentMode === 'trace') {
         initTraceCanvas();
@@ -983,7 +1335,198 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- TRICKIER TILES GENERATOR (10-12 TILES WITH SMART DISTRACTORS) --- */
+    /* ========================================================
+       7. "LOOK, COVER, WRITE, CHECK" ROUTINE (UK KS1)
+       ======================================================== */
+    function setupLCWCMode(word) {
+      lcwcStep = 'look';
+      lcwcInputLetters = [];
+
+      // Update Step Indicators
+      updateLCWCPills('pill-look');
+
+      // Set target word text on stage
+      document.getElementById('lcwc-stage-word').innerText = word;
+
+      // Curtain is OPEN on Look step
+      const curtain = document.getElementById('sliding-curtain');
+      curtain.classList.remove('closed');
+
+      // Hide comparison feedback banner
+      document.getElementById('lcwc-banner').style.display = 'none';
+
+      // Show the Ready button, hide keyboard during Look
+      document.getElementById('lcwc-ready-btn-container').style.display = 'block';
+      document.getElementById('lcwc-keyboard').style.opacity = '0.4';
+      document.getElementById('lcwc-keyboard').style.pointerEvents = 'none';
+
+      // Render empty slots matching word length
+      renderLCWCSlots(word.length);
+
+      // Auto-pronounce word on display
+      setTimeout(() => speakCurrentWord(), 250);
+    }
+
+    function updateLCWCPills(activeId) {
+      const pills = ['pill-look', 'pill-cover', 'pill-write', 'pill-check'];
+      pills.forEach(p => {
+        const el = document.getElementById(p);
+        el.classList.remove('active', 'done');
+        if (p === activeId) el.classList.add('active');
+      });
+      if (activeId === 'pill-write' || activeId === 'pill-check') {
+        document.getElementById('pill-look').classList.add('done');
+        document.getElementById('pill-cover').classList.add('done');
+      }
+      if (activeId === 'pill-check') {
+        document.getElementById('pill-write').classList.add('done');
+      }
+    }
+
+    function renderLCWCSlots(length) {
+      const container = document.getElementById('lcwc-display-slots');
+      container.innerHTML = '';
+      for (let i = 0; i < length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'lcwc-slot';
+        slot.id = `lcwc-slot-${i}`;
+        container.appendChild(slot);
+      }
+    }
+
+    /* STEP 2: COVER -> STEP 3: WRITE */
+    function startCoverPhase() {
+      lcwcStep = 'write';
+      updateLCWCPills('pill-cover');
+
+      playCurtainSound(false);
+
+      // Slide Curtain Down (Close)
+      const curtain = document.getElementById('sliding-curtain');
+      curtain.classList.add('closed');
+
+      // Hide "Ready" button
+      document.getElementById('lcwc-ready-btn-container').style.display = 'none';
+
+      // After 600ms curtain slide finishes, activate step 3 (write)
+      setTimeout(() => {
+        updateLCWCPills('pill-write');
+        const kb = document.getElementById('lcwc-keyboard');
+        kb.style.opacity = '1';
+        kb.style.pointerEvents = 'auto';
+      }, 650);
+    }
+
+    /* In-App Keyboard Input Handlers */
+    function handleLCWCKey(char) {
+      const targetWord = currentWordObj().word.toLowerCase();
+      if (lcwcInputLetters.length >= targetWord.length) return;
+
+      playTapChime();
+      lcwcInputLetters.push(char);
+
+      const slot = document.getElementById(`lcwc-slot-${lcwcInputLetters.length - 1}`);
+      if (slot) {
+        slot.innerText = char;
+        slot.classList.add('filled');
+      }
+    }
+
+    function handleLCWCBackspace() {
+      if (lcwcInputLetters.length === 0) return;
+      playTapChime();
+      const removeIndex = lcwcInputLetters.length - 1;
+      lcwcInputLetters.pop();
+
+      const slot = document.getElementById(`lcwc-slot-${removeIndex}`);
+      if (slot) {
+        slot.innerText = '';
+        slot.classList.remove('filled', 'correct', 'wrong');
+      }
+    }
+
+    /* STEP 4: CHECK & COMPARE */
+    function checkLCWCAttempt() {
+      const targetWord = currentWordObj().word.toLowerCase();
+      if (lcwcInputLetters.length === 0) {
+        playWrongSound();
+        return;
+      }
+
+      lcwcStep = 'check';
+      updateLCWCPills('pill-check');
+
+      // Disable keyboard during check
+      const kb = document.getElementById('lcwc-keyboard');
+      kb.style.pointerEvents = 'none';
+      kb.style.opacity = '0.5';
+
+      // Slide Curtain Open to reveal original word
+      playCurtainSound(true);
+      const curtain = document.getElementById('sliding-curtain');
+      curtain.classList.remove('closed');
+
+      // Compare letter by letter
+      const userSpelling = lcwcInputLetters.join('').toLowerCase();
+      const isExactMatch = userSpelling === targetWord;
+
+      setTimeout(() => {
+        // Highlight individual letter slots
+        for (let i = 0; i < targetWord.length; i++) {
+          const slot = document.getElementById(`lcwc-slot-${i}`);
+          if (slot) {
+            if (lcwcInputLetters[i] === targetWord[i]) {
+              slot.classList.add('correct');
+            } else {
+              slot.classList.add('wrong');
+            }
+          }
+        }
+
+        const banner = document.getElementById('lcwc-banner');
+        const bannerText = document.getElementById('lcwc-banner-text');
+        const nextBtn = document.getElementById('lcwc-next-btn');
+        banner.style.display = 'flex';
+
+        if (isExactMatch) {
+          playCorrectChime();
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+          banner.className = 'comparison-banner success';
+          bannerText.innerText = "✨ Brilliant! Perfect spelling match!";
+          nextBtn.innerText = "Next Word ➔";
+          nextBtn.onclick = advanceLCWCToNextWord;
+
+          recordAttempt(targetWord, firstAttempt);
+          appState.stars += firstAttempt ? 3 : 1;
+          saveState();
+        } else {
+          firstAttempt = false;
+          playWrongSound();
+          banner.className = 'comparison-banner retry';
+          bannerText.innerText = `Keep trying! Look at the differences.`;
+          nextBtn.innerText = "Try Again 🔄";
+          nextBtn.onclick = () => {
+            // Reset for another attempt on this word
+            setupLCWCMode(targetWord);
+          };
+        }
+      }, 700);
+    }
+
+    function advanceLCWCToNextWord() {
+      if (currentIndex < appState.words.length - 1) {
+        currentIndex++;
+        setupCurrentWord();
+      } else {
+        playFanfareSound();
+        confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+        showCertificate();
+        currentIndex = 0;
+        setupCurrentWord();
+      }
+    }
+
+    /* --- 8. TILES MODE LOGIC --- */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -1007,7 +1550,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       const wordLetters = word.split('');
       const distractors = new Set();
 
-      // 1. Add lookalike distractors for letters in this word
       wordLetters.forEach(ch => {
         if (confusions[ch]) {
           confusions[ch].forEach(d => {
@@ -1018,16 +1560,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         }
       });
 
-      // 2. Pad up to at least 10 tiles (or word length + 5)
       const alphabet = "abcdefghijklmnopqrstuvwxyz";
       const targetTotal = Math.max(wordLetters.length + 5, 10);
-      
       while (distractors.size + wordLetters.length < targetTotal) {
         const randChar = alphabet[Math.floor(Math.random() * alphabet.length)];
         distractors.add(randChar);
       }
 
-      // Combine target letters and distractors, then scramble
       const allTiles = [...wordLetters, ...Array.from(distractors)];
       allTiles.sort(() => Math.random() - 0.5);
 
@@ -1063,7 +1602,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* Trace Canvas Mode */
+    /* --- 9. TRACE CANVAS MODE LOGIC --- */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -1090,7 +1629,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       triggerSuccess();
     }
 
-    /* Type Mode */
+    /* --- 10. TYPE INPUT MODE LOGIC --- */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
@@ -1105,7 +1644,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 7. WIN, CELEBRATION & REWARDS --- */
+    /* --- 11. GENERAL SUCCESS & REWARDS --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
@@ -1142,7 +1681,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    /* --- 8. CERTIFICATE MODAL --- */
+    /* --- 12. CERTIFICATE MODAL --- */
     function showCertificate() {
       document.getElementById('certificate-modal').style.display = 'block';
     }
@@ -1151,7 +1690,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('certificate-modal').style.display = 'none';
     }
 
-    /* --- 9. STICKER ALBUM MODAL --- */
+    /* --- 13. STICKER ALBUM MODAL --- */
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
       grid.innerHTML = '';
@@ -1206,7 +1745,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       openStickersModal();
     }
 
-    /* --- 10. PARENT MODAL CONTROLLER --- */
+    /* --- 14. PARENT MODAL CONTROLLER --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
