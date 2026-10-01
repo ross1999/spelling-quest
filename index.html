@@ -15,6 +15,7 @@
       --accent: #F59E0B;
       --success: #10B981;
       --danger: #EF4444;
+      --purple: #8B5CF6;
       --text: #1E293B;
       --text-muted: #64748B;
       --radius: 20px;
@@ -50,19 +51,32 @@
 
     .badge-bar {
       display: flex;
-      gap: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .badge {
       background: #FFF;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 999px;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
       gap: 6px;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .badge:active {
+      transform: scale(0.96);
+    }
+
+    .badge-sticker {
+      background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+      color: var(--primary);
+      border: 1px solid #C7D2FE;
     }
 
     .btn-icon {
@@ -173,6 +187,12 @@
       border: 2px solid var(--primary);
       background: #FFF;
       color: var(--primary);
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     /* Letter Tile Choices */
@@ -200,6 +220,7 @@
       align-items: center;
       justify-content: center;
       text-transform: lowercase;
+      transition: all 0.1s ease;
     }
 
     .tile-btn:active {
@@ -208,7 +229,7 @@
     }
 
     .tile-btn.disabled {
-      opacity: 0.3;
+      opacity: 0.25;
       pointer-events: none;
       transform: translateY(3px);
       box-shadow: none;
@@ -239,11 +260,16 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: transform 0.1s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.96);
     }
 
     .btn-clear { background: #E2E8F0; color: var(--text); }
     .btn-done { background: var(--success); color: #FFF; }
-    .btn-gemini { background: #8B5CF6; color: #FFF; }
+    .btn-gemini { background: var(--purple); color: #FFF; }
 
     /* Typing Input */
     #type-input {
@@ -283,12 +309,12 @@
       margin-top: 10px;
     }
 
-    /* Parent Modal - Robust Scrollable Overlay */
-    #parent-modal {
+    /* Shared Modal Styles */
+    .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       padding: 16px;
       z-index: 1000;
       overflow-y: auto;
@@ -310,7 +336,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .close-btn {
@@ -326,6 +352,114 @@
       justify-content: center;
     }
 
+    /* Sticker Album Grid */
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .sticker-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .sticker-card.unlocked {
+      background: #FFF;
+      border-color: #C7D2FE;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+      cursor: pointer;
+    }
+
+    .sticker-card.unlocked:hover {
+      transform: translateY(-2px);
+    }
+
+    .sticker-card .icon {
+      font-size: 3rem;
+      margin-bottom: 6px;
+      transition: transform 0.2s ease;
+    }
+
+    .sticker-card.locked .icon {
+      filter: grayscale(100%);
+      opacity: 0.35;
+    }
+
+    .sticker-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .sticker-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .sticker-btn.buy {
+      background: var(--accent);
+      color: #FFF;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+    }
+
+    .sticker-btn.need-more {
+      background: #E2E8F0;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .sticker-badge {
+      font-size: 0.75rem;
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    /* Certificate Modal */
+    .certificate-card {
+      border: 8px double #F59E0B;
+      background: #FFFDF7;
+      border-radius: 20px;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
+    }
+
+    .certificate-title {
+      font-size: 1.8rem;
+      color: #92400E;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .certificate-sub {
+      color: #B45309;
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+    }
+
+    .certificate-name {
+      font-size: 2.4rem;
+      color: var(--primary);
+      font-weight: 900;
+      text-decoration: underline;
+      margin-bottom: 16px;
+    }
+
+    /* Parent Settings Inputs */
     .config-section {
       background: #F8FAFC;
       border: 1px solid #E2E8F0;
@@ -392,8 +526,9 @@
 
   <header>
     <div class="badge-bar">
-      <div class="badge">⭐ <span id="star-count">0</span></div>
-      <div class="badge">🔥 <span id="streak-count">0</span></div>
+      <div class="badge" onclick="openStickersModal()" title="View Star Shop">⭐ <span id="star-count">0</span></div>
+      <div class="badge" title="Daily Streak">🔥 <span id="streak-count">1</span></div>
+      <div class="badge badge-sticker" onclick="openStickersModal()" title="Open Sticker Album">🎨 <span id="sticker-badge-count">0/12</span></div>
     </div>
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
@@ -436,12 +571,45 @@
     <div class="tip-box" id="tip-box"></div>
   </main>
 
-  <!-- Parent Admin Modal -->
-  <div id="parent-modal">
+  <!-- STICKER ALBUM MODAL -->
+  <div id="sticker-modal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2>Imogen's Sticker Album</h2>
+          <p style="font-size: 0.9rem; color: #64748B;">Earn stars from spelling words to unlock fun stickers!</p>
+        </div>
+        <button class="close-btn" onclick="closeStickersModal()">✕</button>
+      </div>
+      
+      <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE CELEBRATION MODAL -->
+  <div id="certificate-modal" class="modal-backdrop">
+    <div class="modal-content certificate-card">
+      <div style="font-size: 3.5rem; margin-bottom: 8px;">🏆</div>
+      <h1 class="certificate-title">Spelling Superstar Award!</h1>
+      <p class="certificate-sub">This certificate is proudly awarded to:</p>
+      <div class="certificate-name">Imogen</div>
+      <p style="font-size: 1.1rem; color: #475569; margin-bottom: 24px; line-height: 1.5;">
+        For fantastic effort and mastering all 10 weekly spelling words!
+      </p>
+      
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button class="action-btn btn-done" onclick="window.print()">🖨️ Print Award</button>
+        <button class="action-btn btn-clear" onclick="closeCertificate()">Practice Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARENT ADMIN MODAL -->
+  <div id="parent-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Weekly 10 Words Setup</h2>
-        <button class="close-btn" onclick="closeParentModal()" title="Close Settings">✕</button>
+        <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
       
       <!-- Voice & AI Configuration -->
@@ -481,7 +649,117 @@
   </div>
 
   <script>
-    // Default words in lowercase
+    /* --- 1. WEB AUDIO API SYNTHESIZER (ZERO ASSET CHIMES) --- */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTapChime() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+      } catch(e) {}
+    }
+
+    function playCorrectChime() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        // Ascending major arpeggio: C5 -> E5 -> G5 -> C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+          gain.gain.setValueAtTime(0.15, now + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.07);
+          osc.stop(now + idx * 0.07 + 0.25);
+        });
+      } catch(e) {}
+    }
+
+    function playWrongSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(170, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.22);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
+      } catch(e) {}
+    }
+
+    function playFanfareSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const notes = [
+          { f: 523.25, d: 0.12 }, // C5
+          { f: 659.25, d: 0.12 }, // E5
+          { f: 783.99, d: 0.14 }, // G5
+          { f: 1046.50, d: 0.45 } // C6
+        ];
+        let t = now;
+        notes.forEach(n => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(n.f, t);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + n.d);
+          t += n.d * 0.85;
+        });
+      } catch(e) {}
+    }
+
+    /* --- 2. STICKER CATALOG DATA --- */
+    const STICKER_CATALOG = [
+      { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
+      { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
+      { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5 },
+      { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5 },
+      { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10 },
+      { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 10 },
+      { id: "fairy", icon: "🧚‍♀️️", name: "Garden Fairy", cost: 10 },
+      { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 10 },
+      { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 15 },
+      { id: "panda", icon: "🐼", name: "Bamboo Panda", cost: 15 },
+      { id: "robot", icon: "🤖", name: "Beep Boop", cost: 15 },
+      { id: "crown", icon: "👑", name: "Spelling Queen", cost: 20 }
+    ];
+
+    /* --- 3. PERSISTENT APP STATE --- */
     const defaultData = {
       apiKey: "",
       preferredVoice: "",
@@ -499,10 +777,13 @@
       ],
       stats: {},
       stars: 0,
-      streak: 1
+      streak: 1,
+      unlockedStickers: ["unicorn"] // Welcome gift sticker
     };
 
     let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
+    if (!appState.unlockedStickers) appState.unlockedStickers = ["unicorn"];
+
     let currentIndex = 0;
     let currentMode = 'tiles';
     let currentTileInput = [];
@@ -513,18 +794,17 @@
       localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
       document.getElementById('star-count').innerText = appState.stars;
       document.getElementById('streak-count').innerText = appState.streak;
+      document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    /* --- SPEECH LOGIC (MACOS & IOS OPTIMIZED) --- */
+    /* --- 4. SPEECH SYNTHESIS ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
-      
       availableVoices = window.speechSynthesis.getVoices();
       const select = document.getElementById('voice-select');
       if (!select || availableVoices.length === 0) return;
 
       select.innerHTML = '';
-
       const gbVoices = availableVoices.filter(v => v.lang.includes('en-GB') || v.lang.includes('en_GB'));
       const otherEnVoices = availableVoices.filter(v => !gbVoices.includes(v) && v.lang.startsWith('en'));
       const rest = availableVoices.filter(v => !v.lang.startsWith('en'));
@@ -566,7 +846,7 @@
       appState.preferredVoice = document.getElementById('voice-select').value;
       saveState();
       
-      const utterance = new SpeechSynthesisUtterance("Spelling quest voice selected!");
+      const utterance = new SpeechSynthesisUtterance("Voice ready!");
       const selected = availableVoices.find(v => v.name === appState.preferredVoice);
       if (selected) utterance.voice = selected;
       window.speechSynthesis.speak(utterance);
@@ -592,7 +872,7 @@
       }
     }
 
-    /* --- GEMINI API TIP GENERATION --- */
+    /* --- 5. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const key = document.getElementById('gemini-key').value.trim();
       const status = document.getElementById('gemini-status');
@@ -633,9 +913,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           })
         });
 
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
 
         const data = await response.json();
         const rawJson = data.candidates[0].content.parts[0].text;
@@ -659,7 +937,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- GAME ENGINE & MODES --- */
+    /* --- 6. CORE GAMEPLAY ENGINE --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -692,7 +970,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* Lowercase Tiles */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -706,7 +983,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       const alphabet = "abcdefghijklmnopqrstuvwxyz";
       let letters = word.split('');
-      // 2 distractor letters
       letters.push(alphabet[Math.floor(Math.random() * 26)]);
       letters.push(alphabet[Math.floor(Math.random() * 26)]);
       letters.sort(() => Math.random() - 0.5);
@@ -725,6 +1001,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function handleTileClick(char, btn, targetWord) {
       const nextIndex = currentTileInput.length;
       if (char === targetWord[nextIndex]) {
+        playTapChime();
         currentTileInput.push(char);
         const slot = document.getElementById(`slot-${nextIndex}`);
         slot.innerText = char;
@@ -736,12 +1013,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         }
       } else {
         firstAttempt = false;
+        playWrongSound();
         btn.classList.add('shake');
         setTimeout(() => btn.classList.remove('shake'), 400);
       }
     }
 
-    /* Lowercase Trace Canvas */
+    /* Trace Canvas Mode */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -768,7 +1046,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       triggerSuccess();
     }
 
-    /* Lowercase Typing Mode */
+    /* Type Mode */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
@@ -776,14 +1054,17 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         triggerSuccess();
       } else {
         firstAttempt = false;
+        playWrongSound();
         const inp = document.getElementById('type-input');
         inp.classList.add('shake');
         setTimeout(() => inp.classList.remove('shake'), 400);
       }
     }
 
+    /* --- 7. WIN, CELEBRATION & REWARDS --- */
     function triggerSuccess() {
-      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+      playCorrectChime();
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
       appState.stars += firstAttempt ? 3 : 1;
       saveState();
@@ -793,8 +1074,10 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           currentIndex++;
           setupCurrentWord();
         } else {
-          confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-          alert("🎉 Amazing job! You finished all 10 words!");
+          // Finished all 10 words!
+          playFanfareSound();
+          confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+          showCertificate();
           currentIndex = 0;
           setupCurrentWord();
         }
@@ -816,7 +1099,71 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    /* --- PARENT MODAL CONTROLLER --- */
+    /* --- 8. CERTIFICATE MODAL --- */
+    function showCertificate() {
+      document.getElementById('certificate-modal').style.display = 'block';
+    }
+
+    function closeCertificate() {
+      document.getElementById('certificate-modal').style.display = 'none';
+    }
+
+    /* --- 9. STICKER ALBUM MODAL --- */
+    function openStickersModal() {
+      const grid = document.getElementById('sticker-grid');
+      grid.innerHTML = '';
+
+      STICKER_CATALOG.forEach(sticker => {
+        const isUnlocked = appState.unlockedStickers.includes(sticker.id);
+        const card = document.createElement('div');
+        card.className = `sticker-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+        if (isUnlocked) {
+          card.onclick = () => {
+            playTapChime();
+            confetti({ particleCount: 20, spread: 45, origin: { y: 0.6 } });
+          };
+          card.innerHTML = `
+            <div class="icon">${sticker.icon}</div>
+            <div class="sticker-name">${sticker.name}</div>
+            <div class="sticker-badge">✨ Collected!</div>
+          `;
+        } else {
+          const canAfford = appState.stars >= sticker.cost;
+          card.innerHTML = `
+            <div class="icon">${sticker.icon}</div>
+            <div class="sticker-name">${sticker.name}</div>
+            <button class="sticker-btn ${canAfford ? 'buy' : 'need-more'}" 
+                    onclick="unlockSticker('${sticker.id}', ${sticker.cost}, ${canAfford})">
+              ⭐ ${sticker.cost} Stars
+            </button>
+          `;
+        }
+        grid.appendChild(card);
+      });
+
+      document.getElementById('sticker-modal').style.display = 'block';
+    }
+
+    function closeStickersModal() {
+      document.getElementById('sticker-modal').style.display = 'none';
+    }
+
+    function unlockSticker(id, cost, canAfford) {
+      if (!canAfford) {
+        playWrongSound();
+        alert(`You need ${cost} stars for this sticker. Keep practicing!`);
+        return;
+      }
+      appState.stars -= cost;
+      appState.unlockedStickers.push(id);
+      saveState();
+      playFanfareSound();
+      confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
+      openStickersModal(); // Re-render stickers
+    }
+
+    /* --- 10. PARENT MODAL CONTROLLER --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
@@ -856,7 +1203,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       });
 
       document.getElementById('parent-modal').style.display = 'block';
-      window.scrollTo(0, 0);
     }
 
     function closeParentModal() {
@@ -885,6 +1231,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       closeParentModal();
     }
 
+    // Initialize
     saveState();
     setupCurrentWord();
   </script>
