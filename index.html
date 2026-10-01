@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Imogen's Spelling Quest</title>
+  <!-- Confetti library for celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg: #F4F7FB;
+      --card-bg: #FFFFFF;
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --accent: #F59E0B;
+      --success: #10B981;
+      --danger: #EF4444;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Comic Sans MS", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .badge {
+      background: #FFF;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon {
+      background: #FFF;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    /* Mode Navigation */
+    .mode-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      padding: 12px 8px;
+      border: 2px solid transparent;
+      background: #E2E8F0;
+      color: var(--text-muted);
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab.active {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    /* Main Container */
+    .card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 650px;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .word-counter {
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .listen-btn {
+      background: #EEF2FF;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      transition: transform 0.1s ease;
+    }
+
+    .listen-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Target slots for Tiles and Typing */
+    .slots-container {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+      min-height: 64px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .slot {
+      width: 50px;
+      height: 60px;
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F8FAFC;
+    }
+
+    .slot.filled {
+      border: 2px solid var(--primary);
+      background: #FFF;
+      color: var(--primary);
+    }
+
+    /* Letter Tile Choices */
+    .tile-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 480px;
+      margin: 10px 0 20px 0;
+    }
+
+    .tile-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: #F1F5F9;
+      border: 2px solid #E2E8F0;
+      box-shadow: 0 4px 0 #CBD5E1;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+    }
+
+    .tile-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #CBD5E1;
+    }
+
+    .tile-btn.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    /* Touch Canvas Tracing */
+    #trace-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    #trace-canvas {
+      border: 2px dashed #CBD5E1;
+      border-radius: 16px;
+      background: #FAFAFA;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .trace-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .btn-clear {
+      background: #E2E8F0;
+      color: var(--text);
+    }
+
+    .btn-done {
+      background: var(--success);
+      color: #FFF;
+    }
+
+    /* Keyboard input mode */
+    #type-input {
+      font-size: 2rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 10px 16px;
+      width: 280px;
+      border: 3px solid var(--primary);
+      border-radius: 14px;
+      outline: none;
+      font-weight: 800;
+      margin: 16px 0;
+    }
+
+    /* Hint / Tip Banner */
+    .tip-box {
+      width: 100%;
+      background: #FEF3C7;
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-top: 16px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .tip-toggle {
+      color: var(--primary);
+      background: none;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
+    }
+
+    /* Parent Admin Modal */
+    #parent-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #FFF;
+      border-radius: var(--radius);
+      max-width: 600px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-content h2 {
+      margin-bottom: 14px;
+    }
+
+    .word-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .word-row input {
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    .progress-table th, .progress-table td {
+      border: 1px solid #E2E8F0;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .progress-table th {
+      background: #F8FAFC;
+    }
+
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge-bar">
+      <div class="badge">⭐ <span id="star-count">0</span></div>
+      <div class="badge">🔥 <span id="streak-count">0</span></div>
+    </div>
+    <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
+  </header>
+
+  <nav class="mode-nav">
+    <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
+    <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
+    <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
+  </nav>
+
+  <main class="card">
+    <div class="word-counter" id="word-progress-label">Word 1 of 10</div>
+    
+    <button class="listen-btn" onclick="speakCurrentWord()">
+      🔊 Hear Word
+    </button>
+
+    <!-- MODE 1: Tap Tiles -->
+    <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <div class="slots-container" id="tiles-slots"></div>
+      <div class="tile-grid" id="letters-pool"></div>
+    </div>
+
+    <!-- MODE 2: Tracing Canvas -->
+    <div id="view-trace" style="display: none;" class="trace-container">
+      <canvas id="trace-canvas" width="460" height="180"></canvas>
+      <div class="trace-actions">
+        <button class="action-btn btn-clear" onclick="initTraceCanvas()">Clear</button>
+        <button class="action-btn btn-done" onclick="completeTrace()">Done Tracing!</button>
+      </div>
+    </div>
+
+    <!-- MODE 3: Direct Typing -->
+    <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
+      <input type="text" id="type-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="15" placeholder="TYPE HERE">
+      <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
+    </div>
+
+    <button class="tip-toggle" onclick="toggleTip()">💡 Need a memory tip?</button>
+    <div class="tip-box" id="tip-box"></div>
+  </main>
+
+  <!-- Parent Mode Modal -->
+  <div id="parent-modal">
+    <div class="modal-content">
+      <h2>Weekly 10 Words Setup</h2>
+      <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 14px;">Edit the 10 words and memory tips for this week. Words auto-save to this browser.</p>
+      
+      <div id="word-inputs-container"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 14px;">
+        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Words</button>
+        <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
+      </div>
+
+      <h3 style="margin-top: 24px;">Progress Record</h3>
+      <table class="progress-table">
+        <thead>
+          <tr>
+            <th>Word</th>
+            <th>Tries</th>
+            <th>1st Try %</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="progress-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Default 10 KS1 Common Exception Words with tips
+    const defaultData = {
+      words: [
+        { word: "BECAUSE", tip: "Big Elephants Can Always Understand Small Elephants" },
+        { word: "FRIEND", tip: "A fri-END stays to the END." },
+        { word: "PEOPLE", tip: "People Eat Omelettes, People Like Eggs." },
+        { word: "WATER", tip: "Watch out for the 'a' that sounds like 'o'." },
+        { word: "WHERE", tip: "WHERE contains 'HERE' (locations)." },
+        { word: "THERE", tip: "Contains 'HERE' - over there, in that place." },
+        { word: "SAID", tip: "Silly Ants In Dresses." },
+        { word: "COULD", tip: "O, U, Lucky Duck!" },
+        { word: "WOULD", tip: "O, U, Lucky Duck!" },
+        { word: "HOUSE", tip: "Rhymes with mouse - ends with 'se'." }
+      ],
+      stats: {},
+      stars: 0,
+      streak: 1
+    };
+
+    let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
+    let currentIndex = 0;
+    let currentMode = 'tiles';
+    let currentTileInput = [];
+    let firstAttempt = true;
+
+    function saveState() {
+      localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
+      document.getElementById('star-count').innerText = appState.stars;
+      document.getElementById('streak-count').innerText = appState.streak;
+    }
+
+    function currentWordObj() {
+      return appState.words[currentIndex] || { word: "TEST", tip: "" };
+    }
+
+    function speakCurrentWord() {
+      const text = currentWordObj().word.toLowerCase();
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-GB';
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
+      document.getElementById('view-trace').style.display = (mode === 'trace') ? 'flex' : 'none';
+      document.getElementById('view-type').style.display = (mode === 'type') ? 'flex' : 'none';
+
+      setupCurrentWord();
+    }
+
+    function setupCurrentWord() {
+      firstAttempt = true;
+      const word = currentWordObj().word.toUpperCase();
+      document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${appState.words.length}`;
+      
+      // Update Tip Box
+      const tipBox = document.getElementById('tip-box');
+      tipBox.innerText = currentWordObj().tip || "Listen carefully to each sound!";
+      tipBox.style.display = 'none';
+
+      if (currentMode === 'tiles') {
+        setupTiles(word);
+      } else if (currentMode === 'trace') {
+        initTraceCanvas();
+      } else if (currentMode === 'type') {
+        const inp = document.getElementById('type-input');
+        inp.value = '';
+        inp.focus();
+      }
+    }
+
+    /* --- TILES MODE --- */
+    function setupTiles(word) {
+      currentTileInput = [];
+      const slotsContainer = document.getElementById('tiles-slots');
+      slotsContainer.innerHTML = '';
+      for (let i = 0; i < word.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.id = `slot-${i}`;
+        slotsContainer.appendChild(slot);
+      }
+
+      // Prepare letters: target letters + 2 distractors
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let letters = word.split('');
+      letters.push(alphabet[Math.floor(Math.random() * 26)]);
+      letters.push(alphabet[Math.floor(Math.random() * 26)]);
+      letters.sort(() => Math.random() - 0.5);
+
+      const pool = document.getElementById('letters-pool');
+      pool.innerHTML = '';
+      letters.forEach((char, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'tile-btn';
+        btn.innerText = char;
+        btn.id = `tile-${idx}`;
+        btn.onclick = () => handleTileClick(char, btn, word);
+        pool.appendChild(btn);
+      });
+    }
+
+    function handleTileClick(char, btn, targetWord) {
+      const nextIndex = currentTileInput.length;
+      if (char === targetWord[nextIndex]) {
+        currentTileInput.push(char);
+        const slot = document.getElementById(`slot-${nextIndex}`);
+        slot.innerText = char;
+        slot.classList.add('filled');
+        btn.classList.add('disabled');
+
+        if (currentTileInput.length === targetWord.length) {
+          triggerSuccess();
+        }
+      } else {
+        firstAttempt = false;
+        btn.classList.add('shake');
+        setTimeout(() => btn.classList.remove('shake'), 400);
+      }
+    }
+
+    /* --- TRACE CANVAS MODE --- */
+    let canvas, ctx, isDrawing = false;
+    function initTraceCanvas() {
+      canvas = document.getElementById('trace-canvas');
+      ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const word = currentWordObj().word.toUpperCase();
+      ctx.font = 'bold 72px -apple-system, sans-serif';
+      ctx.fillStyle = '#E2E8F0';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(word, canvas.width / 2, canvas.height / 2);
+
+      // Drawing setup
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#4F46E5';
+
+      canvas.onpointerdown = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+      canvas.onpointermove = (e) => { if (isDrawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } };
+      canvas.onpointerup = () => { isDrawing = false; };
+    }
+
+    function completeTrace() {
+      triggerSuccess();
+    }
+
+    /* --- TYPE MODE --- */
+    function checkTyping() {
+      const val = document.getElementById('type-input').value.trim().toUpperCase();
+      const target = currentWordObj().word.toUpperCase();
+      if (val === target) {
+        triggerSuccess();
+      } else {
+        firstAttempt = false;
+        const inp = document.getElementById('type-input');
+        inp.classList.add('shake');
+        setTimeout(() => inp.classList.remove('shake'), 400);
+      }
+    }
+
+    /* --- SUCCESS & REWARDS --- */
+    function triggerSuccess() {
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+      recordAttempt(currentWordObj().word, firstAttempt);
+
+      appState.stars += firstAttempt ? 3 : 1;
+      saveState();
+
+      setTimeout(() => {
+        if (currentIndex < appState.words.length - 1) {
+          currentIndex++;
+          setupCurrentWord();
+        } else {
+          // Completed the whole 10-word list
+          confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+          alert("🎉 Amazing job! You completed all 10 words for this week!");
+          currentIndex = 0;
+          setupCurrentWord();
+        }
+      }, 900);
+    }
+
+    function recordAttempt(word, isFirstTry) {
+      if (!appState.stats[word]) {
+        appState.stats[word] = { attempts: 0, firstTryWins: 0 };
+      }
+      appState.stats[word].attempts++;
+      if (isFirstTry) appState.stats[word].firstTryWins++;
+      saveState();
+    }
+
+    function toggleTip() {
+      const box = document.getElementById('tip-box');
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    /* --- PARENT SETTINGS & PROGRESS --- */
+    function openParentModal() {
+      const code = prompt("Parent check: What is 4 + 3?");
+      if (code !== "7") return;
+
+      const container = document.getElementById('word-inputs-container');
+      container.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const item = appState.words[i] || { word: "", tip: "" };
+        const row = document.createElement('div');
+        row.className = 'word-row';
+        row.innerHTML = `
+          <input type="text" id="p-word-${i}" value="${item.word}" placeholder="Word ${i+1}">
+          <input type="text" id="p-tip-${i}" value="${item.tip}" placeholder="Memory Tip / Phonics rule">
+        `;
+        container.appendChild(row);
+      }
+
+      // Populate progress table
+      const tbody = document.getElementById('progress-table-body');
+      tbody.innerHTML = '';
+      appState.words.forEach(w => {
+        const wordKey = w.word.toUpperCase();
+        const stat = appState.stats[wordKey] || { attempts: 0, firstTryWins: 0 };
+        const pct = stat.attempts > 0 ? Math.round((stat.firstTryWins / stat.attempts) * 100) : 0;
+        const status = pct >= 80 ? "⭐ Mastered" : (stat.attempts > 0 ? "Practicing" : "New");
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${wordKey}</strong></td>
+          <td>${stat.attempts}</td>
+          <td>${pct}%</td>
+          <td>${status}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('parent-modal').style.display = 'flex';
+    }
+
+    function closeParentModal() {
+      document.getElementById('parent-modal').style.display = 'none';
+    }
+
+    function saveParentSettings() {
+      const newWords = [];
+      for (let i = 0; i < 10; i++) {
+        const w = document.getElementById(`p-word-${i}`).value.trim().toUpperCase();
+        const t = document.getElementById(`p-tip-${i}`).value.trim();
+        if (w) newWords.push({ word: w, tip: t });
+      }
+      if (newWords.length > 0) {
+        appState.words = newWords;
+        currentIndex = 0;
+        saveState();
+        setupCurrentWord();
+      }
+      closeParentModal();
+    }
+
+    // Initialize
+    saveState();
+    setupCurrentWord();
+  </script>
+</body>
+</html>
