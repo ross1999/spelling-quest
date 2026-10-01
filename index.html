@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Imogen's Spelling Quest</title>
-  <!-- Confetti library for celebrations -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
     :root {
@@ -75,7 +74,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
 
-    /* Mode Navigation */
     .mode-nav {
       display: flex;
       gap: 8px;
@@ -104,7 +102,6 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    /* Main Container */
     .card {
       background: var(--card-bg);
       width: 100%;
@@ -145,7 +142,6 @@
       transform: scale(0.96);
     }
 
-    /* Target slots for Tiles and Typing */
     .slots-container {
       display: flex;
       gap: 8px;
@@ -174,7 +170,6 @@
       color: var(--primary);
     }
 
-    /* Letter Tile Choices */
     .tile-grid {
       display: flex;
       flex-wrap: wrap;
@@ -198,7 +193,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.1s ease;
     }
 
     .tile-btn:active {
@@ -211,14 +205,6 @@
       pointer-events: none;
       transform: translateY(3px);
       box-shadow: none;
-    }
-
-    /* Touch Canvas Tracing */
-    #trace-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
     }
 
     #trace-canvas {
@@ -236,25 +222,21 @@
     }
 
     .action-btn {
-      padding: 10px 20px;
+      padding: 10px 18px;
       border: none;
       border-radius: 12px;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-clear {
-      background: #E2E8F0;
-      color: var(--text);
-    }
+    .btn-clear { background: #E2E8F0; color: var(--text); }
+    .btn-done { background: var(--success); color: #FFF; }
+    .btn-gemini { background: #8B5CF6; color: #FFF; }
 
-    .btn-done {
-      background: var(--success);
-      color: #FFF;
-    }
-
-    /* Keyboard input mode */
     #type-input {
       font-size: 2rem;
       letter-spacing: 6px;
@@ -269,7 +251,6 @@
       margin: 16px 0;
     }
 
-    /* Hint / Tip Banner */
     .tip-box {
       width: 100%;
       background: #FEF3C7;
@@ -292,7 +273,7 @@
       margin-top: 10px;
     }
 
-    /* Parent Admin Modal */
+    /* Modal Styling */
     #parent-modal {
       display: none;
       position: fixed;
@@ -308,14 +289,35 @@
     .modal-content {
       background: #FFF;
       border-radius: var(--radius);
-      max-width: 600px;
+      max-width: 650px;
       width: 100%;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    .modal-content h2 {
-      margin-bottom: 14px;
+    .config-section {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .config-section label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .config-section input, .config-section select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #FFF;
     }
 
     .word-row {
@@ -345,14 +347,9 @@
       text-align: left;
     }
 
-    .progress-table th {
-      background: #F8FAFC;
-    }
+    .progress-table th { background: #F8FAFC; }
 
-    .shake {
-      animation: shake 0.3s ease-in-out;
-    }
-
+    .shake { animation: shake 0.3s ease-in-out; }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-8px); }
@@ -383,13 +380,11 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: Tap Tiles -->
     <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
     </div>
 
-    <!-- MODE 2: Tracing Canvas -->
     <div id="view-trace" style="display: none;" class="trace-container">
       <canvas id="trace-canvas" width="460" height="180"></canvas>
       <div class="trace-actions">
@@ -398,7 +393,6 @@
       </div>
     </div>
 
-    <!-- MODE 3: Direct Typing -->
     <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
       <input type="text" id="type-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="15" placeholder="TYPE HERE">
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
@@ -408,16 +402,29 @@
     <div class="tip-box" id="tip-box"></div>
   </main>
 
-  <!-- Parent Mode Modal -->
+  <!-- Parent Admin Modal -->
   <div id="parent-modal">
     <div class="modal-content">
       <h2>Weekly 10 Words Setup</h2>
-      <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 14px;">Edit the 10 words and memory tips for this week. Words auto-save to this browser.</p>
       
+      <!-- AI & Voice Config -->
+      <div class="config-section">
+        <label>Selected Voice (UK Natural voices prioritized):</label>
+        <select id="voice-select" onchange="onVoiceChange()"></select>
+
+        <label style="margin-top: 10px;">Gemini API Key (Saved locally to your browser):</label>
+        <input type="password" id="gemini-key" placeholder="AIzaSy...">
+        
+        <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips with Gemini</button>
+          <span id="gemini-status" style="font-size: 0.85rem; color: #64748B; align-self: center;"></span>
+        </div>
+      </div>
+
       <div id="word-inputs-container"></div>
 
       <div style="display: flex; gap: 10px; margin-top: 14px;">
-        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Words</button>
+        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Settings & Words</button>
         <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
       </div>
 
@@ -437,15 +444,16 @@
   </div>
 
   <script>
-    // Default 10 KS1 Common Exception Words with tips
     const defaultData = {
+      apiKey: "",
+      preferredVoice: "",
       words: [
         { word: "BECAUSE", tip: "Big Elephants Can Always Understand Small Elephants" },
         { word: "FRIEND", tip: "A fri-END stays to the END." },
         { word: "PEOPLE", tip: "People Eat Omelettes, People Like Eggs." },
         { word: "WATER", tip: "Watch out for the 'a' that sounds like 'o'." },
-        { word: "WHERE", tip: "WHERE contains 'HERE' (locations)." },
-        { word: "THERE", tip: "Contains 'HERE' - over there, in that place." },
+        { word: "WHERE", tip: "WHERE contains 'HERE' (places)." },
+        { word: "THERE", tip: "Contains 'HERE' - over there!" },
         { word: "SAID", tip: "Silly Ants In Dresses." },
         { word: "COULD", tip: "O, U, Lucky Duck!" },
         { word: "WOULD", tip: "O, U, Lucky Duck!" },
@@ -461,11 +469,54 @@
     let currentMode = 'tiles';
     let currentTileInput = [];
     let firstAttempt = true;
+    let availableVoices = [];
 
     function saveState() {
       localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
       document.getElementById('star-count').innerText = appState.stars;
       document.getElementById('streak-count').innerText = appState.streak;
+    }
+
+    /* --- SPEECH LOGIC WITH ENHANCED NATURAL VOICES --- */
+    function populateVoiceList() {
+      if (!('speechSynthesis' in window)) return;
+      availableVoices = window.speechSynthesis.getVoices();
+      const select = document.getElementById('voice-select');
+      select.innerHTML = '';
+
+      // Prioritize en-GB voices, especially Siri, Enhanced, or Neural
+      const gbVoices = availableVoices.filter(v => v.lang.includes('en-GB') || v.lang.includes('en_GB'));
+      const otherVoices = availableVoices.filter(v => !gbVoices.includes(v) && v.lang.startsWith('en'));
+
+      const voiceOrder = [...gbVoices, ...otherVoices];
+
+      voiceOrder.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})${voice.name.includes('Enhanced') || voice.name.includes('Siri') ? ' 🌟 Natural' : ''}`;
+        if (appState.preferredVoice && voice.name === appState.preferredVoice) {
+          option.selected = true;
+        } else if (!appState.preferredVoice && (voice.name.includes('Enhanced') || voice.name.includes('Serena') || voice.name.includes('Siri'))) {
+          option.selected = true;
+          appState.preferredVoice = voice.name;
+        }
+        select.appendChild(option);
+      });
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = populateVoiceList;
+      populateVoiceList();
+    }
+
+    function onVoiceChange() {
+      appState.preferredVoice = document.getElementById('voice-select').value;
+      saveState();
+      // Test the newly selected voice
+      const utterance = new SpeechSynthesisUtterance("Spelling quest ready!");
+      const selected = availableVoices.find(v => v.name === appState.preferredVoice);
+      if (selected) utterance.voice = selected;
+      window.speechSynthesis.speak(utterance);
     }
 
     function currentWordObj() {
@@ -477,12 +528,87 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
-        msg.lang = 'en-GB';
-        msg.rate = 0.85;
+        
+        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        msg.rate = 0.82; // Slightly paced for early learning
         window.speechSynthesis.speak(msg);
       }
     }
 
+    /* --- GEMINI API TIP GENERATION --- */
+    async function generateAITips() {
+      const key = document.getElementById('gemini-key').value.trim();
+      const status = document.getElementById('gemini-status');
+      
+      if (!key) {
+        alert("Please paste your Gemini API key first.");
+        return;
+      }
+
+      // Collect words from the current input inputs
+      const wordsToGenerate = [];
+      for (let i = 0; i < 10; i++) {
+        const val = document.getElementById(`p-word-${i}`).value.trim().toUpperCase();
+        if (val) wordsToGenerate.push(val);
+      }
+
+      if (wordsToGenerate.length === 0) {
+        alert("Please enter at least one word first.");
+        return;
+      }
+
+      status.innerText = "Generating tips...";
+
+      const promptText = `You are a teacher helping a 6-year-old UK Key Stage 1 pupil learn spellings.
+Generate a memorable spelling tip or mnemonic for each of these words: ${wordsToGenerate.join(', ')}.
+Rules:
+- Keep tips very short (1 sentence maximum).
+- Use catchy rhymes, acrostics (e.g. "Big Elephants Can Always..."), or highlight the tricky letters (e.g. "Contains 'HERE' for places").
+- Return strictly a valid JSON array of objects with keys: "word" and "tip".
+Example: [{"word": "BECAUSE", "tip": "Big Elephants Can Always Understand Small Elephants"}]`;
+
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API returned error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const rawJson = data.candidates[0].content.parts[0].text;
+        const parsedTips = JSON.parse(rawJson);
+
+        // Update the form input fields
+        parsedTips.forEach(item => {
+          for (let i = 0; i < 10; i++) {
+            const wordInput = document.getElementById(`p-word-${i}`);
+            if (wordInput.value.trim().toUpperCase() === item.word.toUpperCase()) {
+              document.getElementById(`p-tip-${i}`).value = item.tip;
+            }
+          }
+        });
+
+        appState.apiKey = key;
+        saveState();
+        status.innerText = "✨ Tips generated successfully!";
+      } catch (err) {
+        console.error(err);
+        status.innerText = "Error generating tips. Check your API key.";
+      }
+    }
+
+    /* --- GAME ENGINE & MODES --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -500,7 +626,6 @@
       const word = currentWordObj().word.toUpperCase();
       document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${appState.words.length}`;
       
-      // Update Tip Box
       const tipBox = document.getElementById('tip-box');
       tipBox.innerText = currentWordObj().tip || "Listen carefully to each sound!";
       tipBox.style.display = 'none';
@@ -516,7 +641,6 @@
       }
     }
 
-    /* --- TILES MODE --- */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -528,7 +652,6 @@
         slotsContainer.appendChild(slot);
       }
 
-      // Prepare letters: target letters + 2 distractors
       const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       let letters = word.split('');
       letters.push(alphabet[Math.floor(Math.random() * 26)]);
@@ -541,7 +664,6 @@
         const btn = document.createElement('button');
         btn.className = 'tile-btn';
         btn.innerText = char;
-        btn.id = `tile-${idx}`;
         btn.onclick = () => handleTileClick(char, btn, word);
         pool.appendChild(btn);
       });
@@ -566,7 +688,6 @@
       }
     }
 
-    /* --- TRACE CANVAS MODE --- */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -580,7 +701,6 @@
       ctx.textBaseline = 'middle';
       ctx.fillText(word, canvas.width / 2, canvas.height / 2);
 
-      // Drawing setup
       ctx.lineWidth = 10;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#4F46E5';
@@ -594,7 +714,6 @@
       triggerSuccess();
     }
 
-    /* --- TYPE MODE --- */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toUpperCase();
       const target = currentWordObj().word.toUpperCase();
@@ -608,11 +727,9 @@
       }
     }
 
-    /* --- SUCCESS & REWARDS --- */
     function triggerSuccess() {
       confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
-
       appState.stars += firstAttempt ? 3 : 1;
       saveState();
 
@@ -621,9 +738,8 @@
           currentIndex++;
           setupCurrentWord();
         } else {
-          // Completed the whole 10-word list
           confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-          alert("🎉 Amazing job! You completed all 10 words for this week!");
+          alert("🎉 Amazing job! You finished all 10 words!");
           currentIndex = 0;
           setupCurrentWord();
         }
@@ -644,10 +760,13 @@
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    /* --- PARENT SETTINGS & PROGRESS --- */
+    /* --- PARENT MODAL --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
+
+      document.getElementById('gemini-key').value = appState.apiKey || "";
+      populateVoiceList();
 
       const container = document.getElementById('word-inputs-container');
       container.innerHTML = '';
@@ -657,12 +776,11 @@
         row.className = 'word-row';
         row.innerHTML = `
           <input type="text" id="p-word-${i}" value="${item.word}" placeholder="Word ${i+1}">
-          <input type="text" id="p-tip-${i}" value="${item.tip}" placeholder="Memory Tip / Phonics rule">
+          <input type="text" id="p-tip-${i}" value="${item.tip}" placeholder="Memory Tip / Phonics">
         `;
         container.appendChild(row);
       }
 
-      // Populate progress table
       const tbody = document.getElementById('progress-table-body');
       tbody.innerHTML = '';
       appState.words.forEach(w => {
@@ -689,6 +807,9 @@
     }
 
     function saveParentSettings() {
+      appState.apiKey = document.getElementById('gemini-key').value.trim();
+      appState.preferredVoice = document.getElementById('voice-select').value;
+
       const newWords = [];
       for (let i = 0; i < 10; i++) {
         const w = document.getElementById(`p-word-${i}`).value.trim().toUpperCase();
@@ -704,7 +825,6 @@
       closeParentModal();
     }
 
-    // Initialize
     saveState();
     setupCurrentWord();
   </script>
