@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Imogen's Spelling Quest</title>
-  <!-- Google Fonts: Fredoka & Comic Neue for child-friendly infant letterforms -->
+
+  <!-- Child-friendly infant typography (single-storey 'a' and 'g' for KS1) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Confetti library for celebrations -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Celebration Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -23,8 +25,10 @@
       --purple: #8B5CF6;
       --text: #1E293B;
       --text-muted: #64748B;
-      --curtain-bg: #4338CA;
-      --radius: 20px;
+      --curtain: #BE123C;
+      --curtain-shadow: #881337;
+      --gold: #F59E0B;
+      --radius: 22px;
     }
 
     * {
@@ -33,7 +37,7 @@
       -webkit-user-select: none;
       margin: 0;
       padding: 0;
-      font-family: 'Fredoka', 'Comic Neue', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -52,7 +56,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       gap: 8px;
     }
 
@@ -65,21 +69,34 @@
 
     .badge {
       background: #FFF;
-      padding: 8px 14px;
+      padding: 7px 14px;
       border-radius: 999px;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 0.95rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .badge-cloud {
-      color: #0284C7;
-      background: #F0F9FF;
-      border: 1px solid #BAE6FD;
-      font-size: 0.88rem;
+    .cloud-badge {
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+    .cloud-badge.online {
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+    }
+    .cloud-badge.connecting {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FDE68A;
+    }
+    .cloud-badge.offline {
+      background: #F1F5F9;
+      color: #64748B;
+      border: 1px solid #E2E8F0;
     }
 
     .sticker-nav-btn {
@@ -89,52 +106,43 @@
       padding: 8px 16px;
       border-radius: 999px;
       font-weight: 600;
-      font-size: 0.92rem;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
       display: flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
-
-    .sticker-nav-btn:active {
-      transform: scale(0.96);
-    }
+    .sticker-nav-btn:active { transform: scale(0.96); }
 
     .btn-icon {
       background: #FFF;
       border: none;
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 999px;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      transition: transform 0.1s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
 
-    .btn-icon:active {
-      transform: scale(0.94);
-    }
-
+    /* Mode Navigation Tabs */
     .mode-nav {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 6px;
+      margin-bottom: 14px;
       width: 100%;
       max-width: 680px;
-      flex-wrap: wrap;
     }
 
     .mode-tab {
-      flex: 1 1 calc(25% - 8px);
-      min-width: 110px;
-      padding: 10px 6px;
+      flex: 1;
+      padding: 10px 4px;
       border: 2px solid transparent;
       background: #E2E8F0;
       color: var(--text-muted);
       border-radius: 14px;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
       text-align: center;
@@ -144,16 +152,17 @@
     .mode-tab.active {
       background: var(--primary);
       color: #FFF;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
 
+    /* Main Container */
     .card {
       background: var(--card-bg);
       width: 100%;
       max-width: 680px;
       border-radius: var(--radius);
       box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-      padding: 24px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -162,9 +171,9 @@
 
     .word-counter {
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 8px;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
     }
 
     .listen-btn {
@@ -182,122 +191,24 @@
       margin-bottom: 16px;
       transition: transform 0.1s ease;
     }
+    .listen-btn:active { transform: scale(0.96); }
 
-    .listen-btn:active {
-      transform: scale(0.96);
-    }
-
-    .lcwc-stepper {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 14px;
-      width: 100%;
-      max-width: 440px;
-      justify-content: center;
-    }
-
-    .lcwc-step-pill {
-      flex: 1;
-      text-align: center;
-      padding: 6px 4px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      background: #F1F5F9;
-      border-radius: 8px;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-    }
-
-    .lcwc-step-pill.active {
-      background: #E0E7FF;
-      color: var(--primary);
-      box-shadow: inset 0 0 0 1px var(--primary);
-    }
-
-    .stage-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 460px;
-      height: 130px;
-      border-radius: 18px;
-      background: #FFFBEB;
-      border: 3px solid #FDE68A;
-      box-shadow: inset 0 3px 8px rgba(0,0,0,0.05);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
-
-    .stage-target-word {
-      font-size: 3rem;
-      font-weight: 600;
-      color: #92400E;
-      letter-spacing: 4px;
-      text-transform: lowercase;
-      z-index: 1;
-      text-align: center;
-      padding: 0 16px;
-    }
-
-    .curtain-panel {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, #4F46E5 0%, #3730A3 90%, #312E81 100%);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: translateY(-100%);
-      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .curtain-panel.pulled-down {
-      transform: translateY(0%);
-    }
-
-    .curtain-fringe {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 10px;
-      background: repeating-linear-gradient(90deg, #F59E0B, #F59E0B 12px, #D97706 12px, #D97706 24px);
-      box-shadow: 0 -1px 3px rgba(0,0,0,0.15);
-    }
-
-    .curtain-text {
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #FEF3C7;
-      border: 2px dashed #F59E0B;
-      padding: 4px 14px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
+    /* Slots Container */
     .slots-container {
       display: flex;
-      gap: 6px;
-      margin: 14px 0 18px 0;
-      min-height: 56px;
+      gap: 8px;
+      margin: 14px 0 20px 0;
+      min-height: 60px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     .slot {
-      width: 44px;
-      height: 54px;
+      width: 48px;
+      height: 58px;
       border: 2px dashed #CBD5E1;
-      border-radius: 12px;
-      font-size: 2rem;
+      border-radius: 14px;
+      font-size: 2.1rem;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -310,19 +221,7 @@
       border: 2px solid var(--primary);
       background: #FFF;
       color: var(--primary);
-      animation: popIn 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .slot.correct-slot {
-      border: 2px solid var(--success);
-      background: #ECFDF5;
-      color: #065F46;
-    }
-
-    .slot.wrong-slot {
-      border: 2px solid var(--danger);
-      background: #FEF2F2;
-      color: #991B1B;
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes popIn {
@@ -330,70 +229,24 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    .keyboard-box {
-      width: 100%;
-      max-width: 460px;
-      margin: 12px 0 8px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .kb-row {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      width: 100%;
-    }
-
-    .kb-key {
-      flex: 1;
-      max-width: 40px;
-      height: 46px;
-      background: #F1F5F9;
-      border: 2px solid #E2E8F0;
-      box-shadow: 0 3px 0 #CBD5E1;
-      border-radius: 10px;
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      text-transform: lowercase;
-      transition: all 0.08s ease;
-    }
-
-    .kb-key:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 #CBD5E1;
-    }
-
-    .kb-key.action-key {
-      flex: 1.4;
-      max-width: 58px;
-      background: #E2E8F0;
-      font-size: 1.15rem;
-    }
-
+    /* Tiles Grid */
     .tile-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
       max-width: 520px;
-      margin: 10px 0 18px 0;
+      margin: 6px 0 16px 0;
     }
 
     .tile-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
       background: #F1F5F9;
       border: 2px solid #E2E8F0;
       box-shadow: 0 3px 0 #CBD5E1;
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 600;
       color: var(--text);
       cursor: pointer;
@@ -401,14 +254,12 @@
       align-items: center;
       justify-content: center;
       text-transform: lowercase;
-      transition: all 0.08s ease;
+      transition: all 0.1s ease;
     }
-
     .tile-btn:active {
       transform: translateY(2px);
       box-shadow: 0 1px 0 #CBD5E1;
     }
-
     .tile-btn.disabled {
       opacity: 0.25;
       pointer-events: none;
@@ -416,6 +267,7 @@
       box-shadow: none;
     }
 
+    /* Canvas Tracing Mode */
     #trace-canvas {
       border: 2px dashed #CBD5E1;
       border-radius: 16px;
@@ -426,47 +278,190 @@
 
     .trace-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: 14px;
     }
 
     .action-btn {
-      padding: 9px 18px;
+      padding: 10px 18px;
       border: none;
       border-radius: 12px;
       font-weight: 600;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: transform 0.1s ease;
     }
-
-    .action-btn:active {
-      transform: scale(0.96);
-    }
+    .action-btn:active { transform: scale(0.96); }
 
     .btn-clear { background: #E2E8F0; color: var(--text); }
     .btn-done { background: var(--success); color: #FFF; }
-    .btn-primary { background: var(--primary); color: #FFF; }
     .btn-gemini { background: var(--purple); color: #FFF; }
-    .btn-danger { background: #FEE2E2; color: #DC2626; }
 
-    #type-input {
+    /* Look Cover Write Check Stage */
+    .theatre-stage {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 140px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid #CBD5E1;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .theatre-word {
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      color: var(--primary);
+      text-transform: lowercase;
+    }
+
+    .theatre-curtain {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--curtain) 0%, var(--curtain-shadow) 100%);
+      border-bottom: 8px solid var(--gold);
+      transform: translateY(-100%);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .theatre-curtain.closed {
+      transform: translateY(0%);
+    }
+
+    .theatre-curtain .fringe {
+      position: absolute;
+      bottom: -14px;
+      font-size: 1.1rem;
+    }
+
+    .lcwc-steps-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .lcwc-step {
+      flex: 1;
+      text-align: center;
+      padding: 6px;
+      border-radius: 10px;
+      background: #F1F5F9;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .lcwc-step.active {
+      background: #EEF2FF;
+      color: var(--primary);
+      border: 1px solid #C7D2FE;
+    }
+
+    .comparison-display {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      min-height: 48px;
+      align-items: center;
+    }
+
+    .cmp-letter {
+      width: 38px;
+      height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.8rem;
+      font-weight: 600;
+      text-transform: lowercase;
+    }
+    .cmp-letter.match { background: #DCFCE7; color: #15803D; border: 2px solid #86EFAC; }
+    .cmp-letter.mismatch { background: #FEE2E2; color: #B91C1C; border: 2px solid #FCA5A5; }
+
+    /* In-App Child-Friendly Virtual Keyboard */
+    .virtual-keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 10px;
+    }
+
+    .vk-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .vk-key {
+      flex: 1;
+      max-width: 42px;
+      height: 48px;
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #CBD5E1;
+      transition: transform 0.08s ease;
+      text-transform: lowercase;
+    }
+    .vk-key:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+    .vk-key.special {
+      flex: 1.5;
+      font-size: 1.1rem;
+      background: #E2E8F0;
+    }
+
+    /* Standard Type Mode Input */
+    #type-input {
+      font-size: 2rem;
       letter-spacing: 4px;
       text-transform: lowercase;
       text-align: center;
-      padding: 8px 16px;
-      width: 260px;
-      border: 3px solid var(--primary);
+      padding: 10px 16px;
+      width: 280px;
+      border: 2px solid var(--primary);
       border-radius: 14px;
       outline: none;
       font-weight: 600;
-      margin: 16px 0;
+      margin: 14px 0;
     }
 
+    /* Tip Drawer */
     .tip-box {
       width: 100%;
       background: #FEF3C7;
@@ -474,7 +469,7 @@
       padding: 12px 16px;
       border-radius: 10px;
       margin-top: 16px;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       line-height: 1.4;
       display: none;
     }
@@ -487,9 +482,9 @@
       cursor: pointer;
       text-decoration: underline;
       margin-top: 10px;
-      font-size: 0.9rem;
     }
 
+    /* Robust Scrollable Modals */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -506,9 +501,11 @@
       border-radius: var(--radius);
       max-width: 650px;
       width: 100%;
-      margin: 24px auto;
+      margin: 20px auto;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      max-height: 88vh;
+      overflow-y: auto;
       position: relative;
     }
 
@@ -522,83 +519,17 @@
     .close-btn {
       background: #F1F5F9;
       border: none;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .config-section {
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 16px;
-    }
-
-    .config-section label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-muted);
-    }
-
-    .config-section input, .config-section select {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      background: #FFF;
-      outline: none;
-    }
-
-    .word-row {
-      display: grid;
-      grid-template-columns: 140px 1fr 36px;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-
-    .word-row input {
-      padding: 8px 12px;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      outline: none;
-    }
-
-    .btn-row-del {
-      background: #FEE2E2;
-      color: #EF4444;
-      border: none;
-      height: 36px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .progress-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      font-size: 0.88rem;
-    }
-
-    .progress-table th, .progress-table td {
-      border: 1px solid #E2E8F0;
-      padding: 8px;
-      text-align: left;
-    }
-
-    .progress-table th { background: #F8FAFC; }
-
+    /* Sticker Album Grid */
     .sticker-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -615,7 +546,6 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      position: relative;
       transition: all 0.2s ease;
     }
 
@@ -625,10 +555,11 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
       cursor: pointer;
     }
+    .sticker-card.unlocked:hover { transform: translateY(-2px); }
 
     .sticker-card .icon {
       font-size: 2.8rem;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .sticker-card.locked .icon {
@@ -643,7 +574,7 @@
     }
 
     .sticker-btn {
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 999px;
       font-size: 0.8rem;
       font-weight: 600;
@@ -666,37 +597,116 @@
     .sticker-badge {
       font-size: 0.75rem;
       color: var(--success);
-      font-weight: 700;
+      font-weight: 600;
     }
 
-    .toast-box {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #1E293B;
-      color: #FFF;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 0.92rem;
-      font-weight: 500;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      z-index: 10000;
-      transition: transform 0.25s ease, opacity 0.25s ease;
-      opacity: 0;
-      pointer-events: none;
+    /* Certificate Modal */
+    .certificate-card {
+      border: 8px double #F59E0B;
+      background: #FFFDF7;
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
     }
 
-    .toast-box.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    .certificate-title {
+      font-size: 1.8rem;
+      color: #92400E;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
+
+    .certificate-name {
+      font-size: 2.4rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+      margin: 12px 0;
+    }
+
+    /* Parent Settings Inputs */
+    .config-section {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .config-section label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .config-section input, .config-section select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #FFF;
+    }
+
+    .word-list-manager {
+      margin-top: 14px;
+    }
+
+    .word-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 36px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .word-row input {
+      padding: 8px 10px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .btn-row-del {
+      background: #FEE2E2;
+      color: var(--danger);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .list-actions-bar {
+      display: flex;
+      gap: 10px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    .progress-table th, .progress-table td {
+      border: 1px solid #E2E8F0;
+      padding: 8px;
+      text-align: left;
+    }
+    .progress-table th { background: #F8FAFC; }
 
     .shake { animation: shake 0.3s ease-in-out; }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
     }
   </style>
 </head>
@@ -706,18 +716,18 @@
     <div class="badge-bar">
       <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
       <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
-      <div class="badge badge-cloud" id="cloud-sync-badge" title="Multi-device live sync status">☁️ Connecting...</div>
+      <div class="badge cloud-badge connecting" id="cloud-badge" title="Cloud Sync">☁️ Connecting...</div>
       <button class="sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
         📖 Sticker Book (<span id="sticker-badge-count">1/12</span>)
       </button>
     </div>
-    <button class="btn-icon" onclick="openParentAuthModal()" title="Parent Settings">⚙️</button>
+    <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
 
   <nav class="mode-nav">
-    <div class="mode-tab active" onclick="switchMode('lcwc')">🙈 Look & Cover</div>
-    <div class="mode-tab" onclick="switchMode('tiles')">🧩 Tiles</div>
+    <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
     <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
+    <div class="mode-tab" onclick="switchMode('lcwc')">🙈 Cover & Check</div>
     <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
   </nav>
 
@@ -728,94 +738,53 @@
       🔊 Hear Word
     </button>
 
-    <div id="view-lcwc" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-      <div class="lcwc-stepper">
-        <div class="lcwc-step-pill" id="pill-step-look">1. Look 👁️</div>
-        <div class="lcwc-step-pill" id="pill-step-cover">2. Cover 🙈</div>
-        <div class="lcwc-step-pill" id="pill-step-write">3. Write ✍️</div>
-        <div class="lcwc-step-pill" id="pill-step-check">4. Check 🔍</div>
-      </div>
-
-      <div class="stage-wrapper">
-        <div class="stage-target-word" id="lcwc-target-word">word</div>
-        <div class="curtain-panel" id="curtain-panel">
-          <div class="curtain-text">Hidden from view</div>
-          <div class="curtain-fringe"></div>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 8px; margin-bottom: 12px;" id="lcwc-stage-actions">
-        <button class="action-btn btn-primary" id="btn-cover-word" onclick="startCoverPhase()">
-          🙈 Cover & Spell!
-        </button>
-      </div>
-
-      <div class="slots-container" id="lcwc-slots"></div>
-
-      <div class="keyboard-box" id="lcwc-keyboard">
-        <div class="kb-row">
-          <button class="kb-key" onclick="handleLCWCKey('q')">q</button>
-          <button class="kb-key" onclick="handleLCWCKey('w')">w</button>
-          <button class="kb-key" onclick="handleLCWCKey('e')">e</button>
-          <button class="kb-key" onclick="handleLCWCKey('r')">r</button>
-          <button class="kb-key" onclick="handleLCWCKey('t')">t</button>
-          <button class="kb-key" onclick="handleLCWCKey('y')">y</button>
-          <button class="kb-key" onclick="handleLCWCKey('u')">u</button>
-          <button class="kb-key" onclick="handleLCWCKey('i')">i</button>
-          <button class="kb-key" onclick="handleLCWCKey('o')">o</button>
-          <button class="kb-key" onclick="handleLCWCKey('p')">p</button>
-        </div>
-        <div class="kb-row">
-          <button class="kb-key" onclick="handleLCWCKey('a')">a</button>
-          <button class="kb-key" onclick="handleLCWCKey('s')">s</button>
-          <button class="kb-key" onclick="handleLCWCKey('d')">d</button>
-          <button class="kb-key" onclick="handleLCWCKey('f')">f</button>
-          <button class="kb-key" onclick="handleLCWCKey('g')">g</button>
-          <button class="kb-key" onclick="handleLCWCKey('h')">h</button>
-          <button class="kb-key" onclick="handleLCWCKey('j')">j</button>
-          <button class="kb-key" onclick="handleLCWCKey('k')">k</button>
-          <button class="kb-key" onclick="handleLCWCKey('l')">l</button>
-        </div>
-        <div class="kb-row">
-          <button class="kb-key" onclick="handleLCWCKey('z')">z</button>
-          <button class="kb-key" onclick="handleLCWCKey('x')">x</button>
-          <button class="kb-key" onclick="handleLCWCKey('c')">c</button>
-          <button class="kb-key" onclick="handleLCWCKey('v')">v</button>
-          <button class="kb-key" onclick="handleLCWCKey('b')">b</button>
-          <button class="kb-key" onclick="handleLCWCKey('n')">n</button>
-          <button class="kb-key" onclick="handleLCWCKey('m')">m</button>
-          <button class="kb-key action-key" onclick="handleLCWCBackspace()">⌫</button>
-        </div>
-      </div>
-
-      <div style="display: none; gap: 10px; margin-top: 10px;" id="lcwc-check-actions">
-        <button class="action-btn btn-done" id="btn-check-attempt" onclick="checkLCWCAttempt()">
-          🔍 Check My Spelling!
-        </button>
-      </div>
-
-      <div style="display: none; gap: 10px; margin-top: 10px;" id="lcwc-next-actions">
-        <button class="action-btn btn-primary" onclick="advanceLCWCToNextWord()">
-          ➡️ Next Word
-        </button>
-      </div>
-    </div>
-
-    <div id="view-tiles" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+    <!-- MODE 1: Tap Tiles (10-12 Tiles with Smart Distractors) -->
+    <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
     </div>
 
+    <!-- MODE 2: Tracing Canvas -->
     <div id="view-trace" style="display: none;" class="trace-container">
-      <canvas id="trace-canvas" width="460" height="180"></canvas>
+      <canvas id="trace-canvas" width="460" height="160"></canvas>
       <div class="trace-actions">
         <button class="action-btn btn-clear" onclick="initTraceCanvas()">Clear</button>
         <button class="action-btn btn-done" onclick="completeTrace()">Done Tracing!</button>
       </div>
     </div>
 
+    <!-- MODE 3: Look, Cover, Write, Check (Theatre Curtain) -->
+    <div id="view-lcwc" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+      <div class="lcwc-steps-bar">
+        <div class="lcwc-step active" id="step-1">1. Look 👁️</div>
+        <div class="lcwc-step" id="step-2">2. Cover 🙈</div>
+        <div class="lcwc-step" id="step-3">3. Write ✍️</div>
+        <div class="lcwc-step" id="step-4">4. Check 🔍</div>
+      </div>
+
+      <div class="theatre-stage">
+        <div class="theatre-word" id="theatre-word-display">word</div>
+        <div class="theatre-curtain" id="theatre-curtain">
+          <span>🙈 Word Hidden!</span>
+          <span class="fringe">〰〰〰〰〰〰〰〰〰〰</span>
+        </div>
+      </div>
+
+      <div class="slots-container" id="lcwc-slots"></div>
+      <div class="comparison-display" id="lcwc-comparison"></div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button class="action-btn btn-gemini" id="lcwc-peek-btn" onclick="lcwcPeek()">Peek (5s)</button>
+        <button class="action-btn btn-done" id="lcwc-check-btn" onclick="lcwcCheck()">Check Spelling</button>
+      </div>
+
+      <!-- Child-friendly Virtual Keyboard -->
+      <div class="virtual-keyboard" id="lcwc-keyboard"></div>
+    </div>
+
+    <!-- MODE 4: Direct Typing -->
     <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
-      <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="15" placeholder="type here">
+      <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="18" placeholder="type here">
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
     </div>
 
@@ -823,6 +792,7 @@
     <div class="tip-box" id="tip-box"></div>
   </main>
 
+  <!-- STICKER ALBUM MODAL -->
   <div id="sticker-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
@@ -836,43 +806,29 @@
     </div>
   </div>
 
+  <!-- CERTIFICATE CELEBRATION MODAL -->
   <div id="certificate-modal" class="modal-backdrop">
-    <div class="modal-content" style="border: 8px double #F59E0B; background: #FFFDF7; text-align: center; padding: 30px;">
-      <div style="font-size: 3.5rem; margin-bottom: 8px;">🏆</div>
-      <h1 style="color: #92400E; margin-bottom: 8px; font-weight: 600;">Spelling Superstar Award!</h1>
-      <p style="color: #B45309; font-size: 1.05rem; margin-bottom: 16px;">This certificate is proudly awarded to:</p>
-      <div style="font-size: 2.5rem; color: var(--primary); font-weight: 600; text-decoration: underline; margin-bottom: 16px;">Imogen</div>
-      <p style="font-size: 1.05rem; color: #475569; margin-bottom: 24px; line-height: 1.5;">
-        For fantastic effort and mastering all your weekly spelling words!
+    <div class="modal-content certificate-card">
+      <div style="font-size: 3.5rem; margin-bottom: 6px;">🏆</div>
+      <h1 class="certificate-title">Spelling Superstar Award!</h1>
+      <p style="color: #B45309; font-size: 1.05rem;">This certificate is proudly awarded to:</p>
+      <div class="certificate-name">Imogen</div>
+      <p style="font-size: 1.05rem; color: #475569; margin-bottom: 22px; line-height: 1.4;">
+        For fantastic effort and mastering all weekly spelling words!
       </p>
-      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
         <button class="action-btn btn-done" onclick="window.print()">🖨️ Print Award</button>
         <button class="action-btn btn-clear" onclick="closeCertificate()">Practice Again</button>
       </div>
     </div>
   </div>
 
-  <div id="parent-auth-modal" class="modal-backdrop">
-    <div class="modal-content" style="max-width: 420px; text-align: center;">
-      <div class="modal-header">
-        <h3 style="font-weight: 600;">Parents Only</h3>
-        <button class="close-btn" onclick="closeParentAuthModal()">✕</button>
-      </div>
-      <p style="font-size: 0.95rem; color: #64748B; margin-bottom: 16px;">Please solve to unlock settings:</p>
-      <div style="font-size: 1.8rem; font-weight: 600; color: var(--primary); margin-bottom: 20px;">4 + 3 = ?</div>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(5)">5</button>
-        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(6)">6</button>
-        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(7)">7</button>
-        <button class="action-btn btn-clear" style="justify-content: center; font-size: 1.2rem;" onclick="checkParentAuthAnswer(8)">8</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- PARENT ADMIN MODAL -->
   <div id="parent-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Weekly Words Setup</h2>
+        <h2>Weekly Spelling Setup</h2>
         <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
       
@@ -880,48 +836,32 @@
         <label>Selected Voice (UK Natural voices prioritized):</label>
         <select id="voice-select" onchange="onVoiceChange()"></select>
 
-        <label style="margin-top: 10px;">Gemini API Key (Shared across devices via Cloud):</label>
+        <label style="margin-top: 10px;">Gemini API Key (Syncs to all devices via Cloud):</label>
         <input type="password" id="gemini-key" placeholder="AIzaSy...">
         
         <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips with Gemini</button>
           <span id="gemini-status" style="font-size: 0.85rem; color: #64748B; align-self: center;"></span>
         </div>
+      </div>
 
-        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label style="margin-bottom: 0;">Multi-Device Cloud Sync:</label>
-            <button class="action-btn btn-clear" style="padding: 4px 10px; font-size: 0.78rem;" onclick="toggleCloudConfigUI()">⚙️ Cloud Setup</button>
-          </div>
-          <div id="cloud-status-detail" style="font-size: 0.85rem; color: #0284C7; font-weight: 600;">Connecting to real-time cloud data...</div>
-          
-          <div id="cloud-setup-panel" style="display: none; margin-top: 10px; background: #FFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 10px;">
-            <p style="font-size: 0.8rem; color: #475569; margin-bottom: 6px;">
-              Paste your free Firebase Config JSON here to sync words, stars, and the API key between your Mac & iPad:
-            </p>
-            <textarea id="firebase-config-input" style="width: 100%; height: 85px; font-family: monospace; font-size: 0.75rem; padding: 6px; border: 1px solid #CBD5E1; border-radius: 6px;" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}'></textarea>
-            <div style="display: flex; gap: 8px; margin-top: 6px;">
-              <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.82rem;" onclick="saveCustomCloudConfig()">Connect Cloud</button>
-              <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.82rem;" onclick="resetToLocalSync()">Reset to Local</button>
-            </div>
+      <div class="word-list-manager">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3>Word List (<span id="words-count-label">0</span> words)</h3>
+          <div class="list-actions-bar" style="margin: 0;">
+            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑️ Clear All</button>
+            <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addWordRow('', '')">➕ Add Word</button>
           </div>
         </div>
+        <div id="word-inputs-container"></div>
       </div>
-
-      <!-- Action buttons for clearing and adding words -->
-      <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-        <button class="action-btn btn-primary" onclick="handleAddWordClick()">➕ Add Word</button>
-        <button class="action-btn btn-danger" onclick="handleClearAllWords()">🗑️ Clear All Words</button>
-      </div>
-
-      <div id="word-inputs-container"></div>
 
       <div style="display: flex; gap: 10px; margin-top: 16px;">
-        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Settings & Words</button>
+        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Words & Settings</button>
         <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
       </div>
 
-      <h3 style="margin-top: 24px; font-weight: 600;">Progress Record</h3>
+      <h3 style="margin-top: 24px;">Progress Record</h3>
       <table class="progress-table">
         <thead>
           <tr>
@@ -936,23 +876,27 @@
     </div>
   </div>
 
-  <!-- Toast Notification Box -->
-  <div id="toast-box" class="toast-box">Notification</div>
-
+  <!-- FIREBASE MODULE & CORE APP LOGIC -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    /* --- 1. WEB AUDIO API SYNTHESIZER --- */
+    // Firebase Config for spellingapp-95686
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6QPxQwyZVdvqStz2zrldMTqMb98_fdq4",
+      authDomain: "spellingapp-95686.firebaseapp.com",
+      projectId: "spellingapp-95686",
+      storageBucket: "spellingapp-95686.firebasestorage.app",
+      messagingSenderId: "621552619032",
+      appId: "1:621552619032:web:6debc68057cd3f20a13d6d"
+    };
+
+    /* --- 1. WEB AUDIO SYNTHESIZER --- */
     let audioCtx = null;
     function getAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
 
@@ -976,18 +920,17 @@
       try {
         const ctx = getAudioContext();
         const now = ctx.currentTime;
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, now + idx * 0.07);
           gain.gain.setValueAtTime(0.14, now + idx * 0.07);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.22);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now + idx * 0.07);
-          osc.stop(now + idx * 0.07 + 0.25);
+          osc.stop(now + idx * 0.07 + 0.22);
         });
       } catch(e) {}
     }
@@ -1001,12 +944,30 @@
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(170, now);
         osc.frequency.exponentialRampToValueAtTime(110, now + 0.22);
-        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.setValueAtTime(0.1, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.22);
+      } catch(e) {}
+    }
+
+    function playCurtainSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.4);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
       } catch(e) {}
     }
 
@@ -1026,7 +987,7 @@
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(n.f, t);
-          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.setValueAtTime(0.18, t);
           gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -1037,24 +998,7 @@
       } catch(e) {}
     }
 
-    function playCurtainSlideSound() {
-      try {
-        const ctx = getAudioContext();
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(440, now + 0.35);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.35);
-      } catch(e) {}
-    }
-
+    /* --- 2. STICKER CATALOG --- */
     const STICKER_CATALOG = [
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
@@ -1070,6 +1014,7 @@
       { id: "crown", icon: "👑", name: "Spelling Queen", cost: 20 }
     ];
 
+    /* --- 3. STATE & DATA INITIALIZATION --- */
     const defaultData = {
       apiKey: "",
       preferredVoice: "",
@@ -1091,156 +1036,89 @@
       unlockedStickers: ["unicorn"]
     };
 
-    let appState = { ...defaultData };
-    let db = null;
-    let auth = null;
-    let isCloudReady = false;
-    let stateDocRef = null;
-
-    // Embedded Firebase configuration for seamless multi-device cloud synchronization
-    const INLINE_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyB6QPxQwyZVdvqStz2zrldMTqMb98_fdq4",
-      authDomain: "spellingapp-95686.firebaseapp.com",
-      projectId: "spellingapp-95686",
-      storageBucket: "spellingapp-95686.firebasestorage.app",
-      messagingSenderId: "621552619032",
-      appId: "1:621552619032:web:6debc68057cd3f20a13d6d"
-    };
-
-    function getFirebaseConfig() {
-      // Use inline config if a valid apiKey is provided
-      if (INLINE_FIREBASE_CONFIG && INLINE_FIREBASE_CONFIG.apiKey && !INLINE_FIREBASE_CONFIG.apiKey.startsWith("PUT_YOUR")) {
-        return INLINE_FIREBASE_CONFIG;
-      }
-      const stored = localStorage.getItem('imogen_firebase_config');
-      if (stored) {
-        try { return JSON.parse(stored); } catch (e) { console.warn("Invalid stored firebase config", e); }
-      }
-      if (typeof __firebase_config !== 'undefined') {
-        try { return JSON.parse(__firebase_config); } catch (e) {}
-      }
-      return null;
-    }
-
-    async function initCloudSync() {
-      const badge = document.getElementById('cloud-sync-badge');
-      const detail = document.getElementById('cloud-status-detail');
-      
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'spelling-quest-imogen';
-      const firebaseConfig = getFirebaseConfig();
-
-      if (!firebaseConfig) {
-        if (badge) badge.innerText = "☁️️ Local Mode";
-        if (detail) detail.innerHTML = "Running single-device session. Tap <strong>⚙️ Cloud Setup</strong> above to connect Mac & iPad.";
-        renderUIState();
-        return;
-      }
-
-      try {
-        if (detail) detail.innerText = "Connecting to real-time cloud data...";
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        // RULE 3: Authenticate before queries
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-
-        const user = auth.currentUser;
-        if (!user) {
-          if (badge) badge.innerText = "☁️ Offline";
-          if (detail) detail.innerText = "Could not authenticate with cloud.";
-          return;
-        }
-
-        // Shared document reference (syncs words, stats, and API key across devices)
-        stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'spelling_app', 'shared_state');
-
-        onSnapshot(stateDocRef, (snap) => {
-          if (snap.exists()) {
-            const cloudData = snap.data();
-            if (cloudData) {
-              if (Array.isArray(cloudData.words) && cloudData.words.length > 0) {
-                appState.words = cloudData.words;
-              }
-              if (typeof cloudData.stars === 'number') appState.stars = cloudData.stars;
-              if (typeof cloudData.streak === 'number') appState.streak = cloudData.streak;
-              if (Array.isArray(cloudData.unlockedStickers)) appState.unlockedStickers = cloudData.unlockedStickers;
-              if (cloudData.stats) appState.stats = cloudData.stats;
-              if (cloudData.apiKey) {
-                appState.apiKey = cloudData.apiKey;
-                const keyInp = document.getElementById('gemini-key');
-                if (keyInp && !keyInp.value) keyInp.value = cloudData.apiKey;
-              }
-              if (cloudData.preferredVoice) appState.preferredVoice = cloudData.preferredVoice;
-            }
-          } else {
-            setDoc(stateDocRef, appState).catch(console.error);
-          }
-
-          isCloudReady = true;
-          if (badge) badge.innerText = "☁️ Synced Live";
-          if (detail) detail.innerText = `Connected! Syncing live across devices (Project: ${firebaseConfig.projectId || 'Active'})`;
-          renderUIState();
-          setupCurrentWord();
-        }, (err) => {
-          console.error("Cloud sync snapshot error:", err);
-          if (badge) badge.innerText = "☁️ Sync Error";
-          if (detail) detail.innerText = "Could not sync: " + err.message;
-        });
-
-      } catch (err) {
-        console.error("Failed to connect cloud storage:", err);
-        if (badge) badge.innerText = "☁️ Local Mode";
-        if (detail) detail.innerText = "Could not connect: " + err.message;
-        renderUIState();
-      }
-    }
+    // Load instantly from localStorage (zero delay)
+    let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
+    if (!Array.isArray(appState.unlockedStickers)) appState.unlockedStickers = ["unicorn"];
+    if (typeof appState.stars !== 'number') appState.stars = 0;
+    if (typeof appState.streak !== 'number') appState.streak = 1;
 
     let currentIndex = 0;
-    let currentMode = 'lcwc';
+    let currentMode = 'tiles';
     let currentTileInput = [];
-    let lcwcInputLetters = [];
-    let lcwcStep = 'look';
     let firstAttempt = true;
     let availableVoices = [];
 
-    function renderUIState() {
+    // Firestore Reference
+    let db = null;
+    let docRef = null;
+
+    function renderUIStats() {
       document.getElementById('star-count').innerText = appState.stars;
       document.getElementById('streak-count').innerText = appState.streak;
       document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    async function saveState() {
-      renderUIState();
-      if (isCloudReady && stateDocRef && auth && auth.currentUser) {
-        try {
-          await setDoc(stateDocRef, {
-            words: appState.words,
-            stats: appState.stats,
-            stars: appState.stars,
-            streak: appState.streak,
-            unlockedStickers: appState.unlockedStickers,
-            apiKey: appState.apiKey,
-            preferredVoice: appState.preferredVoice,
-            lastUpdated: new Date().toISOString()
-          });
-        } catch (err) {
-          console.error("Error writing state to cloud:", err);
+    function saveState(pushToCloud = true) {
+      localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
+      renderUIStats();
+
+      if (pushToCloud && db && docRef) {
+        setDoc(docRef, appState, { merge: true }).catch(err => console.warn("Cloud push warning:", err));
+      }
+    }
+
+    /* --- 4. OPTIMIZED FAST CLOUD INITIALIZATION --- */
+    function initFastCloud() {
+      try {
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        db = getFirestore(app);
+        docRef = doc(db, "spelling_data", "imogen_state");
+
+        // 1. Immediately listen for changes from Firestore
+        onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const cloudData = docSnap.data();
+            appState = { ...appState, ...cloudData };
+            saveState(false);
+            setupCurrentWord();
+          } else {
+            // First time project creation: upload current state
+            setDoc(docRef, appState);
+          }
+
+          const badge = document.getElementById('cloud-badge');
+          if (badge) {
+            badge.className = "badge cloud-badge online";
+            badge.innerText = "☁️ Synced Live";
+          }
+        }, (err) => {
+          console.warn("Firestore snapshot notice:", err);
+          const badge = document.getElementById('cloud-badge');
+          if (badge) {
+            badge.className = "badge cloud-badge offline";
+            badge.innerText = "☁️ Offline Mode";
+          }
+        });
+
+        // 2. Non-blocking Auth: use cached session, only sign in if unauthenticated
+        onAuthStateChanged(auth, (user) => {
+          if (!user) {
+            signInAnonymously(auth).catch(err => console.error("Anonymous auth notice:", err));
+          }
+        });
+
+      } catch (err) {
+        console.error("Firebase init:", err);
+        const badge = document.getElementById('cloud-badge');
+        if (badge) {
+          badge.className = "badge cloud-badge offline";
+          badge.innerText = "☁️ Offline Mode";
         }
       }
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toast-box');
-      toast.innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
+    /* --- 5. SPEECH SYNTHESIS ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -1282,24 +1160,21 @@
           populateVoiceList();
           retryCount++;
         }
-      }, 250);
+      }, 200);
     }
 
     function onVoiceChange() {
       appState.preferredVoice = document.getElementById('voice-select').value;
-      saveState();
+      saveState(true);
       
-      const utterance = new SpeechSynthesisUtterance("Voice ready!");
+      const utterance = new SpeechSynthesisUtterance("Voice selected!");
       const selected = availableVoices.find(v => v.name === appState.preferredVoice);
       if (selected) utterance.voice = selected;
       window.speechSynthesis.speak(utterance);
     }
 
     function currentWordObj() {
-      if (!appState.words || appState.words.length === 0) {
-        return { word: "spelling", tip: "" };
-      }
-      return appState.words[currentIndex] || appState.words[0];
+      return appState.words[currentIndex] || { word: "spelling", tip: "" };
     }
 
     function speakCurrentWord() {
@@ -1307,7 +1182,6 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
-        
         let voice = availableVoices.find(v => v.name === appState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
@@ -1318,32 +1192,31 @@
       }
     }
 
+    /* --- 6. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const key = document.getElementById('gemini-key').value.trim();
       const status = document.getElementById('gemini-status');
       
       if (!key) {
-        showToast("Please enter your Gemini API key first.");
+        alert("Please paste your Gemini API key first.");
         return;
       }
 
       const rows = document.querySelectorAll('.word-row');
       const wordsToGenerate = [];
       rows.forEach(r => {
-        const wInp = r.querySelector('.row-word-input');
-        if (wInp && wInp.value.trim()) {
-          wordsToGenerate.push(wInp.value.trim().toLowerCase());
-        }
+        const w = r.querySelector('.row-word-input').value.trim().toLowerCase();
+        if (w) wordsToGenerate.push(w);
       });
 
       if (wordsToGenerate.length === 0) {
-        showToast("Please add at least one word first.");
+        alert("Please enter at least one word first.");
         return;
       }
 
       status.innerText = "Generating tips...";
 
-      const promptText = `You are an expert UK Key Stage 1 teacher helping a 6-year-old pupil learn spellings.
+      const promptText = `You are a teacher helping a 6-year-old UK Key Stage 1 pupil learn spellings.
 Generate a memorable spelling tip or mnemonic for each of these words: ${wordsToGenerate.join(', ')}.
 Rules:
 - Keep tips very short (1 sentence maximum).
@@ -1369,40 +1242,41 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
         parsedTips.forEach(item => {
           rows.forEach(r => {
-            const wInp = r.querySelector('.row-word-input');
-            const tInp = r.querySelector('.row-tip-input');
-            if (wInp && tInp && wInp.value.trim().toLowerCase() === item.word.toLowerCase()) {
-              tInp.value = item.tip;
+            const wInput = r.querySelector('.row-word-input');
+            const tInput = r.querySelector('.row-tip-input');
+            if (wInput.value.trim().toLowerCase() === item.word.toLowerCase()) {
+              tInput.value = item.tip;
             }
           });
         });
 
         appState.apiKey = key;
-        saveState();
+        saveState(true);
         status.innerText = "✨ Tips generated successfully!";
-        showToast("✨ AI Tips Generated!");
       } catch (err) {
         console.error(err);
         status.innerText = "Error generating tips. Check API key.";
-        showToast("Error generating tips. Check your API key.");
       }
     }
 
+    /* --- 7. GAME ENGINE & MODES --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-      const activeTab = Array.from(document.querySelectorAll('.mode-tab')).find(t => t.getAttribute('onclick')?.includes(mode));
-      if (activeTab) activeTab.classList.add('active');
+      event.target.classList.add('active');
 
-      document.getElementById('view-lcwc').style.display = (mode === 'lcwc') ? 'flex' : 'none';
       document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
       document.getElementById('view-trace').style.display = (mode === 'trace') ? 'flex' : 'none';
+      document.getElementById('view-lcwc').style.display = (mode === 'lcwc') ? 'flex' : 'none';
       document.getElementById('view-type').style.display = (mode === 'type') ? 'flex' : 'none';
 
       setupCurrentWord();
     }
 
     function setupCurrentWord() {
+      if (appState.words.length === 0) return;
+      if (currentIndex >= appState.words.length) currentIndex = 0;
+
       firstAttempt = true;
       const word = currentWordObj().word.toLowerCase();
       document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${appState.words.length}`;
@@ -1411,12 +1285,12 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       tipBox.innerText = currentWordObj().tip || "Listen carefully to each sound!";
       tipBox.style.display = 'none';
 
-      if (currentMode === 'lcwc') {
-        setupLCWCMode(word);
-      } else if (currentMode === 'tiles') {
+      if (currentMode === 'tiles') {
         setupTiles(word);
       } else if (currentMode === 'trace') {
         initTraceCanvas();
+      } else if (currentMode === 'lcwc') {
+        setupLCWC(word);
       } else if (currentMode === 'type') {
         const inp = document.getElementById('type-input');
         inp.value = '';
@@ -1424,126 +1298,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    function setupLCWCMode(word) {
-      lcwcInputLetters = [];
-      lcwcStep = 'look';
-      updateLCWCPills();
-
-      document.getElementById('lcwc-target-word').innerText = word;
-      const curtain = document.getElementById('curtain-panel');
-      curtain.classList.remove('pulled-down');
-
-      document.getElementById('lcwc-stage-actions').style.display = 'flex';
-      document.getElementById('lcwc-keyboard').style.display = 'none';
-      document.getElementById('lcwc-check-actions').style.display = 'none';
-      document.getElementById('lcwc-next-actions').style.display = 'none';
-
-      renderLCWCSlots(word.length);
-    }
-
-    function updateLCWCPills() {
-      ['look', 'cover', 'write', 'check'].forEach(s => {
-        const p = document.getElementById(`pill-step-${s}`);
-        if (p) p.classList.toggle('active', s === lcwcStep);
-      });
-    }
-
-    function renderLCWCSlots(length) {
-      const container = document.getElementById('lcwc-slots');
-      container.innerHTML = '';
-      for (let i = 0; i < length; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'slot';
-        slot.id = `lcwc-slot-${i}`;
-        if (lcwcInputLetters[i]) {
-          slot.innerText = lcwcInputLetters[i];
-          slot.classList.add('filled');
-        }
-        container.appendChild(slot);
-      }
-    }
-
-    function startCoverPhase() {
-      playCurtainSlideSound();
-      const curtain = document.getElementById('curtain-panel');
-      curtain.classList.add('pulled-down');
-
-      document.getElementById('lcwc-stage-actions').style.display = 'none';
-      document.getElementById('lcwc-keyboard').style.display = 'flex';
-      document.getElementById('lcwc-check-actions').style.display = 'flex';
-
-      lcwcStep = 'write';
-      updateLCWCPills();
-    }
-
-    function handleLCWCKey(char) {
-      const word = currentWordObj().word.toLowerCase();
-      if (lcwcInputLetters.length < word.length) {
-        playTapChime();
-        lcwcInputLetters.push(char);
-        renderLCWCSlots(word.length);
-      }
-    }
-
-    function handleLCWCBackspace() {
-      if (lcwcInputLetters.length > 0) {
-        playTapChime();
-        lcwcInputLetters.pop();
-        renderLCWCSlots(currentWordObj().word.toLowerCase().length);
-      }
-    }
-
-    function checkLCWCAttempt() {
-      const word = currentWordObj().word.toLowerCase();
-      if (lcwcInputLetters.length === 0) {
-        showToast("Spell the word using the keyboard first!");
-        return;
-      }
-
-      playCurtainSlideSound();
-      const curtain = document.getElementById('curtain-panel');
-      curtain.classList.remove('pulled-down');
-
-      document.getElementById('lcwc-keyboard').style.display = 'none';
-      document.getElementById('lcwc-check-actions').style.display = 'none';
-
-      lcwcStep = 'check';
-      updateLCWCPills();
-
-      let isPerfect = true;
-      for (let i = 0; i < word.length; i++) {
-        const slot = document.getElementById(`lcwc-slot-${i}`);
-        if (!slot) continue;
-        if (lcwcInputLetters[i] === word[i]) {
-          slot.classList.add('correct-slot');
-        } else {
-          slot.classList.add('wrong-slot');
-          isPerfect = false;
-        }
-      }
-
-      if (isPerfect) {
-        triggerSuccess();
-      } else {
-        firstAttempt = false;
-        playWrongSound();
-        document.getElementById('lcwc-next-actions').style.display = 'flex';
-      }
-    }
-
-    function advanceLCWCToNextWord() {
-      if (currentIndex < appState.words.length - 1) {
-        currentIndex++;
-        setupCurrentWord();
-      } else {
-        playFanfareSound();
-        confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
-        showCertificate();
-        currentIndex = 0;
-        setupCurrentWord();
-      }
-    }
-
+    /* MODE 1: TILES WITH SMART DISTRACTORS */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -1569,19 +1324,15 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       wordLetters.forEach(ch => {
         if (confusions[ch]) {
           confusions[ch].forEach(d => {
-            if (!wordLetters.includes(d) && distractors.size < 4) {
-              distractors.add(d);
-            }
+            if (!wordLetters.includes(d) && distractors.size < 4) distractors.add(d);
           });
         }
       });
 
       const alphabet = "abcdefghijklmnopqrstuvwxyz";
       const targetTotal = Math.max(wordLetters.length + 5, 10);
-      
       while (distractors.size + wordLetters.length < targetTotal) {
-        const randChar = alphabet[Math.floor(Math.random() * alphabet.length)];
-        distractors.add(randChar);
+        distractors.add(alphabet[Math.floor(Math.random() * alphabet.length)]);
       }
 
       const allTiles = [...wordLetters, ...Array.from(distractors)];
@@ -1615,10 +1366,11 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         firstAttempt = false;
         playWrongSound();
         btn.classList.add('shake');
-        setTimeout(() => btn.classList.remove('shake'), 400);
+        setTimeout(() => btn.classList.remove('shake'), 350);
       }
     }
 
+    /* MODE 2: TRACE CANVAS */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -1626,13 +1378,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const word = currentWordObj().word.toLowerCase();
-      ctx.font = '500 70px "Fredoka", "Comic Neue", -apple-system, sans-serif';
+      ctx.font = '500 70px Fredoka, sans-serif';
       ctx.fillStyle = '#E2E8F0';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(word, canvas.width / 2, canvas.height / 2);
 
-      ctx.lineWidth = 9;
+      ctx.lineWidth = 10;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#4F46E5';
 
@@ -1645,6 +1397,161 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       triggerSuccess();
     }
 
+    /* MODE 3: LOOK, COVER, WRITE, CHECK */
+    let lcwcInput = [];
+    function setupLCWC(word) {
+      lcwcInput = [];
+      const curtain = document.getElementById('theatre-curtain');
+      const wordDisplay = document.getElementById('theatre-word-display');
+      const comparisonBox = document.getElementById('lcwc-comparison');
+      comparisonBox.innerHTML = '';
+      wordDisplay.innerText = word;
+
+      // Start: Step 1 (Look)
+      curtain.classList.remove('closed');
+      setLcwcStep(1);
+
+      // Create empty write slots
+      const slots = document.getElementById('lcwc-slots');
+      slots.innerHTML = '';
+      for (let i = 0; i < word.length; i++) {
+        const s = document.createElement('div');
+        s.className = 'slot';
+        s.id = `lcwc-slot-${i}`;
+        slots.appendChild(s);
+      }
+
+      buildVirtualKeyboard();
+
+      // Automatically drop curtain after 4 seconds (or user can peek/cover)
+      setTimeout(() => {
+        if (currentMode === 'lcwc' && !curtain.classList.contains('closed')) {
+          playCurtainSound();
+          curtain.classList.add('closed');
+          setLcwcStep(2);
+          setTimeout(() => setLcwcStep(3), 800);
+        }
+      }, 3500);
+    }
+
+    function setLcwcStep(num) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`step-${i}`);
+        if (el) el.className = `lcwc-step ${i === num ? 'active' : ''}`;
+      }
+    }
+
+    function lcwcPeek() {
+      const curtain = document.getElementById('theatre-curtain');
+      playCurtainSound();
+      curtain.classList.remove('closed');
+      setLcwcStep(1);
+      setTimeout(() => {
+        if (currentMode === 'lcwc') {
+          playCurtainSound();
+          curtain.classList.add('closed');
+          setLcwcStep(3);
+        }
+      }, 4000);
+    }
+
+    function buildVirtualKeyboard() {
+      const kb = document.getElementById('lcwc-keyboard');
+      kb.innerHTML = '';
+      const rows = [
+        ['q','w','e','r','t','y','u','i','o','p'],
+        ['a','s','d','f','g','h','j','k','l'],
+        ['z','x','c','v','b','n','m']
+      ];
+
+      rows.forEach((r, idx) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'vk-row';
+        r.forEach(ch => {
+          const btn = document.createElement('button');
+          btn.className = 'vk-key';
+          btn.innerText = ch;
+          btn.onclick = () => virtualKeyPress(ch);
+          rowEl.appendChild(btn);
+        });
+
+        // Add backspace on last row
+        if (idx === 2) {
+          const back = document.createElement('button');
+          back.className = 'vk-key special';
+          back.innerText = '⌫';
+          back.onclick = virtualKeyBackspace;
+          rowEl.appendChild(back);
+        }
+        kb.appendChild(rowEl);
+      });
+    }
+
+    function virtualKeyPress(ch) {
+      const targetWord = currentWordObj().word.toLowerCase();
+      if (lcwcInput.length < targetWord.length) {
+        playTapChime();
+        const nextIdx = lcwcInput.length;
+        lcwcInput.push(ch);
+        const slot = document.getElementById(`lcwc-slot-${nextIdx}`);
+        slot.innerText = ch;
+        slot.classList.add('filled');
+      }
+    }
+
+    function virtualKeyBackspace() {
+      if (lcwcInput.length > 0) {
+        playTapChime();
+        const lastIdx = lcwcInput.length - 1;
+        lcwcInput.pop();
+        const slot = document.getElementById(`lcwc-slot-${lastIdx}`);
+        slot.innerText = '';
+        slot.classList.remove('filled');
+      }
+    }
+
+    function lcwcCheck() {
+      const targetWord = currentWordObj().word.toLowerCase();
+      const enteredWord = lcwcInput.join('');
+
+      if (enteredWord.length === 0) return;
+
+      // Step 4: Check
+      setLcwcStep(4);
+      const curtain = document.getElementById('theatre-curtain');
+      playCurtainSound();
+      curtain.classList.remove('closed');
+
+      const comparisonBox = document.getElementById('lcwc-comparison');
+      comparisonBox.innerHTML = '';
+
+      let isFullMatch = (enteredWord === targetWord);
+
+      // Render letter-by-letter verification
+      for (let i = 0; i < targetWord.length; i++) {
+        const letterDiv = document.createElement('div');
+        const userChar = enteredWord[i] || '';
+        const targetChar = targetWord[i];
+
+        if (userChar === targetChar) {
+          letterDiv.className = 'cmp-letter match';
+          letterDiv.innerText = userChar;
+        } else {
+          letterDiv.className = 'cmp-letter mismatch';
+          letterDiv.innerText = userChar || '_';
+        }
+        comparisonBox.appendChild(letterDiv);
+      }
+
+      if (isFullMatch) {
+        triggerSuccess();
+      } else {
+        firstAttempt = false;
+        playWrongSound();
+      }
+    }
+
+    /* MODE 4: TYPE */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
@@ -1655,16 +1562,17 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         playWrongSound();
         const inp = document.getElementById('type-input');
         inp.classList.add('shake');
-        setTimeout(() => inp.classList.remove('shake'), 400);
+        setTimeout(() => inp.classList.remove('shake'), 350);
       }
     }
 
+    /* --- 8. WIN & CELEBRATION --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
       appState.stars += firstAttempt ? 3 : 1;
-      saveState();
+      saveState(true);
 
       setTimeout(() => {
         if (currentIndex < appState.words.length - 1) {
@@ -1677,7 +1585,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           currentIndex = 0;
           setupCurrentWord();
         }
-      }, 900);
+      }, 1000);
     }
 
     function recordAttempt(word, isFirstTry) {
@@ -1687,7 +1595,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
       appState.stats[key].attempts++;
       if (isFirstTry) appState.stats[key].firstTryWins++;
-      saveState();
+      saveState(true);
     }
 
     function toggleTip() {
@@ -1703,6 +1611,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('certificate-modal').style.display = 'none';
     }
 
+    /* --- 9. STICKER ALBUM MODAL --- */
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
       grid.innerHTML = '';
@@ -1746,44 +1655,31 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function unlockSticker(id, cost, canAfford) {
       if (!canAfford) {
         playWrongSound();
-        showToast(`You need ${cost} stars for this sticker. Keep practicing!`);
+        alert(`You need ${cost} stars for this sticker. Keep practicing!`);
         return;
       }
       appState.stars -= cost;
       appState.unlockedStickers.push(id);
-      saveState();
+      saveState(true);
       playFanfareSound();
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
       openStickersModal();
     }
 
-    function openParentAuthModal() {
-      document.getElementById('parent-auth-modal').style.display = 'block';
-    }
-
-    function closeParentAuthModal() {
-      document.getElementById('parent-auth-modal').style.display = 'none';
-    }
-
-    function checkParentAuthAnswer(ans) {
-      if (ans === 7) {
-        closeParentAuthModal();
-        openParentModal();
-      } else {
-        playWrongSound();
-        showToast("Incorrect answer. Please try again.");
-      }
-    }
-
+    /* --- 10. PARENT DASHBOARD & DYNAMIC WORD LIST --- */
     function openParentModal() {
+      const code = prompt("Parent check: What is 4 + 3?");
+      if (code !== "7") return;
+
       document.getElementById('gemini-key').value = appState.apiKey || "";
       populateVoiceList();
 
       const container = document.getElementById('word-inputs-container');
       container.innerHTML = '';
-      appState.words.forEach((item, index) => {
-        container.appendChild(createWordRow(index, item.word, item.tip));
+      appState.words.forEach(item => {
+        addWordRow(item.word, item.tip);
       });
+      updateWordsCountLabel();
 
       const tbody = document.getElementById('progress-table-body');
       tbody.innerHTML = '';
@@ -1810,91 +1706,30 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('parent-modal').style.display = 'none';
     }
 
-    function createWordRow(idx, word = "", tip = "") {
+    function addWordRow(wordVal = '', tipVal = '') {
+      const container = document.getElementById('word-inputs-container');
       const row = document.createElement('div');
       row.className = 'word-row';
       row.innerHTML = `
-        <input type="text" class="row-word-input" value="${word.toLowerCase()}" placeholder="word">
-        <input type="text" class="row-tip-input" value="${tip}" placeholder="Memory Tip / Phonics">
-        <button class="btn-row-del" onclick="deleteWordRow(this)" title="Delete Word">✕</button>
+        <input type="text" class="row-word-input" value="${wordVal.toLowerCase()}" placeholder="word">
+        <input type="text" class="row-tip-input" value="${tipVal}" placeholder="Memory tip / phonics">
+        <button class="btn-row-del" onclick="this.parentElement.remove(); updateWordsCountLabel();">✕</button>
       `;
-      return row;
+      container.appendChild(row);
+      updateWordsCountLabel();
     }
 
-    function handleAddWordClick() {
-      const container = document.getElementById('word-inputs-container');
-      const newRow = createWordRow(container.children.length, "", "");
-      container.appendChild(newRow);
-      newRow.querySelector('.row-word-input').focus();
-    }
-
-    function deleteWordRow(btn) {
-      const row = btn.closest('.word-row');
-      if (row) row.remove();
-    }
-
-    function toggleCloudConfigUI() {
-      const panel = document.getElementById('cloud-setup-panel');
-      if (!panel) return;
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-      const stored = localStorage.getItem('imogen_firebase_config');
-      if (stored) {
-        document.getElementById('firebase-config-input').value = stored;
+    function clearAllWords() {
+      if (confirm("Are you sure you want to clear all words?")) {
+        document.getElementById('word-inputs-container').innerHTML = '';
+        updateWordsCountLabel();
       }
     }
 
-    function extractFirebaseConfig(input) {
-      // 1. Try direct JSON parse
-      try {
-        const direct = JSON.parse(input);
-        if (direct && direct.apiKey && direct.projectId) return direct;
-      } catch (e) {}
-
-      // 2. Extract key-value pairs using regex (immune to import lines, comments, and URLs)
-      const cleanText = input.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-      const result = {};
-
-      for (const key of keys) {
-        const match = cleanText.match(new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`));
-        if (match) {
-          result[key] = match[1];
-        }
-      }
-
-      if (result.apiKey && result.projectId) {
-        return result;
-      }
-      throw new Error("Missing required Firebase fields (apiKey, projectId)");
-    }
-
-    function saveCustomCloudConfig() {
-      const raw = document.getElementById('firebase-config-input').value.trim();
-      if (!raw) {
-        showToast("Please paste your Firebase configuration.");
-        return;
-      }
-      try {
-        const parsed = extractFirebaseConfig(raw);
-        localStorage.setItem('imogen_firebase_config', JSON.stringify(parsed));
-        showToast("Cloud configuration saved! Connecting...");
-        initCloudSync();
-      } catch (e) {
-        showToast("Could not read configuration. Check that apiKey and projectId are present.");
-      }
-    }
-
-    function resetToLocalSync() {
-      localStorage.removeItem('imogen_firebase_config');
-      showToast("Reset to single-device local mode.");
-      location.reload();
-    }
-
-    function handleClearAllWords() {
-      const container = document.getElementById('word-inputs-container');
-      container.innerHTML = '';
-      handleAddWordClick();
-      showToast("Cleared all words. Add your new list!");
+    function updateWordsCountLabel() {
+      const count = document.querySelectorAll('.word-row').length;
+      const lbl = document.getElementById('words-count-label');
+      if (lbl) lbl.innerText = count;
     }
 
     function saveParentSettings() {
@@ -1915,46 +1750,40 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       if (newWords.length > 0) {
         appState.words = newWords;
         currentIndex = 0;
-        saveState();
+        saveState(true);
         setupCurrentWord();
-        showToast("Words and settings saved!");
       }
       closeParentModal();
     }
 
+    // Attach all handlers to window for HTML event compatibility
     window.switchMode = switchMode;
     window.speakCurrentWord = speakCurrentWord;
-    window.startCoverPhase = startCoverPhase;
-    window.handleLCWCKey = handleLCWCKey;
-    window.handleLCWCBackspace = handleLCWCBackspace;
-    window.checkLCWCAttempt = checkLCWCAttempt;
-    window.advanceLCWCToNextWord = advanceLCWCToNextWord;
-    window.initTraceCanvas = initTraceCanvas;
-    window.completeTrace = completeTrace;
-    window.checkTyping = checkTyping;
     window.toggleTip = toggleTip;
     window.openStickersModal = openStickersModal;
     window.closeStickersModal = closeStickersModal;
     window.unlockSticker = unlockSticker;
-    window.openParentAuthModal = openParentAuthModal;
-    window.closeParentAuthModal = closeParentAuthModal;
-    window.checkParentAuthAnswer = checkParentAuthAnswer;
     window.openParentModal = openParentModal;
     window.closeParentModal = closeParentModal;
-    window.handleAddWordClick = handleAddWordClick;
-    window.deleteWordRow = deleteWordRow;
-    window.handleClearAllWords = handleClearAllWords;
     window.saveParentSettings = saveParentSettings;
+    window.addWordRow = addWordRow;
+    window.clearAllWords = clearAllWords;
+    window.updateWordsCountLabel = updateWordsCountLabel;
     window.generateAITips = generateAITips;
     window.onVoiceChange = onVoiceChange;
     window.closeCertificate = closeCertificate;
-    window.toggleCloudConfigUI = toggleCloudConfigUI;
-    window.saveCustomCloudConfig = saveCustomCloudConfig;
-    window.resetToLocalSync = resetToLocalSync;
+    window.lcwcPeek = lcwcPeek;
+    window.lcwcCheck = lcwcCheck;
+    window.virtualKeyPress = virtualKeyPress;
+    window.virtualKeyBackspace = virtualKeyBackspace;
+    window.initTraceCanvas = initTraceCanvas;
+    window.completeTrace = completeTrace;
+    window.checkTyping = checkTyping;
 
-    renderUIState();
+    // Boot app immediately, then sync cloud
+    renderUIStats();
     setupCurrentWord();
-    initCloudSync();
+    initFastCloud();
   </script>
 </body>
 </html>
