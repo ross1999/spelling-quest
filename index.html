@@ -47,11 +47,13 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 8px;
     }
 
     .badge-bar {
       display: flex;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -60,8 +62,23 @@
       padding: 8px 14px;
       border-radius: 999px;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Unmissable, colorful Sticker Book Button */
+    .sticker-nav-btn {
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      color: #FFF;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -69,14 +86,8 @@
       transition: transform 0.1s ease;
     }
 
-    .badge:active {
-      transform: scale(0.96);
-    }
-
-    .badge-sticker {
-      background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
-      color: var(--primary);
-      border: 1px solid #C7D2FE;
+    .sticker-nav-btn:active {
+      transform: scale(0.95);
     }
 
     .btn-icon {
@@ -163,15 +174,15 @@
     .slots-container {
       display: flex;
       gap: 8px;
-      margin: 20px 0;
+      margin: 16px 0 20px 0;
       min-height: 64px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     .slot {
-      width: 50px;
-      height: 60px;
+      width: 48px;
+      height: 58px;
       border: 2px dashed #CBD5E1;
       border-radius: 12px;
       font-size: 2.2rem;
@@ -195,24 +206,24 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Letter Tile Choices */
+    /* Letter Tile Choices - Dense and Challenging */
     .tile-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      max-width: 480px;
+      max-width: 520px;
       margin: 10px 0 20px 0;
     }
 
     .tile-btn {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       border-radius: 14px;
       background: #F1F5F9;
       border: 2px solid #E2E8F0;
       box-shadow: 0 4px 0 #CBD5E1;
-      font-size: 2rem;
+      font-size: 1.85rem;
       font-weight: 800;
       color: var(--text);
       cursor: pointer;
@@ -309,14 +320,14 @@
       margin-top: 10px;
     }
 
-    /* Shared Modal Styles */
+    /* Shared Robust Modal Styles */
     .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
       padding: 16px;
-      z-index: 1000;
+      z-index: 9999;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -326,9 +337,9 @@
       border-radius: var(--radius);
       max-width: 650px;
       width: 100%;
-      margin: 30px auto;
+      margin: 24px auto;
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
       position: relative;
     }
 
@@ -342,10 +353,10 @@
     .close-btn {
       background: #F1F5F9;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -387,7 +398,6 @@
     .sticker-card .icon {
       font-size: 3rem;
       margin-bottom: 6px;
-      transition: transform 0.2s ease;
     }
 
     .sticker-card.locked .icon {
@@ -526,9 +536,12 @@
 
   <header>
     <div class="badge-bar">
-      <div class="badge" onclick="openStickersModal()" title="View Star Shop">⭐ <span id="star-count">0</span></div>
-      <div class="badge" title="Daily Streak">🔥 <span id="streak-count">1</span></div>
-      <div class="badge badge-sticker" onclick="openStickersModal()" title="Open Sticker Album">🎨 <span id="sticker-badge-count">0/12</span></div>
+      <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
+      <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
+      <!-- Unmissable Sticker Book Button -->
+      <button class="sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
+        📖 Sticker Book (<span id="sticker-badge-count">1/12</span>)
+      </button>
     </div>
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
@@ -546,7 +559,7 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: Tap Tiles -->
+    <!-- MODE 1: Tap Tiles (Now Trickier!) -->
     <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
@@ -577,7 +590,7 @@
       <div class="modal-header">
         <div>
           <h2>Imogen's Sticker Album</h2>
-          <p style="font-size: 0.9rem; color: #64748B;">Earn stars from spelling words to unlock fun stickers!</p>
+          <p style="font-size: 0.9rem; color: #64748B;">Spend your stars to unlock awesome stickers!</p>
         </div>
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
       </div>
@@ -612,7 +625,6 @@
         <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
       
-      <!-- Voice & AI Configuration -->
       <div class="config-section">
         <label>Selected Voice (UK Natural voices prioritized):</label>
         <select id="voice-select" onchange="onVoiceChange()"></select>
@@ -649,7 +661,7 @@
   </div>
 
   <script>
-    /* --- 1. WEB AUDIO API SYNTHESIZER (ZERO ASSET CHIMES) --- */
+    /* --- 1. WEB AUDIO API SYNTHESIZER --- */
     let audioCtx = null;
     function getAudioContext() {
       if (!audioCtx) {
@@ -667,7 +679,7 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
         gain.gain.setValueAtTime(0.08, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
         osc.connect(gain);
@@ -681,7 +693,6 @@
       try {
         const ctx = getAudioContext();
         const now = ctx.currentTime;
-        // Ascending major arpeggio: C5 -> E5 -> G5 -> C6
         const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -721,10 +732,10 @@
         const ctx = getAudioContext();
         const now = ctx.currentTime;
         const notes = [
-          { f: 523.25, d: 0.12 }, // C5
-          { f: 659.25, d: 0.12 }, // E5
-          { f: 783.99, d: 0.14 }, // G5
-          { f: 1046.50, d: 0.45 } // C6
+          { f: 523.25, d: 0.12 },
+          { f: 659.25, d: 0.12 },
+          { f: 783.99, d: 0.14 },
+          { f: 1046.50, d: 0.45 }
         ];
         let t = now;
         notes.forEach(n => {
@@ -743,7 +754,7 @@
       } catch(e) {}
     }
 
-    /* --- 2. STICKER CATALOG DATA --- */
+    /* --- 2. STICKER CATALOG --- */
     const STICKER_CATALOG = [
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
@@ -751,7 +762,7 @@
       { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5 },
       { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10 },
       { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 10 },
-      { id: "fairy", icon: "🧚‍♀️️", name: "Garden Fairy", cost: 10 },
+      { id: "fairy", icon: "🧚‍♀", name: "Garden Fairy", cost: 10 },
       { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 10 },
       { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 15 },
       { id: "panda", icon: "🐼", name: "Bamboo Panda", cost: 15 },
@@ -778,11 +789,13 @@
       stats: {},
       stars: 0,
       streak: 1,
-      unlockedStickers: ["unicorn"] // Welcome gift sticker
+      unlockedStickers: ["unicorn"]
     };
 
     let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
-    if (!appState.unlockedStickers) appState.unlockedStickers = ["unicorn"];
+    if (!Array.isArray(appState.unlockedStickers)) appState.unlockedStickers = ["unicorn"];
+    if (typeof appState.stars !== 'number') appState.stars = 0;
+    if (typeof appState.streak !== 'number') appState.streak = 1;
 
     let currentIndex = 0;
     let currentMode = 'tiles';
@@ -970,6 +983,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
+    /* --- TRICKIER TILES GENERATOR (10-12 TILES WITH SMART DISTRACTORS) --- */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -981,15 +995,45 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         slotsContainer.appendChild(slot);
       }
 
+      // Phonics confusions and lookalikes
+      const confusions = {
+        'b': ['d', 'p'], 'd': ['b', 'q'], 'p': ['q', 'b'], 'q': ['p', 'g'],
+        'm': ['n', 'w'], 'n': ['m', 'u'], 'u': ['v', 'n'], 'w': ['v', 'm'],
+        'c': ['k', 's'], 's': ['c', 'z'], 'k': ['c'],
+        'a': ['e', 'o'], 'e': ['i', 'a'], 'i': ['e', 'y'], 'o': ['a', 'u'],
+        'f': ['t', 'v'], 't': ['f', 'l'], 'l': ['i', 't']
+      };
+
+      const wordLetters = word.split('');
+      const distractors = new Set();
+
+      // 1. Add lookalike distractors for letters in this word
+      wordLetters.forEach(ch => {
+        if (confusions[ch]) {
+          confusions[ch].forEach(d => {
+            if (!wordLetters.includes(d) && distractors.size < 4) {
+              distractors.add(d);
+            }
+          });
+        }
+      });
+
+      // 2. Pad up to at least 10 tiles (or word length + 5)
       const alphabet = "abcdefghijklmnopqrstuvwxyz";
-      let letters = word.split('');
-      letters.push(alphabet[Math.floor(Math.random() * 26)]);
-      letters.push(alphabet[Math.floor(Math.random() * 26)]);
-      letters.sort(() => Math.random() - 0.5);
+      const targetTotal = Math.max(wordLetters.length + 5, 10);
+      
+      while (distractors.size + wordLetters.length < targetTotal) {
+        const randChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+        distractors.add(randChar);
+      }
+
+      // Combine target letters and distractors, then scramble
+      const allTiles = [...wordLetters, ...Array.from(distractors)];
+      allTiles.sort(() => Math.random() - 0.5);
 
       const pool = document.getElementById('letters-pool');
       pool.innerHTML = '';
-      letters.forEach((char, idx) => {
+      allTiles.forEach((char, idx) => {
         const btn = document.createElement('button');
         btn.className = 'tile-btn';
         btn.innerText = char;
@@ -1074,7 +1118,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           currentIndex++;
           setupCurrentWord();
         } else {
-          // Finished all 10 words!
           playFanfareSound();
           confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
           showCertificate();
@@ -1121,7 +1164,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         if (isUnlocked) {
           card.onclick = () => {
             playTapChime();
-            confetti({ particleCount: 20, spread: 45, origin: { y: 0.6 } });
+            confetti({ particleCount: 25, spread: 50, origin: { y: 0.6 } });
           };
           card.innerHTML = `
             <div class="icon">${sticker.icon}</div>
@@ -1160,7 +1203,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       saveState();
       playFanfareSound();
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
-      openStickersModal(); // Re-render stickers
+      openStickersModal();
     }
 
     /* --- 10. PARENT MODAL CONTROLLER --- */
