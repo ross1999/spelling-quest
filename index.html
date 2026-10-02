@@ -461,27 +461,25 @@
       margin: 14px 0;
     }
 
-    /* Tip Drawer */
-    .tip-box {
-      width: 100%;
-      background: #FEF3C7;
-      border-left: 4px solid var(--accent);
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-top: 16px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      display: none;
-    }
-
+    /* Spoken Tip Button */
     .tip-toggle {
       color: var(--primary);
-      background: none;
-      border: none;
+      background: #EEF2FF;
+      border: 1.5px solid #C7D2FE;
+      padding: 8px 18px;
+      border-radius: 999px;
       font-weight: 600;
+      font-size: 0.95rem;
       cursor: pointer;
-      text-decoration: underline;
-      margin-top: 10px;
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .tip-toggle:active {
+      transform: scale(0.96);
+      background: #E0E7FF;
     }
 
     /* Robust Scrollable Modals */
@@ -651,7 +649,7 @@
       background: #FFF;
     }
 
-    /* Masked secure styling for API Key field to thwart browser scrapers & password managers */
+    /* Masked secure styling for API Key field to thwart password managers */
     #gemini-key {
       -webkit-text-security: disc;
       text-security: disc;
@@ -795,8 +793,8 @@
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
     </div>
 
-    <button class="tip-toggle" onclick="toggleTip()">💡 Need a memory tip?</button>
-    <div class="tip-box" id="tip-box"></div>
+    <!-- Auditory Memory Tip Button -->
+    <button class="tip-toggle" id="tip-btn" onclick="speakTip()">💡 Hear Memory Tip</button>
   </main>
 
   <!-- STICKER ALBUM MODAL -->
@@ -1240,7 +1238,7 @@
     function speakLetter(char) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(char.toLowerCase());
+        const msg = new SpeechSynthesisUtterance(char.toUpperCase());
         let voice = availableVoices.find(v => v.name === appState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
@@ -1248,6 +1246,71 @@
         if (voice) msg.voice = voice;
         msg.rate = 0.95;
         msg.pitch = 1.1;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    /* Speak Spelled Letters, then pronounce whole word */
+    function spellAndSayWord(word, onComplete) {
+      if (!('speechSynthesis' in window)) {
+        if (onComplete) onComplete();
+        return;
+      }
+      window.speechSynthesis.cancel();
+
+      // Uppercase letters separated by commas forces distinct letter-by-letter spelling
+      const spelledLetters = word.toUpperCase().split('').join(', ');
+      const fullPhrase = `${spelledLetters}. ... ${word}!`;
+
+      const msg = new SpeechSynthesisUtterance(fullPhrase);
+      let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+      if (!voice) {
+        voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+      }
+      if (voice) msg.voice = voice;
+      msg.rate = 0.82;
+      msg.pitch = 1.05;
+
+      let finished = false;
+      const done = () => {
+        if (!finished) {
+          finished = true;
+          if (onComplete) onComplete();
+        }
+      };
+
+      msg.onend = done;
+      msg.onerror = done;
+
+      // Fallback timer to guarantee progression on mobile Safari WebKit
+      const fallbackTime = (word.length * 800) + 3000;
+      setTimeout(done, fallbackTime);
+
+      window.speechSynthesis.speak(msg);
+    }
+
+    /* Speak Memory Tip Auditory-First */
+    function speakTip() {
+      const tipText = currentWordObj().tip || "Listen carefully to each sound in the word!";
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(tipText);
+        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        msg.rate = 0.84;
+        msg.pitch = 1.05;
+
+        const tipBtn = document.getElementById('tip-btn');
+        if (tipBtn) {
+          tipBtn.innerHTML = "🔊 Listening to tip...";
+          const reset = () => { tipBtn.innerHTML = "💡 Hear Memory Tip"; };
+          msg.onend = reset;
+          msg.onerror = reset;
+        }
+
         window.speechSynthesis.speak(msg);
       }
     }
@@ -1347,9 +1410,8 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       const word = currentWordObj().word.toLowerCase();
       document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${appState.words.length}`;
       
-      const tipBox = document.getElementById('tip-box');
-      tipBox.innerText = currentWordObj().tip || "Listen carefully to each sound!";
-      tipBox.style.display = 'none';
+      const tipBtn = document.getElementById('tip-btn');
+      if (tipBtn) tipBtn.innerHTML = "💡 Hear Memory Tip";
 
       if (currentMode === 'tiles') {
         setupTiles(word);
@@ -1550,6 +1612,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function virtualKeyPress(ch) {
       const targetWord = currentWordObj().word.toLowerCase();
       if (lcwcInput.length < targetWord.length) {
+        speakLetter(ch);
         playTapChime();
         const nextIdx = lcwcInput.length;
         lcwcInput.push(ch);
@@ -1622,7 +1685,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 8. WIN & CELEBRATION --- */
+    /* --- 8. WIN & CELEBRATION (SPELL-OUT + WORD RECITATION) --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
@@ -1630,18 +1693,25 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       appState.stars += firstAttempt ? 3 : 1;
       saveState(true);
 
+      const target = currentWordObj().word;
+
+      // 600ms grace period for final chime & letter audio to finish
       setTimeout(() => {
-        if (currentIndex < appState.words.length - 1) {
-          currentIndex++;
-          setupCurrentWord();
-        } else {
-          playFanfareSound();
-          confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
-          showCertificate();
-          currentIndex = 0;
-          setupCurrentWord();
-        }
-      }, 1000);
+        spellAndSayWord(target, () => {
+          setTimeout(() => {
+            if (currentIndex < appState.words.length - 1) {
+              currentIndex++;
+              setupCurrentWord();
+            } else {
+              playFanfareSound();
+              confetti({ particleCount: 160, spread: 100, origin: { y: 0.4 } });
+              showCertificate();
+              currentIndex = 0;
+              setupCurrentWord();
+            }
+          }, 450);
+        });
+      }, 600);
     }
 
     function recordAttempt(word, isFirstTry) {
@@ -1652,11 +1722,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       appState.stats[key].attempts++;
       if (isFirstTry) appState.stats[key].firstTryWins++;
       saveState(true);
-    }
-
-    function toggleTip() {
-      const box = document.getElementById('tip-box');
-      box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
     function showCertificate() {
@@ -1830,7 +1895,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.switchMode = switchMode;
     window.speakCurrentWord = speakCurrentWord;
     window.speakLetter = speakLetter;
-    window.toggleTip = toggleTip;
+    window.speakTip = speakTip;
     window.openStickersModal = openStickersModal;
     window.closeStickersModal = closeStickersModal;
     window.unlockSticker = unlockSticker;
