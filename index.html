@@ -651,6 +651,13 @@
       background: #FFF;
     }
 
+    /* Masked secure styling for API Key field to thwart browser scrapers & password managers */
+    #gemini-key {
+      -webkit-text-security: disc;
+      text-security: disc;
+      letter-spacing: 2px;
+    }
+
     .word-list-manager {
       margin-top: 14px;
     }
@@ -837,7 +844,21 @@
         <select id="voice-select" onchange="onVoiceChange()"></select>
 
         <label style="margin-top: 10px;">Gemini API Key (Syncs to all devices via Cloud):</label>
-        <input type="password" id="gemini-key" placeholder="AIzaSy...">
+        <!-- Protected Text Field: Anti-Autofill, Anti-Bitwarden, Anti-Copy -->
+        <input 
+          type="text" 
+          id="gemini-key" 
+          placeholder="Paste Gemini API Key (AIzaSy...)" 
+          autocomplete="off" 
+          autocorrect="off" 
+          autocapitalize="none" 
+          spellcheck="false" 
+          data-bwignore="true" 
+          data-1p-ignore="true" 
+          data-lpignore="true" 
+          oncopy="return false;" 
+          oncut="return false;"
+        >
         
         <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips with Gemini</button>
@@ -849,7 +870,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h3>Word List (<span id="words-count-label">0</span> words)</h3>
           <div class="list-actions-bar" style="margin: 0;">
-            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑️ Clear All</button>
+            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑️️ Clear All</button>
             <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addWordRow('', '')">➕ Add Word</button>
           </div>
         </div>
@@ -880,9 +901,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Firebase Config for spellingapp-95686
     const firebaseConfig = {
       apiKey: "AIzaSyB6QPxQwyZVdvqStz2zrldMTqMb98_fdq4",
       authDomain: "spellingapp-95686.firebaseapp.com",
@@ -1036,7 +1056,6 @@
       unlockedStickers: ["unicorn"]
     };
 
-    // Load instantly from localStorage (zero delay)
     let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
     if (!Array.isArray(appState.unlockedStickers)) appState.unlockedStickers = ["unicorn"];
     if (typeof appState.stars !== 'number') appState.stars = 0;
@@ -1048,9 +1067,25 @@
     let firstAttempt = true;
     let availableVoices = [];
 
-    // Firestore Reference
     let db = null;
     let docRef = null;
+
+    // Helper: Guarantee clean payload without undefined values for Firestore
+    function cleanPayload(state) {
+      return {
+        apiKey: state.apiKey || "",
+        preferredVoice: state.preferredVoice || "",
+        words: (state.words || []).map(w => ({
+          word: (w.word || "").trim().toLowerCase(),
+          tip: (w.tip || "").trim()
+        })),
+        stats: state.stats || {},
+        stars: Number(state.stars) || 0,
+        streak: Number(state.streak) || 1,
+        unlockedStickers: Array.isArray(state.unlockedStickers) ? state.unlockedStickers : ["unicorn"],
+        lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      };
+    }
 
     function renderUIStats() {
       document.getElementById('star-count').innerText = appState.stars;
@@ -1058,16 +1093,31 @@
       document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    function saveState(pushToCloud = true) {
+    async function saveState(pushToCloud = true) {
       localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
       renderUIStats();
 
       if (pushToCloud && db && docRef) {
-        setDoc(docRef, appState, { merge: true }).catch(err => console.warn("Cloud push warning:", err));
+        try {
+          const payload = cleanPayload(appState);
+          await setDoc(docRef, payload, { merge: true });
+          const badge = document.getElementById('cloud-badge');
+          if (badge) {
+            badge.className = "badge cloud-badge online";
+            badge.innerText = `☁️ Synced (${payload.lastUpdated})`;
+          }
+        } catch (err) {
+          console.error("Cloud push failed:", err);
+          const badge = document.getElementById('cloud-badge');
+          if (badge) {
+            badge.className = "badge cloud-badge offline";
+            badge.innerText = "⚠️ Cloud Error";
+          }
+        }
       }
     }
 
-    /* --- 4. OPTIMIZED FAST CLOUD INITIALIZATION --- */
+    /* --- 4. FAST CLOUD INITIALIZATION --- */
     function initFastCloud() {
       try {
         const app = initializeApp(firebaseConfig);
@@ -1075,33 +1125,34 @@
         db = getFirestore(app);
         docRef = doc(db, "spelling_data", "imogen_state");
 
-        // 1. Immediately listen for changes from Firestore
         onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
             const cloudData = docSnap.data();
-            appState = { ...appState, ...cloudData };
+            appState = {
+              ...appState,
+              ...cloudData,
+              words: cloudData.words && cloudData.words.length > 0 ? cloudData.words : appState.words
+            };
             saveState(false);
             setupCurrentWord();
-          } else {
-            // First time project creation: upload current state
-            setDoc(docRef, appState);
-          }
 
-          const badge = document.getElementById('cloud-badge');
-          if (badge) {
-            badge.className = "badge cloud-badge online";
-            badge.innerText = "☁️ Synced Live";
+            const badge = document.getElementById('cloud-badge');
+            if (badge) {
+              badge.className = "badge cloud-badge online";
+              badge.innerText = `☁️ Synced Live${cloudData.lastUpdated ? ' (' + cloudData.lastUpdated + ')' : ''}`;
+            }
+          } else {
+            setDoc(docRef, cleanPayload(appState));
           }
         }, (err) => {
-          console.warn("Firestore snapshot notice:", err);
+          console.warn("Firestore snapshot error:", err);
           const badge = document.getElementById('cloud-badge');
           if (badge) {
             badge.className = "badge cloud-badge offline";
-            badge.innerText = "☁️ Offline Mode";
+            badge.innerText = "☁️ Permission Denied";
           }
         });
 
-        // 2. Non-blocking Auth: use cached session, only sign in if unauthenticated
         onAuthStateChanged(auth, (user) => {
           if (!user) {
             signInAnonymously(auth).catch(err => console.error("Anonymous auth notice:", err));
@@ -1110,11 +1161,6 @@
 
       } catch (err) {
         console.error("Firebase init:", err);
-        const badge = document.getElementById('cloud-badge');
-        if (badge) {
-          badge.className = "badge cloud-badge offline";
-          badge.innerText = "☁️ Offline Mode";
-        }
       }
     }
 
@@ -1194,7 +1240,14 @@
 
     /* --- 6. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
-      const key = document.getElementById('gemini-key').value.trim();
+      const keyInput = document.getElementById('gemini-key');
+      let key = keyInput.value.trim();
+      
+      // If the field shows dummy masked dots, use the securely saved in-memory key
+      if (key.includes("••") || key === "") {
+        key = appState.apiKey || "";
+      }
+      
       const status = document.getElementById('gemini-status');
       
       if (!key) {
@@ -1274,7 +1327,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     }
 
     function setupCurrentWord() {
-      if (appState.words.length === 0) return;
+      if (!appState.words || appState.words.length === 0) return;
       if (currentIndex >= appState.words.length) currentIndex = 0;
 
       firstAttempt = true;
@@ -1298,7 +1351,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* MODE 1: TILES WITH SMART DISTRACTORS */
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
@@ -1340,7 +1392,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       const pool = document.getElementById('letters-pool');
       pool.innerHTML = '';
-      allTiles.forEach((char, idx) => {
+      allTiles.forEach((char) => {
         const btn = document.createElement('button');
         btn.className = 'tile-btn';
         btn.innerText = char;
@@ -1370,7 +1422,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* MODE 2: TRACE CANVAS */
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
@@ -1397,7 +1448,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       triggerSuccess();
     }
 
-    /* MODE 3: LOOK, COVER, WRITE, CHECK */
     let lcwcInput = [];
     function setupLCWC(word) {
       lcwcInput = [];
@@ -1407,11 +1457,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       comparisonBox.innerHTML = '';
       wordDisplay.innerText = word;
 
-      // Start: Step 1 (Look)
       curtain.classList.remove('closed');
       setLcwcStep(1);
 
-      // Create empty write slots
       const slots = document.getElementById('lcwc-slots');
       slots.innerHTML = '';
       for (let i = 0; i < word.length; i++) {
@@ -1423,7 +1471,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       buildVirtualKeyboard();
 
-      // Automatically drop curtain after 4 seconds (or user can peek/cover)
       setTimeout(() => {
         if (currentMode === 'lcwc' && !curtain.classList.contains('closed')) {
           playCurtainSound();
@@ -1475,7 +1522,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           rowEl.appendChild(btn);
         });
 
-        // Add backspace on last row
         if (idx === 2) {
           const back = document.createElement('button');
           back.className = 'vk-key special';
@@ -1513,10 +1559,8 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function lcwcCheck() {
       const targetWord = currentWordObj().word.toLowerCase();
       const enteredWord = lcwcInput.join('');
-
       if (enteredWord.length === 0) return;
 
-      // Step 4: Check
       setLcwcStep(4);
       const curtain = document.getElementById('theatre-curtain');
       playCurtainSound();
@@ -1527,7 +1571,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       let isFullMatch = (enteredWord === targetWord);
 
-      // Render letter-by-letter verification
       for (let i = 0; i < targetWord.length; i++) {
         const letterDiv = document.createElement('div');
         const userChar = enteredWord[i] || '';
@@ -1551,7 +1594,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* MODE 4: TYPE */
     function checkTyping() {
       const val = document.getElementById('type-input').value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
@@ -1666,12 +1708,21 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       openStickersModal();
     }
 
-    /* --- 10. PARENT DASHBOARD & DYNAMIC WORD LIST --- */
+    /* --- 10. PARENT DASHBOARD & SAFE API KEY LOGIC --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
 
-      document.getElementById('gemini-key').value = appState.apiKey || "";
+      const keyInput = document.getElementById('gemini-key');
+      if (appState.apiKey && appState.apiKey.trim() !== '') {
+        // Display dummy masked dots so the real key is never exposed in the DOM or clipboard
+        keyInput.value = "••••••••••••••••••••••••••••••••";
+        keyInput.dataset.hasKey = "true";
+      } else {
+        keyInput.value = "";
+        keyInput.dataset.hasKey = "false";
+      }
+
       populateVoiceList();
 
       const container = document.getElementById('word-inputs-container');
@@ -1732,8 +1783,15 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       if (lbl) lbl.innerText = count;
     }
 
-    function saveParentSettings() {
-      appState.apiKey = document.getElementById('gemini-key').value.trim();
+    async function saveParentSettings() {
+      const keyInput = document.getElementById('gemini-key');
+      const rawVal = keyInput.value.trim();
+
+      // Only overwrite the secret if a fresh key was actually pasted/typed
+      if (rawVal !== "" && !rawVal.includes("••")) {
+        appState.apiKey = rawVal;
+      }
+
       const voiceEl = document.getElementById('voice-select');
       if (voiceEl && voiceEl.value) {
         appState.preferredVoice = voiceEl.value;
@@ -1750,13 +1808,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       if (newWords.length > 0) {
         appState.words = newWords;
         currentIndex = 0;
-        saveState(true);
+        await saveState(true);
         setupCurrentWord();
       }
       closeParentModal();
     }
 
-    // Attach all handlers to window for HTML event compatibility
+    // Window bindings
     window.switchMode = switchMode;
     window.speakCurrentWord = speakCurrentWord;
     window.toggleTip = toggleTip;
@@ -1780,7 +1838,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.completeTrace = completeTrace;
     window.checkTyping = checkTyping;
 
-    // Boot app immediately, then sync cloud
+    // Boot
     renderUIStats();
     setupCurrentWord();
     initFastCloud();
