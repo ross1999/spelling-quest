@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Imogen's Spelling Quest</title>
+  <title>Spelling Quest</title>
 
   <!-- Child-friendly infant typography (single-storey 'a' and 'g' for KS1) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,6 +77,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .player-badge {
+      background: #EEF2FF;
+      color: var(--primary);
+      border: 1.5px solid #C7D2FE;
     }
 
     .cloud-badge {
@@ -649,7 +655,6 @@
       background: #FFF;
     }
 
-    /* Masked secure styling for API Key field to thwart password managers */
     #gemini-key {
       -webkit-text-security: disc;
       text-security: disc;
@@ -719,6 +724,7 @@
 
   <header>
     <div class="badge-bar">
+      <div class="badge player-badge" id="player-badge">👤 <span id="player-name-label">Imogen</span></div>
       <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
       <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
       <div class="badge cloud-badge connecting" id="cloud-badge" title="Cloud Sync">☁️ Connecting...</div>
@@ -802,7 +808,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <div>
-          <h2>Imogen's Sticker Album</h2>
+          <h2 id="album-title">Sticker Album</h2>
           <p style="font-size: 0.9rem; color: #64748B;">Spend your stars to unlock awesome stickers!</p>
         </div>
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
@@ -817,7 +823,7 @@
       <div style="font-size: 3.5rem; margin-bottom: 6px;">🏆</div>
       <h1 class="certificate-title">Spelling Superstar Award!</h1>
       <p style="color: #B45309; font-size: 1.05rem;">This certificate is proudly awarded to:</p>
-      <div class="certificate-name">Imogen</div>
+      <div class="certificate-name" id="certificate-player-name">Imogen</div>
       <p style="font-size: 1.05rem; color: #475569; margin-bottom: 22px; line-height: 1.4;">
         For fantastic effort and mastering all weekly spelling words!
       </p>
@@ -833,15 +839,25 @@
   <div id="parent-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Weekly Spelling Setup</h2>
+        <h2>Parent Settings & Words</h2>
         <button class="close-btn" onclick="closeParentModal()">✕</button>
+      </div>
+
+      <!-- Invite Friend Link Generator -->
+      <div class="config-section" style="background: #F0FDF4; border-color: #BBF7D0;">
+        <label style="color: #166534;">🔗 Invite a Friend to Test:</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="friend-name-input" placeholder="Enter friend's name (e.g. Olivia)" style="flex: 1;">
+          <button class="action-btn btn-done" onclick="generateFriendLink()">📋 Copy Link</button>
+        </div>
+        <span id="friend-link-status" style="font-size: 0.8rem; color: #166534; margin-top: 4px; display: block;"></span>
       </div>
       
       <div class="config-section">
         <label>Selected Voice (UK Natural voices prioritized):</label>
         <select id="voice-select" onchange="onVoiceChange()"></select>
 
-        <label style="margin-top: 10px;">Gemini API Key (Syncs to all devices via Cloud):</label>
+        <label style="margin-top: 10px;">Gemini API Key (Syncs to all players):</label>
         <input 
           type="text" 
           id="gemini-key" 
@@ -858,32 +874,48 @@
         >
         
         <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips with Gemini</button>
+          <button class="action-btn btn-gemini" onclick="generateAITips()">✨ Auto-Generate Tips for Master List</button>
           <span id="gemini-status" style="font-size: 0.85rem; color: #64748B; align-self: center;"></span>
         </div>
       </div>
 
+      <!-- 1. MASTER SCHOOL WORDS (SHARED) -->
       <div class="word-list-manager">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3>Word List (<span id="words-count-label">0</span> words)</h3>
-          <div class="list-actions-bar" style="margin: 0;">
-            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑 Clear All</button>
-            <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addWordRow('', '')">➕ Add Word</button>
+          <div>
+            <h3>🏫 Master School Words (<span id="master-count-label">0</span>)</h3>
+            <p style="font-size: 0.8rem; color: #64748B;">Shared across all players (synced automatically)</p>
           </div>
+          <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addMasterWordRow('', '')">➕ Add Master Word</button>
         </div>
-        <div id="word-inputs-container"></div>
+        <div id="master-word-inputs"></div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 16px;">
-        <button class="action-btn btn-done" onclick="saveParentSettings()">Save Words & Settings</button>
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #E2E8F0;">
+
+      <!-- 2. CUSTOM WORDS FOR CURRENT PLAYER ONLY -->
+      <div class="word-list-manager">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div>
+            <h3>✏️ Custom Words for <span id="custom-player-title">Player</span> (<span id="custom-count-label">0</span>)</h3>
+            <p style="font-size: 0.8rem; color: #64748B;">Only appears for this child</p>
+          </div>
+          <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addCustomWordRow('', '')">➕ Add Custom Word</button>
+        </div>
+        <div id="custom-word-inputs"></div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="action-btn btn-done" onclick="saveParentSettings()">Save All Words & Settings</button>
         <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
       </div>
 
-      <h3 style="margin-top: 24px;">Progress Record</h3>
+      <h3 style="margin-top: 24px;">Progress Record (<span id="progress-player-name">Player</span>)</h3>
       <table class="progress-table">
         <thead>
           <tr>
             <th>Word</th>
+            <th>Type</th>
             <th>Tries</th>
             <th>1st Try %</th>
             <th>Status</th>
@@ -898,7 +930,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6QPxQwyZVdvqStz2zrldMTqMb98_fdq4",
@@ -909,7 +941,25 @@
       appId: "1:621552619032:web:6debc68057cd3f20a13d6d"
     };
 
-    /* --- 1. WEB AUDIO SYNTHESIZER --- */
+    /* --- 1. MULTI-USER DETECTION --- */
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawPlayerParam = urlParams.get('player') || localStorage.getItem('last_spelling_player') || 'Imogen';
+    const currentPlayer = rawPlayerParam.charAt(0).toUpperCase() + rawPlayerParam.slice(1).trim();
+    localStorage.setItem('last_spelling_player', currentPlayer);
+
+    const playerId = currentPlayer.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const MASTER_STORAGE_KEY = 'spelling_master_config';
+    const PLAYER_STORAGE_KEY = `spelling_player_${playerId}`;
+
+    // Apply names to page
+    document.title = `${currentPlayer}'s Spelling Quest`;
+    document.getElementById('player-name-label').innerText = currentPlayer;
+    document.getElementById('certificate-player-name').innerText = currentPlayer;
+    document.getElementById('album-title').innerText = `${currentPlayer}'s Sticker Album`;
+    document.getElementById('custom-player-title').innerText = currentPlayer;
+    document.getElementById('progress-player-name').innerText = currentPlayer;
+
+    /* --- 2. WEB AUDIO SYNTHESIZER --- */
     let audioCtx = null;
     function getAudioContext() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1015,7 +1065,7 @@
       } catch(e) {}
     }
 
-    /* --- 2. STICKER CATALOG --- */
+    /* --- 3. STICKER CATALOG --- */
     const STICKER_CATALOG = [
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
@@ -1031,10 +1081,9 @@
       { id: "crown", icon: "👑", name: "Spelling Queen", cost: 20 }
     ];
 
-    /* --- 3. STATE & DATA INITIALIZATION --- */
-    const defaultData = {
+    /* --- 4. DATA MODEL: MASTER + INDIVIDUAL PLAYER --- */
+    const defaultMaster = {
       apiKey: "",
-      preferredVoice: "",
       words: [
         { word: "because", tip: "Big Elephants Can Always Understand Small Elephants" },
         { word: "friend", tip: "A fri-end stays to the end." },
@@ -1046,17 +1095,45 @@
         { word: "could", tip: "O, U, Lucky Duck!" },
         { word: "would", tip: "O, U, Lucky Duck!" },
         { word: "house", tip: "Rhymes with mouse - ends with 'se'." }
-      ],
+      ]
+    };
+
+    const defaultPlayerState = {
+      preferredVoice: "",
+      customWords: [],
       stats: {},
       stars: 0,
       streak: 1,
       unlockedStickers: ["unicorn"]
     };
 
-    let appState = JSON.parse(localStorage.getItem('imogen_spelling_app')) || defaultData;
-    if (!Array.isArray(appState.unlockedStickers)) appState.unlockedStickers = ["unicorn"];
-    if (typeof appState.stars !== 'number') appState.stars = 0;
-    if (typeof appState.streak !== 'number') appState.streak = 1;
+    let masterConfig = JSON.parse(localStorage.getItem(MASTER_STORAGE_KEY)) || defaultMaster;
+    let playerState = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || defaultPlayerState;
+    if (!Array.isArray(playerState.unlockedStickers)) playerState.unlockedStickers = ["unicorn"];
+    if (typeof playerState.stars !== 'number') playerState.stars = 0;
+    if (typeof playerState.streak !== 'number') playerState.streak = 1;
+    if (!Array.isArray(playerState.customWords)) playerState.customWords = [];
+
+    // Combined active practice list
+    let activeWords = [];
+    function computeActiveWords() {
+      const masterList = (masterConfig.words || []).map(w => ({ ...w, isCustom: false }));
+      const customList = (playerState.customWords || []).map(w => ({ ...w, isCustom: true }));
+      
+      const seen = new Set();
+      activeWords = [];
+      [...masterList, ...customList].forEach(item => {
+        const key = (item.word || '').trim().toLowerCase();
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          activeWords.push({ word: key, tip: item.tip || '', isCustom: item.isCustom });
+        }
+      });
+      if (activeWords.length === 0) {
+        activeWords = [{ word: "spelling", tip: "Practice makes perfect!", isCustom: false }];
+      }
+    }
+    computeActiveWords();
 
     let currentIndex = 0;
     let currentMode = 'tiles';
@@ -1065,88 +1142,97 @@
     let availableVoices = [];
 
     let db = null;
-    let docRef = null;
-
-    function cleanPayload(state) {
-      return {
-        apiKey: state.apiKey || "",
-        preferredVoice: state.preferredVoice || "",
-        words: (state.words || []).map(w => ({
-          word: (w.word || "").trim().toLowerCase(),
-          tip: (w.tip || "").trim()
-        })),
-        stats: state.stats || {},
-        stars: Number(state.stars) || 0,
-        streak: Number(state.streak) || 1,
-        unlockedStickers: Array.isArray(state.unlockedStickers) ? state.unlockedStickers : ["unicorn"],
-        lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      };
-    }
+    let masterDocRef = null;
+    let playerDocRef = null;
 
     function renderUIStats() {
-      document.getElementById('star-count').innerText = appState.stars;
-      document.getElementById('streak-count').innerText = appState.streak;
-      document.getElementById('sticker-badge-count').innerText = `${appState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
+      document.getElementById('star-count').innerText = playerState.stars;
+      document.getElementById('streak-count').innerText = playerState.streak;
+      document.getElementById('sticker-badge-count').innerText = `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
-    async function saveState(pushToCloud = true) {
-      localStorage.setItem('imogen_spelling_app', JSON.stringify(appState));
+    async function savePlayerState(pushToCloud = true) {
+      localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(playerState));
       renderUIStats();
 
-      if (pushToCloud && db && docRef) {
+      if (pushToCloud && db && playerDocRef) {
         try {
-          const payload = cleanPayload(appState);
-          await setDoc(docRef, payload, { merge: true });
-          const badge = document.getElementById('cloud-badge');
-          if (badge) {
-            badge.className = "badge cloud-badge online";
-            badge.innerText = `☁️ Synced (${payload.lastUpdated})`;
-          }
+          const payload = {
+            preferredVoice: playerState.preferredVoice || "",
+            customWords: (playerState.customWords || []).map(w => ({ word: (w.word||"").trim().toLowerCase(), tip: (w.tip||"").trim() })),
+            stats: playerState.stats || {},
+            stars: Number(playerState.stars) || 0,
+            streak: Number(playerState.streak) || 1,
+            unlockedStickers: Array.isArray(playerState.unlockedStickers) ? playerState.unlockedStickers : ["unicorn"],
+            lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          };
+          await setDoc(playerDocRef, payload, { merge: true });
         } catch (err) {
-          console.error("Cloud push failed:", err);
-          const badge = document.getElementById('cloud-badge');
-          if (badge) {
-            badge.className = "badge cloud-badge offline";
-            badge.innerText = "⚠️ Cloud Error";
-          }
+          console.error("Player sync error:", err);
         }
       }
     }
 
-    /* --- 4. FAST CLOUD INITIALIZATION --- */
+    async function saveMasterConfig(pushToCloud = true) {
+      localStorage.setItem(MASTER_STORAGE_KEY, JSON.stringify(masterConfig));
+
+      if (pushToCloud && db && masterDocRef) {
+        try {
+          const payload = {
+            apiKey: masterConfig.apiKey || "",
+            words: (masterConfig.words || []).map(w => ({ word: (w.word||"").trim().toLowerCase(), tip: (w.tip||"").trim() })),
+            lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          };
+          await setDoc(masterDocRef, payload, { merge: true });
+        } catch (err) {
+          console.error("Master sync error:", err);
+        }
+      }
+    }
+
+    /* --- 5. CLOUD INITIALIZATION (DUAL LISTENERS) --- */
     function initFastCloud() {
       try {
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         db = getFirestore(app);
-        docRef = doc(db, "spelling_data", "imogen_state");
 
-        onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const cloudData = docSnap.data();
-            appState = {
-              ...appState,
-              ...cloudData,
-              words: cloudData.words && cloudData.words.length > 0 ? cloudData.words : appState.words
-            };
-            saveState(false);
+        masterDocRef = doc(db, "spelling_data", "master_config");
+        playerDocRef = doc(db, "spelling_data", `profile_${playerId}`);
+
+        // Listener 1: Master school words & Gemini key
+        onSnapshot(masterDocRef, (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.words && data.words.length > 0) masterConfig.words = data.words;
+            if (data.apiKey) masterConfig.apiKey = data.apiKey;
+            saveMasterConfig(false);
+            computeActiveWords();
             setupCurrentWord();
-
-            const badge = document.getElementById('cloud-badge');
-            if (badge) {
-              badge.className = "badge cloud-badge online";
-              badge.innerText = `☁️ Synced Live${cloudData.lastUpdated ? ' (' + cloudData.lastUpdated + ')' : ''}`;
-            }
           } else {
-            setDoc(docRef, cleanPayload(appState));
+            saveMasterConfig(true);
           }
+          updateCloudStatusBadge(true);
         }, (err) => {
-          console.warn("Firestore snapshot error:", err);
-          const badge = document.getElementById('cloud-badge');
-          if (badge) {
-            badge.className = "badge cloud-badge offline";
-            badge.innerText = "☁️ Permission Denied";
+          console.warn("Master snapshot notice:", err);
+          updateCloudStatusBadge(false);
+        });
+
+        // Listener 2: Player specific progress & custom words
+        onSnapshot(playerDocRef, (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            playerState = { ...playerState, ...data };
+            savePlayerState(false);
+            computeActiveWords();
+            setupCurrentWord();
+          } else {
+            savePlayerState(true);
           }
+          updateCloudStatusBadge(true);
+        }, (err) => {
+          console.warn("Player snapshot notice:", err);
+          updateCloudStatusBadge(false);
         });
 
         onAuthStateChanged(auth, (user) => {
@@ -1157,10 +1243,23 @@
 
       } catch (err) {
         console.error("Firebase init:", err);
+        updateCloudStatusBadge(false);
       }
     }
 
-    /* --- 5. SPEECH SYNTHESIS ENGINE --- */
+    function updateCloudStatusBadge(isOnline) {
+      const badge = document.getElementById('cloud-badge');
+      if (!badge) return;
+      if (isOnline) {
+        badge.className = "badge cloud-badge online";
+        badge.innerText = `☁️ Synced Live`;
+      } else {
+        badge.className = "badge cloud-badge offline";
+        badge.innerText = `☁️ Offline Mode`;
+      }
+    }
+
+    /* --- 6. SPEECH SYNTHESIS ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -1180,11 +1279,11 @@
         const isNatural = voice.name.includes('Enhanced') || voice.name.includes('Siri') || voice.name.includes('Natural');
         option.textContent = `${voice.name} (${voice.lang})${isNatural ? ' 🌟 Natural' : ''}`;
         
-        if (appState.preferredVoice && voice.name === appState.preferredVoice) {
+        if (playerState.preferredVoice && voice.name === playerState.preferredVoice) {
           option.selected = true;
-        } else if (!appState.preferredVoice && isNatural && voice.lang.includes('en-GB')) {
+        } else if (!playerState.preferredVoice && isNatural && voice.lang.includes('en-GB')) {
           option.selected = true;
-          appState.preferredVoice = voice.name;
+          playerState.preferredVoice = voice.name;
         }
         select.appendChild(option);
       });
@@ -1206,17 +1305,17 @@
     }
 
     function onVoiceChange() {
-      appState.preferredVoice = document.getElementById('voice-select').value;
-      saveState(true);
+      playerState.preferredVoice = document.getElementById('voice-select').value;
+      savePlayerState(true);
       
       const utterance = new SpeechSynthesisUtterance("Voice selected!");
-      const selected = availableVoices.find(v => v.name === appState.preferredVoice);
+      const selected = availableVoices.find(v => v.name === playerState.preferredVoice);
       if (selected) utterance.voice = selected;
       window.speechSynthesis.speak(utterance);
     }
 
     function currentWordObj() {
-      return appState.words[currentIndex] || { word: "spelling", tip: "" };
+      return activeWords[currentIndex] || { word: "spelling", tip: "" };
     }
 
     function speakCurrentWord() {
@@ -1224,33 +1323,31 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
-        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
         }
         if (voice) msg.voice = voice;
-        msg.rate = 0.82;
+        msg.rate = 0.88;
         window.speechSynthesis.speak(msg);
       }
     }
 
-    /* Speak Individual Letter with Child-Friendly Tone */
     function speakLetter(char) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(char.toUpperCase());
-        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
         }
         if (voice) msg.voice = voice;
-        msg.rate = 0.95;
+        msg.rate = 1.0;
         msg.pitch = 1.1;
         window.speechSynthesis.speak(msg);
       }
     }
 
-    /* Speak Spelled Letters, then pronounce whole word */
     function spellAndSayWord(word, onComplete) {
       if (!('speechSynthesis' in window)) {
         if (onComplete) onComplete();
@@ -1258,17 +1355,16 @@
       }
       window.speechSynthesis.cancel();
 
-      // Uppercase letters separated by commas forces distinct letter-by-letter spelling
-      const spelledLetters = word.toUpperCase().split('').join(', ');
-      const fullPhrase = `${spelledLetters}. ... ${word}!`;
+      const spelledLetters = word.toUpperCase().split('').join(' ');
+      const fullPhrase = `${spelledLetters} — ${word}!`;
 
       const msg = new SpeechSynthesisUtterance(fullPhrase);
-      let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+      let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
       if (!voice) {
         voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
       }
       if (voice) msg.voice = voice;
-      msg.rate = 0.82;
+      msg.rate = 1.1;
       msg.pitch = 1.05;
 
       let finished = false;
@@ -1282,25 +1378,23 @@
       msg.onend = done;
       msg.onerror = done;
 
-      // Fallback timer to guarantee progression on mobile Safari WebKit
-      const fallbackTime = (word.length * 800) + 3000;
+      const fallbackTime = (word.length * 350) + 1200;
       setTimeout(done, fallbackTime);
 
       window.speechSynthesis.speak(msg);
     }
 
-    /* Speak Memory Tip Auditory-First */
     function speakTip() {
       const tipText = currentWordObj().tip || "Listen carefully to each sound in the word!";
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(tipText);
-        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
         }
         if (voice) msg.voice = voice;
-        msg.rate = 0.84;
+        msg.rate = 0.92;
         msg.pitch = 1.05;
 
         const tipBtn = document.getElementById('tip-btn');
@@ -1315,13 +1409,13 @@
       }
     }
 
-    /* --- 6. GEMINI API TIP GENERATION --- */
+    /* --- 7. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const keyInput = document.getElementById('gemini-key');
       let key = keyInput.value.trim();
       
       if (key.includes("••") || key === "") {
-        key = appState.apiKey || "";
+        key = masterConfig.apiKey || "";
       }
       
       const status = document.getElementById('gemini-status');
@@ -1331,7 +1425,7 @@
         return;
       }
 
-      const rows = document.querySelectorAll('.word-row');
+      const rows = document.querySelectorAll('#master-word-inputs .word-row');
       const wordsToGenerate = [];
       rows.forEach(r => {
         const w = r.querySelector('.row-word-input').value.trim().toLowerCase();
@@ -1339,7 +1433,7 @@
       });
 
       if (wordsToGenerate.length === 0) {
-        alert("Please enter at least one word first.");
+        alert("Please enter at least one word in the Master list.");
         return;
       }
 
@@ -1379,8 +1473,8 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
           });
         });
 
-        appState.apiKey = key;
-        saveState(true);
+        masterConfig.apiKey = key;
+        saveMasterConfig(true);
         status.innerText = "✨ Tips generated successfully!";
       } catch (err) {
         console.error(err);
@@ -1388,7 +1482,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 7. GAME ENGINE & MODES --- */
+    /* --- 8. GAME MODES & ENGINE --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -1403,12 +1497,14 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     }
 
     function setupCurrentWord() {
-      if (!appState.words || appState.words.length === 0) return;
-      if (currentIndex >= appState.words.length) currentIndex = 0;
+      if (activeWords.length === 0) return;
+      if (currentIndex >= activeWords.length) currentIndex = 0;
 
       firstAttempt = true;
-      const word = currentWordObj().word.toLowerCase();
-      document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${appState.words.length}`;
+      const wordObj = currentWordObj();
+      const word = wordObj.word.toLowerCase();
+      const tag = wordObj.isCustom ? ' (Custom)' : '';
+      document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${activeWords.length}${tag}`;
       
       const tipBtn = document.getElementById('tip-btn');
       if (tipBtn) tipBtn.innerHTML = "💡 Hear Memory Tip";
@@ -1685,21 +1781,20 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 8. WIN & CELEBRATION (SPELL-OUT + WORD RECITATION) --- */
+    /* --- 9. WIN & CELEBRATION --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
-      appState.stars += firstAttempt ? 3 : 1;
-      saveState(true);
+      playerState.stars += firstAttempt ? 3 : 1;
+      savePlayerState(true);
 
       const target = currentWordObj().word;
 
-      // 600ms grace period for final chime & letter audio to finish
       setTimeout(() => {
         spellAndSayWord(target, () => {
           setTimeout(() => {
-            if (currentIndex < appState.words.length - 1) {
+            if (currentIndex < activeWords.length - 1) {
               currentIndex++;
               setupCurrentWord();
             } else {
@@ -1709,19 +1804,19 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
               currentIndex = 0;
               setupCurrentWord();
             }
-          }, 450);
+          }, 250);
         });
-      }, 600);
+      }, 250);
     }
 
     function recordAttempt(word, isFirstTry) {
       const key = word.toLowerCase();
-      if (!appState.stats[key]) {
-        appState.stats[key] = { attempts: 0, firstTryWins: 0 };
+      if (!playerState.stats[key]) {
+        playerState.stats[key] = { attempts: 0, firstTryWins: 0 };
       }
-      appState.stats[key].attempts++;
-      if (isFirstTry) appState.stats[key].firstTryWins++;
-      saveState(true);
+      playerState.stats[key].attempts++;
+      if (isFirstTry) playerState.stats[key].firstTryWins++;
+      savePlayerState(true);
     }
 
     function showCertificate() {
@@ -1732,13 +1827,13 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('certificate-modal').style.display = 'none';
     }
 
-    /* --- 9. STICKER ALBUM MODAL --- */
+    /* --- 10. STICKER ALBUM MODAL --- */
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
       grid.innerHTML = '';
 
       STICKER_CATALOG.forEach(sticker => {
-        const isUnlocked = appState.unlockedStickers.includes(sticker.id);
+        const isUnlocked = playerState.unlockedStickers.includes(sticker.id);
         const card = document.createElement('div');
         card.className = `sticker-card ${isUnlocked ? 'unlocked' : 'locked'}`;
 
@@ -1753,7 +1848,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
             <div class="sticker-badge">✨ Collected!</div>
           `;
         } else {
-          const canAfford = appState.stars >= sticker.cost;
+          const canAfford = playerState.stars >= sticker.cost;
           card.innerHTML = `
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
@@ -1779,21 +1874,21 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         alert(`You need ${cost} stars for this sticker. Keep practicing!`);
         return;
       }
-      appState.stars -= cost;
-      appState.unlockedStickers.push(id);
-      saveState(true);
+      playerState.stars -= cost;
+      playerState.unlockedStickers.push(id);
+      savePlayerState(true);
       playFanfareSound();
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
       openStickersModal();
     }
 
-    /* --- 10. PARENT DASHBOARD & SAFE API KEY LOGIC --- */
+    /* --- 11. PARENT DASHBOARD (MASTER + CUSTOM WORDS) --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
 
       const keyInput = document.getElementById('gemini-key');
-      if (appState.apiKey && appState.apiKey.trim() !== '') {
+      if (masterConfig.apiKey && masterConfig.apiKey.trim() !== '') {
         keyInput.value = "••••••••••••••••••••••••••••••••";
         keyInput.dataset.hasKey = "true";
       } else {
@@ -1803,24 +1898,35 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       populateVoiceList();
 
-      const container = document.getElementById('word-inputs-container');
-      container.innerHTML = '';
-      appState.words.forEach(item => {
-        addWordRow(item.word, item.tip);
+      // Render Master School Words
+      const masterContainer = document.getElementById('master-word-inputs');
+      masterContainer.innerHTML = '';
+      (masterConfig.words || []).forEach(item => {
+        addMasterWordRow(item.word, item.tip);
       });
-      updateWordsCountLabel();
+      updateCountLabels();
 
+      // Render Custom Player Words
+      const customContainer = document.getElementById('custom-word-inputs');
+      customContainer.innerHTML = '';
+      (playerState.customWords || []).forEach(item => {
+        addCustomWordRow(item.word, item.tip);
+      });
+      updateCountLabels();
+
+      // Render Progress Table
       const tbody = document.getElementById('progress-table-body');
       tbody.innerHTML = '';
-      appState.words.forEach(w => {
+      activeWords.forEach(w => {
         const wordKey = w.word.toLowerCase();
-        const stat = appState.stats[wordKey] || { attempts: 0, firstTryWins: 0 };
+        const stat = playerState.stats[wordKey] || { attempts: 0, firstTryWins: 0 };
         const pct = stat.attempts > 0 ? Math.round((stat.firstTryWins / stat.attempts) * 100) : 0;
         const status = pct >= 80 ? "⭐ Mastered" : (stat.attempts > 0 ? "Practicing" : "New");
         
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${wordKey}</strong></td>
+          <td>${w.isCustom ? 'Custom' : 'Master'}</td>
           <td>${stat.attempts}</td>
           <td>${pct}%</td>
           <td>${status}</td>
@@ -1835,30 +1941,37 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('parent-modal').style.display = 'none';
     }
 
-    function addWordRow(wordVal = '', tipVal = '') {
-      const container = document.getElementById('word-inputs-container');
+    function addMasterWordRow(wordVal = '', tipVal = '') {
+      const container = document.getElementById('master-word-inputs');
       const row = document.createElement('div');
       row.className = 'word-row';
       row.innerHTML = `
-        <input type="text" class="row-word-input" value="${wordVal.toLowerCase()}" placeholder="word">
+        <input type="text" class="row-word-input" value="${wordVal.toLowerCase()}" placeholder="school word">
         <input type="text" class="row-tip-input" value="${tipVal}" placeholder="Memory tip / phonics">
-        <button class="btn-row-del" onclick="this.parentElement.remove(); updateWordsCountLabel();">✕</button>
+        <button class="btn-row-del" onclick="this.parentElement.remove(); updateCountLabels();">✕</button>
       `;
       container.appendChild(row);
-      updateWordsCountLabel();
+      updateCountLabels();
     }
 
-    function clearAllWords() {
-      if (confirm("Are you sure you want to clear all words?")) {
-        document.getElementById('word-inputs-container').innerHTML = '';
-        updateWordsCountLabel();
-      }
+    function addCustomWordRow(wordVal = '', tipVal = '') {
+      const container = document.getElementById('custom-word-inputs');
+      const row = document.createElement('div');
+      row.className = 'word-row';
+      row.innerHTML = `
+        <input type="text" class="row-word-input" value="${wordVal.toLowerCase()}" placeholder="custom word">
+        <input type="text" class="row-tip-input" value="${tipVal}" placeholder="Memory tip / phonics">
+        <button class="btn-row-del" onclick="this.parentElement.remove(); updateCountLabels();">✕</button>
+      `;
+      container.appendChild(row);
+      updateCountLabels();
     }
 
-    function updateWordsCountLabel() {
-      const count = document.querySelectorAll('.word-row').length;
-      const lbl = document.getElementById('words-count-label');
-      if (lbl) lbl.innerText = count;
+    function updateCountLabels() {
+      const mCount = document.querySelectorAll('#master-word-inputs .word-row').length;
+      const cCount = document.querySelectorAll('#custom-word-inputs .word-row').length;
+      document.getElementById('master-count-label').innerText = mCount;
+      document.getElementById('custom-count-label').innerText = cCount;
     }
 
     async function saveParentSettings() {
@@ -1866,29 +1979,61 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       const rawVal = keyInput.value.trim();
 
       if (rawVal !== "" && !rawVal.includes("••")) {
-        appState.apiKey = rawVal;
+        masterConfig.apiKey = rawVal;
       }
 
       const voiceEl = document.getElementById('voice-select');
       if (voiceEl && voiceEl.value) {
-        appState.preferredVoice = voiceEl.value;
+        playerState.preferredVoice = voiceEl.value;
       }
 
-      const rows = document.querySelectorAll('.word-row');
-      const newWords = [];
-      rows.forEach(r => {
+      // Collect Master List
+      const masterRows = document.querySelectorAll('#master-word-inputs .word-row');
+      const newMaster = [];
+      masterRows.forEach(r => {
         const w = r.querySelector('.row-word-input').value.trim().toLowerCase();
         const t = r.querySelector('.row-tip-input').value.trim();
-        if (w) newWords.push({ word: w, tip: t });
+        if (w) newMaster.push({ word: w, tip: t });
       });
+      masterConfig.words = newMaster;
 
-      if (newWords.length > 0) {
-        appState.words = newWords;
-        currentIndex = 0;
-        await saveState(true);
-        setupCurrentWord();
-      }
+      // Collect Custom List
+      const customRows = document.querySelectorAll('#custom-word-inputs .word-row');
+      const newCustom = [];
+      customRows.forEach(r => {
+        const w = r.querySelector('.row-word-input').value.trim().toLowerCase();
+        const t = r.querySelector('.row-tip-input').value.trim();
+        if (w) newCustom.push({ word: w, tip: t });
+      });
+      playerState.customWords = newCustom;
+
+      await saveMasterConfig(true);
+      await savePlayerState(true);
+
+      computeActiveWords();
+      currentIndex = 0;
+      setupCurrentWord();
       closeParentModal();
+    }
+
+    function generateFriendLink() {
+      const friendInput = document.getElementById('friend-name-input');
+      const status = document.getElementById('friend-link-status');
+      const name = friendInput.value.trim();
+
+      if (!name) {
+        alert("Please enter a friend's first name.");
+        return;
+      }
+
+      const cleanName = encodeURIComponent(name);
+      const url = `${window.location.origin}${window.location.pathname}?player=${cleanName}`;
+
+      navigator.clipboard.writeText(url).then(() => {
+        status.innerText = `✅ Copied link for ${name}! Send it to their parent.`;
+      }).catch(() => {
+        prompt("Copy this link:", url);
+      });
     }
 
     // Window bindings
@@ -1902,9 +2047,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.openParentModal = openParentModal;
     window.closeParentModal = closeParentModal;
     window.saveParentSettings = saveParentSettings;
-    window.addWordRow = addWordRow;
-    window.clearAllWords = clearAllWords;
-    window.updateWordsCountLabel = updateWordsCountLabel;
+    window.addMasterWordRow = addMasterWordRow;
+    window.addCustomWordRow = addCustomWordRow;
+    window.updateCountLabels = updateCountLabels;
     window.generateAITips = generateAITips;
     window.onVoiceChange = onVoiceChange;
     window.closeCertificate = closeCertificate;
@@ -1915,6 +2060,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.initTraceCanvas = initTraceCanvas;
     window.completeTrace = completeTrace;
     window.checkTyping = checkTyping;
+    window.generateFriendLink = generateFriendLink;
 
     // Boot
     renderUIStats();
