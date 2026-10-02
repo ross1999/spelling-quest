@@ -745,7 +745,7 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: Tap Tiles (10-12 Tiles with Smart Distractors) -->
+    <!-- MODE 1: Tap Tiles (10-12 Tiles with Smart Distractors & Letter Audio) -->
     <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
@@ -844,7 +844,6 @@
         <select id="voice-select" onchange="onVoiceChange()"></select>
 
         <label style="margin-top: 10px;">Gemini API Key (Syncs to all devices via Cloud):</label>
-        <!-- Protected Text Field: Anti-Autofill, Anti-Bitwarden, Anti-Copy -->
         <input 
           type="text" 
           id="gemini-key" 
@@ -870,7 +869,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h3>Word List (<span id="words-count-label">0</span> words)</h3>
           <div class="list-actions-bar" style="margin: 0;">
-            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑️️ Clear All</button>
+            <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearAllWords()">🗑 Clear All</button>
             <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addWordRow('', '')">➕ Add Word</button>
           </div>
         </div>
@@ -1070,7 +1069,6 @@
     let db = null;
     let docRef = null;
 
-    // Helper: Guarantee clean payload without undefined values for Firestore
     function cleanPayload(state) {
       return {
         apiKey: state.apiKey || "",
@@ -1238,12 +1236,27 @@
       }
     }
 
+    /* Speak Individual Letter with Child-Friendly Tone */
+    function speakLetter(char) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(char.toLowerCase());
+        let voice = availableVoices.find(v => v.name === appState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        msg.rate = 0.95;
+        msg.pitch = 1.1;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
     /* --- 6. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const keyInput = document.getElementById('gemini-key');
       let key = keyInput.value.trim();
       
-      // If the field shows dummy masked dots, use the securely saved in-memory key
       if (key.includes("••") || key === "") {
         key = appState.apiKey || "";
       }
@@ -1404,6 +1417,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function handleTileClick(char, btn, targetWord) {
       const nextIndex = currentTileInput.length;
       if (char === targetWord[nextIndex]) {
+        speakLetter(char);
         playTapChime();
         currentTileInput.push(char);
         const slot = document.getElementById(`slot-${nextIndex}`);
@@ -1715,7 +1729,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       const keyInput = document.getElementById('gemini-key');
       if (appState.apiKey && appState.apiKey.trim() !== '') {
-        // Display dummy masked dots so the real key is never exposed in the DOM or clipboard
         keyInput.value = "••••••••••••••••••••••••••••••••";
         keyInput.dataset.hasKey = "true";
       } else {
@@ -1787,7 +1800,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       const keyInput = document.getElementById('gemini-key');
       const rawVal = keyInput.value.trim();
 
-      // Only overwrite the secret if a fresh key was actually pasted/typed
       if (rawVal !== "" && !rawVal.includes("••")) {
         appState.apiKey = rawVal;
       }
@@ -1817,6 +1829,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     // Window bindings
     window.switchMode = switchMode;
     window.speakCurrentWord = speakCurrentWord;
+    window.speakLetter = speakLetter;
     window.toggleTip = toggleTip;
     window.openStickersModal = openStickersModal;
     window.closeStickersModal = closeStickersModal;
