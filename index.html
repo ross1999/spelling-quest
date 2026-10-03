@@ -767,7 +767,7 @@
     <!-- MODE 3: Look, Cover, Write, Check (Theatre Curtain) -->
     <div id="view-lcwc" style="display: none; width: 100%; flex-direction: column; align-items: center;">
       <div class="lcwc-steps-bar">
-        <div class="lcwc-step active" id="step-1">1. Look 👁️</div>
+        <div class="lcwc-step active" id="step-1">1. Look 👁️️</div>
         <div class="lcwc-step" id="step-2">2. Cover 🙈</div>
         <div class="lcwc-step" id="step-3">3. Write ✍️</div>
         <div class="lcwc-step" id="step-4">4. Check 🔍</div>
@@ -951,7 +951,6 @@
     const MASTER_STORAGE_KEY = 'spelling_master_config';
     const PLAYER_STORAGE_KEY = `spelling_player_${playerId}`;
 
-    // Apply names to page
     document.title = `${currentPlayer}'s Spelling Quest`;
     document.getElementById('player-name-label').innerText = currentPlayer;
     document.getElementById('certificate-player-name').innerText = currentPlayer;
@@ -1114,7 +1113,6 @@
     if (typeof playerState.streak !== 'number') playerState.streak = 1;
     if (!Array.isArray(playerState.customWords)) playerState.customWords = [];
 
-    // Combined active practice list
     let activeWords = [];
     function computeActiveWords() {
       const masterList = (masterConfig.words || []).map(w => ({ ...w, isCustom: false }));
@@ -1200,7 +1198,6 @@
         masterDocRef = doc(db, "spelling_data", "master_config");
         playerDocRef = doc(db, "spelling_data", `profile_${playerId}`);
 
-        // Listener 1: Master school words & Gemini key
         onSnapshot(masterDocRef, (snap) => {
           if (snap.exists()) {
             const data = snap.data();
@@ -1218,7 +1215,6 @@
           updateCloudStatusBadge(false);
         });
 
-        // Listener 2: Player specific progress & custom words
         onSnapshot(playerDocRef, (snap) => {
           if (snap.exists()) {
             const data = snap.data();
@@ -1348,6 +1344,7 @@
       }
     }
 
+    /* Deliberate, calm classroom spelling pace (0.85 rate) */
     function spellAndSayWord(word, onComplete) {
       if (!('speechSynthesis' in window)) {
         if (onComplete) onComplete();
@@ -1364,7 +1361,7 @@
         voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
       }
       if (voice) msg.voice = voice;
-      msg.rate = 1.1;
+      msg.rate = 0.85;
       msg.pitch = 1.05;
 
       let finished = false;
@@ -1378,7 +1375,7 @@
       msg.onend = done;
       msg.onerror = done;
 
-      const fallbackTime = (word.length * 350) + 1200;
+      const fallbackTime = (word.length * 550) + 1800;
       setTimeout(done, fallbackTime);
 
       window.speechSynthesis.speak(msg);
@@ -1394,7 +1391,7 @@
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
         }
         if (voice) msg.voice = voice;
-        msg.rate = 0.92;
+        msg.rate = 0.90;
         msg.pitch = 1.05;
 
         const tipBtn = document.getElementById('tip-btn');
@@ -1409,7 +1406,7 @@
       }
     }
 
-    /* --- 7. GEMINI API TIP GENERATION --- */
+    /* --- 7. GEMINI API TIP GENERATION (SHARED MASTER) --- */
     async function generateAITips() {
       const keyInput = document.getElementById('gemini-key');
       let key = keyInput.value.trim();
@@ -1804,9 +1801,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
               currentIndex = 0;
               setupCurrentWord();
             }
-          }, 250);
+          }, 300);
         });
-      }, 250);
+      }, 300);
     }
 
     function recordAttempt(word, isFirstTry) {
@@ -1898,7 +1895,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
 
       populateVoiceList();
 
-      // Render Master School Words
       const masterContainer = document.getElementById('master-word-inputs');
       masterContainer.innerHTML = '';
       (masterConfig.words || []).forEach(item => {
@@ -1906,7 +1902,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       });
       updateCountLabels();
 
-      // Render Custom Player Words
       const customContainer = document.getElementById('custom-word-inputs');
       customContainer.innerHTML = '';
       (playerState.customWords || []).forEach(item => {
@@ -1914,7 +1909,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       });
       updateCountLabels();
 
-      // Render Progress Table
       const tbody = document.getElementById('progress-table-body');
       tbody.innerHTML = '';
       activeWords.forEach(w => {
@@ -1987,7 +1981,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         playerState.preferredVoice = voiceEl.value;
       }
 
-      // Collect Master List
       const masterRows = document.querySelectorAll('#master-word-inputs .word-row');
       const newMaster = [];
       masterRows.forEach(r => {
@@ -1997,7 +1990,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       });
       masterConfig.words = newMaster;
 
-      // Collect Custom List
       const customRows = document.querySelectorAll('#custom-word-inputs .word-row');
       const newCustom = [];
       customRows.forEach(r => {
