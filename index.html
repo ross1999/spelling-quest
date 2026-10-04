@@ -406,7 +406,7 @@
     .cmp-letter.match { background: #DCFCE7; color: #15803D; border: 2px solid #86EFAC; }
     .cmp-letter.mismatch { background: #FEE2E2; color: #B91C1C; border: 2px solid #FCA5A5; }
 
-    /* In-App Child-Friendly Virtual Keyboard */
+    /* In-App Virtual Keyboard */
     .virtual-keyboard {
       display: flex;
       flex-direction: column;
@@ -452,7 +452,7 @@
       background: #E2E8F0;
     }
 
-    /* Standard Type Mode Input */
+    /* Direct Typing Input */
     #type-input {
       font-size: 2rem;
       letter-spacing: 4px;
@@ -488,7 +488,7 @@
       background: #E0E7FF;
     }
 
-    /* Robust Scrollable Modals */
+    /* Modals */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -574,7 +574,7 @@
       margin-bottom: 10px;
     }
 
-    /* Sticker Album Grid */
+    /* Sticker Grid */
     .sticker-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
@@ -595,7 +595,6 @@
       transition: all 0.2s ease;
     }
 
-    /* Sparkly Holographic Animation */
     @keyframes sparkleHolo {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -631,14 +630,12 @@
     }
     .sticker-card.unlocked:hover { transform: translateY(-2px); }
 
-    /* Affordable (Ready to Buy) State */
     .sticker-card.affordable {
       border: 2px solid var(--success);
       background: #F0FDF4;
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
     }
 
-    /* Unaffordable State */
     .sticker-card.unaffordable {
       opacity: 0.75;
       background: #F8FAFC;
@@ -928,13 +925,11 @@
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
       </div>
 
-      <!-- Wallet & Counter Banner -->
       <div class="sticker-wallet-banner">
         <div>⭐ My Balance: <strong id="modal-star-balance" style="font-size: 1.15rem;">0</strong> Stars</div>
         <div>🏆 Collected: <strong id="modal-collected-count">1/24</strong></div>
       </div>
 
-      <!-- Filter Tabs for Instant Clarity -->
       <div class="sticker-filter-bar">
         <button class="sticker-filter-tab active" onclick="setStickerFilter('all', this)">All Stickers</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('affordable', this)">🎁 Ready to Unlock (<span id="filter-afford-count">0</span>)</button>
@@ -1025,7 +1020,7 @@
       <div class="word-list-manager">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <div>
-            <h3>✏️ Custom Words for <span id="custom-player-title">Player</span> (<span id="custom-count-label">0</span>)</h3>
+            <h3>✏️️ Custom Words for <span id="custom-player-title">Player</span> (<span id="custom-count-label">0</span>)</h3>
             <p style="font-size: 0.8rem; color: #64748B;">Only appears for this child</p>
           </div>
           <button class="action-btn btn-done" style="padding: 6px 12px; font-size: 0.85rem;" onclick="addCustomWordRow('', '')">➕ Add Custom Word</button>
@@ -1303,7 +1298,7 @@
         playerState.streak = 1;
         playerState.lastPlayedDate = today;
       } else if (playerState.lastPlayedDate === today) {
-        // Already practiced today, keep streak active
+        // Practiced today
       } else {
         const yDate = new Date();
         yDate.setDate(yDate.getDate() - 1);
@@ -1312,7 +1307,6 @@
         if (playerState.lastPlayedDate === yesterday) {
           playerState.streak = (Number(playerState.streak) || 0) + 1;
         } else {
-          // Missed at least one calendar day, restart streak
           playerState.streak = 1;
         }
         playerState.lastPlayedDate = today;
@@ -1370,7 +1364,7 @@
       }
     }
 
-    /* --- 6. CLOUD INITIALIZATION (DUAL LISTENERS) --- */
+    /* --- 6. CLOUD INITIALIZATION --- */
     function initFastCloud() {
       try {
         const app = initializeApp(firebaseConfig);
@@ -1526,6 +1520,7 @@
       }
     }
 
+    /* Calibrated letter-by-letter spelling with comma pauses */
     function spellAndSayWord(word, onComplete) {
       if (!('speechSynthesis' in window)) {
         if (onComplete) onComplete();
@@ -1533,8 +1528,9 @@
       }
       window.speechSynthesis.cancel();
 
-      const spelledLetters = word.toUpperCase().split('').join(' ');
-      const fullPhrase = `${spelledLetters} — ${word}!`;
+      // Commas enforce clean spacing between letters so the engine doesn't rush
+      const spelledLetters = word.toUpperCase().split('').join(', ');
+      const fullPhrase = `${spelledLetters} ... ${word}!`;
 
       const msg = new SpeechSynthesisUtterance(fullPhrase);
       let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
@@ -1542,7 +1538,7 @@
         voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
       }
       if (voice) msg.voice = voice;
-      msg.rate = 0.85;
+      msg.rate = 0.88;
       msg.pitch = 1.05;
 
       let finished = false;
@@ -1556,7 +1552,7 @@
       msg.onend = done;
       msg.onerror = done;
 
-      const fallbackTime = (word.length * 550) + 1800;
+      const fallbackTime = (word.length * 600) + 2000;
       setTimeout(done, fallbackTime);
 
       window.speechSynthesis.speak(msg);
@@ -1965,7 +1961,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
       
-      // Award stars & check continuous day streak
       playerState.stars += firstAttempt ? 3 : 1;
       checkAndIncrementStreak();
       savePlayerState(true);
@@ -1985,9 +1980,9 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
               currentIndex = 0;
               setupCurrentWord();
             }
-          }, 300);
+          }, 350);
         });
-      }, 300);
+      }, 350);
     }
 
     function recordAttempt(word, isFirstTry) {
@@ -2034,7 +2029,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         const isUnlocked = playerState.unlockedStickers.includes(sticker.id);
         const canAfford = playerState.stars >= sticker.cost;
 
-        // Apply tab filters
         if (currentStickerFilter === 'unlocked' && !isUnlocked) return;
         if (currentStickerFilter === 'affordable' && (isUnlocked || !canAfford)) return;
         if (currentStickerFilter === 'sparkly' && !sticker.sparkly) return;
@@ -2052,7 +2046,6 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
         }
         card.className = cardClasses.join(' ');
 
-        // Sparkly pill tag
         let sparklyTag = sticker.sparkly ? `<div class="sparkle-tag">✨ Sparkly</div>` : '';
 
         if (isUnlocked) {
@@ -2117,7 +2110,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       openStickersModal();
     }
 
-    /* --- 12. PARENT DASHBOARD (MASTER + CUSTOM WORDS) --- */
+    /* --- 12. PARENT DASHBOARD --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
