@@ -517,7 +517,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .close-btn {
@@ -533,24 +533,94 @@
       justify-content: center;
     }
 
+    /* Sticker Album Filters & Header */
+    .sticker-filter-bar {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0 16px 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .sticker-filter-tab {
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748B;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .sticker-filter-tab.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+
+    .sticker-wallet-banner {
+      background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+      border: 1.5px solid #FDE68A;
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #92400E;
+      margin-bottom: 10px;
+    }
+
     /* Sticker Album Grid */
     .sticker-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 8px;
     }
 
     .sticker-card {
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
       border-radius: 16px;
-      padding: 14px 10px;
+      padding: 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      position: relative;
       transition: all 0.2s ease;
+    }
+
+    /* Sparkly Holographic Animation */
+    @keyframes sparkleHolo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .sticker-card.is-sparkly {
+      background: linear-gradient(135deg, #FFF1F2, #F5F3FF, #E0F2FE, #FEF9C3);
+      background-size: 300% 300%;
+      animation: sparkleHolo 5s ease infinite;
+      border: 2px solid #F59E0B;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+    }
+
+    .sparkle-tag {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 0.7rem;
+      background: #FEF3C7;
+      color: #B45309;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid #FDE68A;
     }
 
     .sticker-card.unlocked {
@@ -561,41 +631,87 @@
     }
     .sticker-card.unlocked:hover { transform: translateY(-2px); }
 
+    /* Affordable (Ready to Buy) State */
+    .sticker-card.affordable {
+      border: 2px solid var(--success);
+      background: #F0FDF4;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+    }
+
+    /* Unaffordable State */
+    .sticker-card.unaffordable {
+      opacity: 0.75;
+      background: #F8FAFC;
+    }
+
     .sticker-card .icon {
       font-size: 2.8rem;
       margin-bottom: 4px;
+      transition: transform 0.2s ease;
     }
+    .sticker-card:hover .icon { transform: scale(1.1); }
 
-    .sticker-card.locked .icon {
-      filter: grayscale(100%);
-      opacity: 0.35;
+    .sticker-card.locked.unaffordable .icon {
+      filter: grayscale(80%);
     }
 
     .sticker-name {
       font-weight: 600;
       font-size: 0.85rem;
       margin-bottom: 6px;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .sticker-btn {
-      padding: 5px 12px;
+      width: 100%;
+      padding: 6px 10px;
       border-radius: 999px;
       font-size: 0.8rem;
       font-weight: 600;
       border: none;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
 
-    .sticker-btn.buy {
-      background: var(--accent);
+    .sticker-btn.buy-ready {
+      background: linear-gradient(135deg, #10B981, #059669);
       color: #FFF;
-      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+      animation: pulseBtn 2s infinite ease-in-out;
     }
 
-    .sticker-btn.need-more {
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .sticker-btn.need-more-box {
       background: #E2E8F0;
-      color: var(--text-muted);
+      color: #475569;
       cursor: not-allowed;
+      flex-direction: column;
+      gap: 2px;
+      padding: 4px 8px;
+    }
+
+    .mini-progress-track {
+      width: 100%;
+      height: 5px;
+      background: #CBD5E1;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    .mini-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
     }
 
     .sticker-badge {
@@ -726,10 +842,10 @@
     <div class="badge-bar">
       <div class="badge player-badge" id="player-badge">👤 <span id="player-name-label">Imogen</span></div>
       <div class="badge" title="Stars collected">⭐ <span id="star-count">0</span></div>
-      <div class="badge" title="Daily streak">🔥 <span id="streak-count">1</span></div>
+      <div class="badge" title="Daily streak" id="streak-badge">🔥 <span id="streak-count">1</span> Day Streak</div>
       <div class="badge cloud-badge connecting" id="cloud-badge" title="Cloud Sync">☁️ Connecting...</div>
       <button class="sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
-        📖 Sticker Book (<span id="sticker-badge-count">1/12</span>)
+        📖 Sticker Book (<span id="sticker-badge-count">1/24</span>)
       </button>
     </div>
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
@@ -749,7 +865,7 @@
       🔊 Hear Word
     </button>
 
-    <!-- MODE 1: Tap Tiles (10-12 Tiles with Smart Distractors & Letter Audio) -->
+    <!-- MODE 1: Tap Tiles -->
     <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="slots-container" id="tiles-slots"></div>
       <div class="tile-grid" id="letters-pool"></div>
@@ -764,10 +880,10 @@
       </div>
     </div>
 
-    <!-- MODE 3: Look, Cover, Write, Check (Theatre Curtain) -->
+    <!-- MODE 3: Look, Cover, Write, Check -->
     <div id="view-lcwc" style="display: none; width: 100%; flex-direction: column; align-items: center;">
       <div class="lcwc-steps-bar">
-        <div class="lcwc-step active" id="step-1">1. Look 👁️️</div>
+        <div class="lcwc-step active" id="step-1">1. Look 👁</div>
         <div class="lcwc-step" id="step-2">2. Cover 🙈</div>
         <div class="lcwc-step" id="step-3">3. Write ✍️</div>
         <div class="lcwc-step" id="step-4">4. Check 🔍</div>
@@ -789,7 +905,6 @@
         <button class="action-btn btn-done" id="lcwc-check-btn" onclick="lcwcCheck()">Check Spelling</button>
       </div>
 
-      <!-- Child-friendly Virtual Keyboard -->
       <div class="virtual-keyboard" id="lcwc-keyboard"></div>
     </div>
 
@@ -799,7 +914,6 @@
       <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
     </div>
 
-    <!-- Auditory Memory Tip Button -->
     <button class="tip-toggle" id="tip-btn" onclick="speakTip()">💡 Hear Memory Tip</button>
   </main>
 
@@ -809,10 +923,25 @@
       <div class="modal-header">
         <div>
           <h2 id="album-title">Sticker Album</h2>
-          <p style="font-size: 0.9rem; color: #64748B;">Spend your stars to unlock awesome stickers!</p>
+          <p style="font-size: 0.9rem; color: #64748B;">Unlock new characters & sparkly specials with your stars!</p>
         </div>
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
       </div>
+
+      <!-- Wallet & Counter Banner -->
+      <div class="sticker-wallet-banner">
+        <div>⭐ My Balance: <strong id="modal-star-balance" style="font-size: 1.15rem;">0</strong> Stars</div>
+        <div>🏆 Collected: <strong id="modal-collected-count">1/24</strong></div>
+      </div>
+
+      <!-- Filter Tabs for Instant Clarity -->
+      <div class="sticker-filter-bar">
+        <button class="sticker-filter-tab active" onclick="setStickerFilter('all', this)">All Stickers</button>
+        <button class="sticker-filter-tab" onclick="setStickerFilter('affordable', this)">🎁 Ready to Unlock (<span id="filter-afford-count">0</span>)</button>
+        <button class="sticker-filter-tab" onclick="setStickerFilter('sparkly', this)">✨ Sparkly Only</button>
+        <button class="sticker-filter-tab" onclick="setStickerFilter('unlocked', this)">📖 Collected</button>
+      </div>
+
       <div class="sticker-grid" id="sticker-grid"></div>
     </div>
   </div>
@@ -843,7 +972,6 @@
         <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
 
-      <!-- Invite Friend Link Generator -->
       <div class="config-section" style="background: #F0FDF4; border-color: #BBF7D0;">
         <label style="color: #166534;">🔗 Invite a Friend to Test:</label>
         <div style="display: flex; gap: 8px;">
@@ -879,7 +1007,7 @@
         </div>
       </div>
 
-      <!-- 1. MASTER SCHOOL WORDS (SHARED) -->
+      <!-- Master School Words -->
       <div class="word-list-manager">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <div>
@@ -893,7 +1021,7 @@
 
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #E2E8F0;">
 
-      <!-- 2. CUSTOM WORDS FOR CURRENT PLAYER ONLY -->
+      <!-- Custom Words for Player -->
       <div class="word-list-manager">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <div>
@@ -1064,20 +1192,39 @@
       } catch(e) {}
     }
 
-    /* --- 3. STICKER CATALOG --- */
+    /* --- 3. EXPANDED STICKER CATALOG (24 STICKERS + SPARKLY) --- */
     const STICKER_CATALOG = [
-      { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 5 },
-      { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 5 },
-      { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5 },
-      { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5 },
-      { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10 },
-      { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 10 },
-      { id: "fairy", icon: "🧚‍♀", name: "Garden Fairy", cost: 10 },
-      { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 10 },
-      { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 15 },
-      { id: "panda", icon: "🐼", name: "Bamboo Panda", cost: 15 },
-      { id: "robot", icon: "🤖", name: "Beep Boop", cost: 15 },
-      { id: "crown", icon: "👑", name: "Spelling Queen", cost: 20 }
+      // Standard Collection (5 Stars)
+      { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5, sparkly: false },
+      { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5, sparkly: false },
+      { id: "bunny", icon: "🐰", name: "Bouncy Bunny", cost: 5, sparkly: false },
+      { id: "fox", icon: "🦊", name: "Clever Fox", cost: 5, sparkly: false },
+      { id: "icecream", icon: "🍦", name: "Sweet Swirl", cost: 5, sparkly: false },
+      { id: "lollipop", icon: "🍭", name: "Sugar Pop", cost: 5, sparkly: false },
+
+      // Adventurer Collection (10 Stars)
+      { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 10, sparkly: false },
+      { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10, sparkly: false },
+      { id: "dolphin", icon: "🐬", name: "Ocean Dolphin", cost: 10, sparkly: false },
+      { id: "panda", icon: "🐼", name: "Bamboo Panda", cost: 10, sparkly: false },
+      { id: "koala", icon: "🐨", name: "Cuddle Koala", cost: 10, sparkly: false },
+      { id: "penguin", icon: "🐧", name: "Ice Penguin", cost: 10, sparkly: false },
+      { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 10, sparkly: false },
+      { id: "robot", icon: "🤖", name: "Beep Boop", cost: 10, sparkly: false },
+
+      // ✨ Sparkly Magic Tier (15 Stars)
+      { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 15, sparkly: true },
+      { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 15, sparkly: true },
+      { id: "fairy", icon: "🧚‍♀️", name: "Garden Fairy", cost: 15, sparkly: true },
+      { id: "star_burst", icon: "⭐", name: "Golden Starburst", cost: 15, sparkly: true },
+
+      // ✨ Sparkly Mythical Tier (20 - 25 Stars)
+      { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 20, sparkly: true },
+      { id: "mermaid", icon: "🧜‍♀️", name: "Secret Mermaid", cost: 20, sparkly: true },
+      { id: "wand", icon: "🪄", name: "Cosmic Wand", cost: 20, sparkly: true },
+      { id: "saturn", icon: "🪐", name: "Glitter Planet", cost: 20, sparkly: true },
+      { id: "diamond", icon: "💎", name: "Sky Diamond", cost: 25, sparkly: true },
+      { id: "crown", icon: "👑", name: "Superstar Queen", cost: 30, sparkly: true }
     ];
 
     /* --- 4. DATA MODEL: MASTER + INDIVIDUAL PLAYER --- */
@@ -1103,15 +1250,19 @@
       stats: {},
       stars: 0,
       streak: 1,
-      unlockedStickers: ["unicorn"]
+      lastPlayedDate: "",
+      unlockedStickers: ["puppy"]
     };
 
     let masterConfig = JSON.parse(localStorage.getItem(MASTER_STORAGE_KEY)) || defaultMaster;
     let playerState = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || defaultPlayerState;
-    if (!Array.isArray(playerState.unlockedStickers)) playerState.unlockedStickers = ["unicorn"];
+    if (!Array.isArray(playerState.unlockedStickers)) playerState.unlockedStickers = ["puppy"];
     if (typeof playerState.stars !== 'number') playerState.stars = 0;
     if (typeof playerState.streak !== 'number') playerState.streak = 1;
     if (!Array.isArray(playerState.customWords)) playerState.customWords = [];
+    if (typeof playerState.lastPlayedDate !== 'string') playerState.lastPlayedDate = "";
+
+    let currentStickerFilter = 'all';
 
     let activeWords = [];
     function computeActiveWords() {
@@ -1143,10 +1294,40 @@
     let masterDocRef = null;
     let playerDocRef = null;
 
+    /* --- 5. DAILY STREAK EVALUATION --- */
+    function checkAndIncrementStreak() {
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      
+      if (!playerState.lastPlayedDate) {
+        playerState.streak = 1;
+        playerState.lastPlayedDate = today;
+      } else if (playerState.lastPlayedDate === today) {
+        // Already practiced today, keep streak active
+      } else {
+        const yDate = new Date();
+        yDate.setDate(yDate.getDate() - 1);
+        const yesterday = `${yDate.getFullYear()}-${String(yDate.getMonth() + 1).padStart(2, '0')}-${String(yDate.getDate()).padStart(2, '0')}`;
+
+        if (playerState.lastPlayedDate === yesterday) {
+          playerState.streak = (Number(playerState.streak) || 0) + 1;
+        } else {
+          // Missed at least one calendar day, restart streak
+          playerState.streak = 1;
+        }
+        playerState.lastPlayedDate = today;
+      }
+    }
+
     function renderUIStats() {
       document.getElementById('star-count').innerText = playerState.stars;
-      document.getElementById('streak-count').innerText = playerState.streak;
+      document.getElementById('streak-count').innerText = playerState.streak || 1;
       document.getElementById('sticker-badge-count').innerText = `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
+      
+      const modalBalance = document.getElementById('modal-star-balance');
+      if (modalBalance) modalBalance.innerText = playerState.stars;
+      const modalCol = document.getElementById('modal-collected-count');
+      if (modalCol) modalCol.innerText = `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
     }
 
     async function savePlayerState(pushToCloud = true) {
@@ -1161,7 +1342,8 @@
             stats: playerState.stats || {},
             stars: Number(playerState.stars) || 0,
             streak: Number(playerState.streak) || 1,
-            unlockedStickers: Array.isArray(playerState.unlockedStickers) ? playerState.unlockedStickers : ["unicorn"],
+            lastPlayedDate: playerState.lastPlayedDate || "",
+            unlockedStickers: Array.isArray(playerState.unlockedStickers) ? playerState.unlockedStickers : ["puppy"],
             lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
           };
           await setDoc(playerDocRef, payload, { merge: true });
@@ -1188,7 +1370,7 @@
       }
     }
 
-    /* --- 5. CLOUD INITIALIZATION (DUAL LISTENERS) --- */
+    /* --- 6. CLOUD INITIALIZATION (DUAL LISTENERS) --- */
     function initFastCloud() {
       try {
         const app = initializeApp(firebaseConfig);
@@ -1255,7 +1437,7 @@
       }
     }
 
-    /* --- 6. SPEECH SYNTHESIS ENGINE --- */
+    /* --- 7. SPEECH SYNTHESIS ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -1344,7 +1526,6 @@
       }
     }
 
-    /* Deliberate, calm classroom spelling pace (0.85 rate) */
     function spellAndSayWord(word, onComplete) {
       if (!('speechSynthesis' in window)) {
         if (onComplete) onComplete();
@@ -1406,7 +1587,7 @@
       }
     }
 
-    /* --- 7. GEMINI API TIP GENERATION (SHARED MASTER) --- */
+    /* --- 8. GEMINI API TIP GENERATION --- */
     async function generateAITips() {
       const keyInput = document.getElementById('gemini-key');
       let key = keyInput.value.trim();
@@ -1479,7 +1660,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 8. GAME MODES & ENGINE --- */
+    /* --- 9. GAME ENGINE & MODES --- */
     function switchMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -1778,12 +1959,15 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       }
     }
 
-    /* --- 9. WIN & CELEBRATION --- */
+    /* --- 10. WIN, STREAK & CELEBRATION --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       recordAttempt(currentWordObj().word, firstAttempt);
+      
+      // Award stars & check continuous day streak
       playerState.stars += firstAttempt ? 3 : 1;
+      checkAndIncrementStreak();
       savePlayerState(true);
 
       const target = currentWordObj().word;
@@ -1824,15 +2008,52 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
       document.getElementById('certificate-modal').style.display = 'none';
     }
 
-    /* --- 10. STICKER ALBUM MODAL --- */
+    /* --- 11. ENHANCED STICKER ALBUM MODAL --- */
+    function setStickerFilter(filter, tabBtn) {
+      currentStickerFilter = filter;
+      document.querySelectorAll('.sticker-filter-tab').forEach(b => b.classList.remove('active'));
+      if (tabBtn) tabBtn.classList.add('active');
+      openStickersModal();
+    }
+
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
       grid.innerHTML = '';
 
+      renderUIStats();
+
+      let readyCount = 0;
+      STICKER_CATALOG.forEach(s => {
+        const isUnlocked = playerState.unlockedStickers.includes(s.id);
+        if (!isUnlocked && playerState.stars >= s.cost) readyCount++;
+      });
+      const affordCountEl = document.getElementById('filter-afford-count');
+      if (affordCountEl) affordCountEl.innerText = readyCount;
+
       STICKER_CATALOG.forEach(sticker => {
         const isUnlocked = playerState.unlockedStickers.includes(sticker.id);
+        const canAfford = playerState.stars >= sticker.cost;
+
+        // Apply tab filters
+        if (currentStickerFilter === 'unlocked' && !isUnlocked) return;
+        if (currentStickerFilter === 'affordable' && (isUnlocked || !canAfford)) return;
+        if (currentStickerFilter === 'sparkly' && !sticker.sparkly) return;
+
         const card = document.createElement('div');
-        card.className = `sticker-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+        let cardClasses = ['sticker-card'];
+        if (sticker.sparkly) cardClasses.push('is-sparkly');
+
+        if (isUnlocked) {
+          cardClasses.push('unlocked');
+        } else if (canAfford) {
+          cardClasses.push('affordable');
+        } else {
+          cardClasses.push('unaffordable');
+        }
+        card.className = cardClasses.join(' ');
+
+        // Sparkly pill tag
+        let sparklyTag = sticker.sparkly ? `<div class="sparkle-tag">✨ Sparkly</div>` : '';
 
         if (isUnlocked) {
           card.onclick = () => {
@@ -1840,19 +2061,35 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
             confetti({ particleCount: 25, spread: 50, origin: { y: 0.6 } });
           };
           card.innerHTML = `
+            ${sparklyTag}
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
             <div class="sticker-badge">✨ Collected!</div>
           `;
-        } else {
-          const canAfford = playerState.stars >= sticker.cost;
+        } else if (canAfford) {
           card.innerHTML = `
+            ${sparklyTag}
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
-            <button class="sticker-btn ${canAfford ? 'buy' : 'need-more'}" 
-                    onclick="unlockSticker('${sticker.id}', ${sticker.cost}, ${canAfford})">
-              ⭐ ${sticker.cost} Stars
+            <button class="sticker-btn buy-ready" 
+                    onclick="unlockSticker('${sticker.id}', ${sticker.cost}, true)">
+              🎁 Unlock (⭐ ${sticker.cost})
             </button>
+          `;
+        } else {
+          const needed = sticker.cost - playerState.stars;
+          const pct = Math.min(100, Math.round((playerState.stars / sticker.cost) * 100));
+          card.innerHTML = `
+            ${sparklyTag}
+            <div class="icon">${sticker.icon}</div>
+            <div class="sticker-name">${sticker.name}</div>
+            <div class="sticker-btn need-more-box" 
+                 onclick="unlockSticker('${sticker.id}', ${sticker.cost}, false)">
+              <span>Need ${needed} more ⭐</span>
+              <div class="mini-progress-track">
+                <div class="mini-progress-fill" style="width: ${pct}%"></div>
+              </div>
+            </div>
           `;
         }
         grid.appendChild(card);
@@ -1868,18 +2105,19 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     function unlockSticker(id, cost, canAfford) {
       if (!canAfford) {
         playWrongSound();
-        alert(`You need ${cost} stars for this sticker. Keep practicing!`);
+        const needed = cost - playerState.stars;
+        alert(`You need ${needed} more stars to unlock this sticker. Keep practicing!`);
         return;
       }
       playerState.stars -= cost;
       playerState.unlockedStickers.push(id);
       savePlayerState(true);
       playFanfareSound();
-      confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
+      confetti({ particleCount: 90, spread: 90, origin: { y: 0.5 } });
       openStickersModal();
     }
 
-    /* --- 11. PARENT DASHBOARD (MASTER + CUSTOM WORDS) --- */
+    /* --- 12. PARENT DASHBOARD (MASTER + CUSTOM WORDS) --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
@@ -2036,6 +2274,7 @@ Example: [{"word": "because", "tip": "Big Elephants Can Always Understand Small 
     window.openStickersModal = openStickersModal;
     window.closeStickersModal = closeStickersModal;
     window.unlockSticker = unlockSticker;
+    window.setStickerFilter = setStickerFilter;
     window.openParentModal = openParentModal;
     window.closeParentModal = closeParentModal;
     window.saveParentSettings = saveParentSettings;
