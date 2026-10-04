@@ -190,22 +190,39 @@
       font-size: 0.95rem;
     }
 
+    /* Dual Audio Buttons Row */
+    .audio-actions-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .listen-btn {
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .listen-btn:active { transform: scale(0.96); }
+
+    .listen-btn.word-btn {
       background: #EEF2FF;
       color: var(--primary);
       border: 2px solid var(--primary);
-      border-radius: 50px;
-      padding: 10px 24px;
-      font-size: 1.15rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      transition: transform 0.1s ease;
     }
-    .listen-btn:active { transform: scale(0.96); }
+
+    .listen-btn.sentence-btn {
+      background: #ECFDF5;
+      color: #065F46;
+      border: 2px solid #10B981;
+    }
 
     /* Slots Container */
     .slots-container {
@@ -725,9 +742,7 @@
       font-weight: 600;
     }
 
-    /* ======================================================== */
-    /* INTERACTIVE STICKER PLAYGROUND CANVAS                   */
-    /* ======================================================== */
+    /* Sticker Playground */
     .playground-toolbar {
       display: flex;
       justify-content: space-between;
@@ -773,7 +788,6 @@
       user-select: none;
     }
 
-    /* Backdrops */
     .scene-woodland {
       background: linear-gradient(180deg, #BAE6FD 0%, #E0F2FE 55%, #86EFAC 55%, #22C55E 100%);
     }
@@ -896,7 +910,6 @@
       margin-top: 14px;
     }
 
-    /* Word row grid: Word | Sentence in context | Tip | Delete */
     .word-row {
       display: grid;
       grid-template-columns: 110px 1.2fr 1fr 34px;
@@ -965,7 +978,6 @@
         📖 Sticker Book (<span id="sticker-badge-count">1/24</span>)
       </button>
 
-      <!-- Interactive Playground Trigger -->
       <button class="nav-action-btn playground-nav-btn" onclick="openPlaygroundModal()" title="Open Sticker Scene Playground">
         🎨 Playground
       </button>
@@ -983,10 +995,15 @@
   <main class="card">
     <div class="word-counter" id="word-progress-label">Word 1 of 10</div>
     
-    <!-- Audio Button Dictating Word in Context -->
-    <button class="listen-btn" onclick="speakCurrentWord()">
-      🔊 Hear Word in Context
-    </button>
+    <!-- Distinct Word & Sentence Audio Triggers -->
+    <div class="audio-actions-row">
+      <button class="listen-btn word-btn" onclick="speakCurrentWord()">
+        🔊 Hear Word
+      </button>
+      <button class="listen-btn sentence-btn" onclick="speakCurrentSentence()">
+        📖 Hear Sentence
+      </button>
+    </div>
 
     <!-- MODE 1: Tap Tiles -->
     <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
@@ -1088,10 +1105,8 @@
         <button class="action-btn btn-clear" style="padding: 6px 12px; font-size: 0.85rem;" onclick="clearPlaygroundScene()">🗑️ Clear Scene</button>
       </div>
 
-      <!-- Drag Stage Area -->
       <div class="playground-stage scene-woodland" id="playground-stage"></div>
 
-      <!-- Bottom Shelf of Unlocked Stickers -->
       <div class="sticker-shelf">
         <div class="sticker-shelf-title">✨ Tap a sticker below to drop it onto your scene:</div>
         <div class="sticker-shelf-tray" id="playground-tray"></div>
@@ -1363,7 +1378,6 @@
 
     /* --- 4. EXPANDED STICKER CATALOG (24 STICKERS + SPARKLY) --- */
     const STICKER_CATALOG = [
-      // Standard Collection (5 Stars)
       { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5, sparkly: false },
       { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5, sparkly: false },
       { id: "bunny", icon: "🐰", name: "Bouncy Bunny", cost: 5, sparkly: false },
@@ -1371,7 +1385,6 @@
       { id: "icecream", icon: "🍦", name: "Sweet Swirl", cost: 5, sparkly: false },
       { id: "lollipop", icon: "🍭", name: "Sugar Pop", cost: 5, sparkly: false },
 
-      // Adventurer Collection (10 Stars)
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 10, sparkly: false },
       { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10, sparkly: false },
       { id: "dolphin", icon: "🐬", name: "Ocean Dolphin", cost: 10, sparkly: false },
@@ -1381,13 +1394,11 @@
       { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 10, sparkly: false },
       { id: "robot", icon: "🤖", name: "Beep Boop", cost: 10, sparkly: false },
 
-      // ✨ Sparkly Magic Tier (15 Stars)
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 15, sparkly: true },
       { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 15, sparkly: true },
       { id: "fairy", icon: "🧚‍♀️", name: "Garden Fairy", cost: 15, sparkly: true },
       { id: "star_burst", icon: "⭐", name: "Golden Starburst", cost: 15, sparkly: true },
 
-      // ✨ Sparkly Mythical Tier (20 - 30 Stars)
       { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 20, sparkly: true },
       { id: "mermaid", icon: "🧜‍♀️", name: "Secret Mermaid", cost: 20, sparkly: true },
       { id: "wand", icon: "🪄", name: "Cosmic Wand", cost: 20, sparkly: true },
@@ -1400,22 +1411,22 @@
     const defaultMaster = {
       apiKey: "",
       words: [
-        { word: "because", sentence: "I wore my coat because it was raining.", tip: "Big Elephants Can Always Understand Small Elephants" },
-        { word: "friend", sentence: "My best friend plays with me at break.", tip: "A fri-end stays to the end." },
-        { word: "people", sentence: "Many people came to the school fair.", tip: "People Eat Omelettes, People Like Eggs." },
+        { word: "because", sentence: "I wore my warm coat because it was raining.", tip: "Big Elephants Can Always Understand Small Elephants" },
+        { word: "friend", sentence: "My best friend plays with me at break time.", tip: "A fri-end stays to the end." },
+        { word: "people", sentence: "Many people came to visit the school fair.", tip: "People Eat Omelettes, People Like Eggs." },
         { word: "water", sentence: "Please may I have a glass of cold water?", tip: "Watch out for the 'a' that sounds like 'o'." },
-        { word: "where", sentence: "Where did you put your school bag?", tip: "Where contains 'here' (for places)." },
-        { word: "there", sentence: "The book is sitting over there on the shelf.", tip: "Contains 'here' - over there!" },
-        { word: "said", sentence: "Mum said it was time for dinner.", tip: "Silly Ants In Dresses." },
-        { word: "could", sentence: "I wish I could fly like a bird.", tip: "O, U, Lucky Duck!" },
-        { word: "would", sentence: "Would you like an apple or an orange?", tip: "O, U, Lucky Duck!" },
+        { word: "where", sentence: "Where did you put your red school jumper?", tip: "Where contains 'here' (for places)." },
+        { word: "there", sentence: "Look over there at the beautiful rainbow.", tip: "Contains 'here' - over there!" },
+        { word: "said", sentence: "Mum said it was time to read our story.", tip: "Silly Ants In Dresses." },
+        { word: "could", sentence: "I wish I could fly right up to space.", tip: "O, U, Lucky Duck!" },
+        { word: "would", sentence: "Would you like an apple or a banana?", tip: "O, U, Lucky Duck!" },
         { word: "house", sentence: "We built a cosy den inside our house.", tip: "Rhymes with mouse - ends with 'se'." }
       ]
     };
 
     const defaultPlayerState = {
       preferredVoice: "",
-      audioMode: "names", // "names" or "phonics"
+      audioMode: "names",
       customWords: [],
       stats: {},
       stars: 0,
@@ -1423,7 +1434,7 @@
       lastPlayedDate: "",
       unlockedStickers: ["puppy"],
       playgroundScene: "woodland",
-      playgroundStickers: [] // [{ id, stickerId, icon, x, y }]
+      playgroundStickers: []
     };
 
     let masterConfig = JSON.parse(localStorage.getItem(MASTER_STORAGE_KEY)) || defaultMaster;
@@ -1627,7 +1638,7 @@
       }
     }
 
-    /* --- 8. SPEECH SYNTHESIS ENGINE (WORDS IN CONTEXT & PHONICS) --- */
+    /* --- 8. SPEECH SYNTHESIS ENGINE --- */
     function populateVoiceList() {
       if (!('speechSynthesis' in window)) return;
       availableVoices = window.speechSynthesis.getVoices();
@@ -1686,24 +1697,38 @@
       return activeWords[currentIndex] || { word: "spelling", sentence: "We love spelling.", tip: "" };
     }
 
-    /* Dictate Word in Context: "[Word]. [Sentence]. [Word]." */
+    /* Speaks ONLY the word */
     function speakCurrentWord() {
       const obj = currentWordObj();
       const word = obj.word.toLowerCase();
-      const sentence = (obj.sentence && obj.sentence.trim() !== '') ? `${obj.sentence}. ` : '';
-      
-      // UK Primary Test Dictation Style
-      const fullUtterance = sentence ? `${word}. ${sentence} ${word}.` : word;
 
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(fullUtterance);
+        const msg = new SpeechSynthesisUtterance(word);
         let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
         }
         if (voice) msg.voice = voice;
         msg.rate = 0.86;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    /* Speaks ONLY the sentence in context */
+    function speakCurrentSentence() {
+      const obj = currentWordObj();
+      let sentenceText = (obj.sentence && obj.sentence.trim() !== '') ? obj.sentence.trim() : `Can you spell the word ${obj.word}?`;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(sentenceText);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        msg.rate = 0.88;
         window.speechSynthesis.speak(msg);
       }
     }
@@ -2369,7 +2394,6 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       const stage = document.getElementById('playground-stage');
       const rect = stage.getBoundingClientRect();
 
-      // Drop in center with slight random offset
       const posX = (rect.width / 2) + (Math.random() * 60 - 30);
       const posY = (rect.height / 2) + (Math.random() * 60 - 30);
 
@@ -2402,7 +2426,6 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       stage.className = `playground-stage scene-${playerState.playgroundScene || 'woodland'}`;
       stage.innerHTML = '';
 
-      // Update scene pill buttons
       document.querySelectorAll('.scene-pill').forEach(p => {
         if (p.textContent.toLowerCase().includes(playerState.playgroundScene || 'woodland')) {
           p.classList.add('active');
@@ -2418,7 +2441,6 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         el.style.left = item.x + 'px';
         el.style.top = item.y + 'px';
 
-        // Touch & pointer dragging
         let isDragging = false;
         let startX, startY;
         let origX = item.x;
@@ -2452,7 +2474,6 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
           savePlayerState(true);
         };
 
-        // Double click / long tap to delete
         el.ondblclick = () => {
           playWrongSound();
           playerState.playgroundStickers = playerState.playgroundStickers.filter(s => s.uid !== item.uid);
@@ -2623,6 +2644,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     // Window bindings
     window.switchMode = switchMode;
     window.speakCurrentWord = speakCurrentWord;
+    window.speakCurrentSentence = speakCurrentSentence;
     window.speakLetter = speakLetter;
     window.speakTip = speakTip;
     window.openStickersModal = openStickersModal;
