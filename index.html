@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Spelling Quest</title>
+  <title>Learning Quest</title>
 
   <!-- Child-friendly infant typography (single-storey 'a' and 'g' for KS1) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +24,7 @@
       --danger: #EF4444;
       --purple: #8B5CF6;
       --pink: #EC4899;
+      --teal: #0D9488;
       --text: #1E293B;
       --text-muted: #64748B;
       --curtain: #BE123C;
@@ -57,7 +58,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       gap: 8px;
     }
 
@@ -140,7 +141,46 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
 
-    /* Mode Navigation Tabs */
+    /* Primary Quest Switcher (Spelling vs Times Tables) */
+    .quest-switch-bar {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 12px;
+    }
+
+    .quest-switch-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background: #E2E8F0;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .quest-switch-btn.active {
+      background: #FFF;
+      color: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.15);
+    }
+
+    .quest-switch-btn.active.math-active {
+      color: var(--teal);
+      border-color: var(--teal);
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.15);
+    }
+
+    /* Sub Navigation Tabs */
     .mode-nav {
       display: flex;
       gap: 6px;
@@ -169,7 +209,12 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
 
-    /* Main Container */
+    .mode-tab.math-tab.active {
+      background: var(--teal);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Main Card Container */
     .card {
       background: var(--card-bg);
       width: 100%;
@@ -190,7 +235,7 @@
       font-size: 0.95rem;
     }
 
-    /* Dual Audio Buttons Row */
+    /* Audio Buttons */
     .audio-actions-row {
       display: flex;
       gap: 10px;
@@ -208,7 +253,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      transition: transform 0.1s ease;
     }
     .listen-btn:active { transform: scale(0.96); }
 
@@ -224,7 +269,13 @@
       border: 2px solid #10B981;
     }
 
-    /* Slots Container */
+    .listen-btn.math-btn {
+      background: #CCFBF1;
+      color: #0F766E;
+      border: 2px solid #0D9488;
+    }
+
+    /* Spelling Slots */
     .slots-container {
       display: flex;
       gap: 8px;
@@ -298,7 +349,7 @@
       box-shadow: none;
     }
 
-    /* Canvas Tracing Mode */
+    /* Trace Canvas */
     #trace-canvas {
       border: 2px dashed #CBD5E1;
       border-radius: 16px;
@@ -331,7 +382,7 @@
     .btn-done { background: var(--success); color: #FFF; }
     .btn-gemini { background: var(--purple); color: #FFF; }
 
-    /* Look Cover Write Check Stage */
+    /* LCWC */
     .theatre-stage {
       position: relative;
       width: 100%;
@@ -374,15 +425,8 @@
       z-index: 10;
     }
 
-    .theatre-curtain.closed {
-      transform: translateY(0%);
-    }
-
-    .theatre-curtain .fringe {
-      position: absolute;
-      bottom: -14px;
-      font-size: 1.1rem;
-    }
+    .theatre-curtain.closed { transform: translateY(0%); }
+    .theatre-curtain .fringe { position: absolute; bottom: -14px; font-size: 1.1rem; }
 
     .lcwc-steps-bar {
       display: flex;
@@ -431,7 +475,7 @@
     .cmp-letter.match { background: #DCFCE7; color: #15803D; border: 2px solid #86EFAC; }
     .cmp-letter.mismatch { background: #FEE2E2; color: #B91C1C; border: 2px solid #FCA5A5; }
 
-    /* In-App Virtual Keyboard */
+    /* Virtual Keyboard */
     .virtual-keyboard {
       display: flex;
       flex-direction: column;
@@ -442,12 +486,7 @@
       margin-top: 10px;
     }
 
-    .vk-row {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-      width: 100%;
-    }
+    .vk-row { display: flex; gap: 5px; justify-content: center; width: 100%; }
 
     .vk-key {
       flex: 1;
@@ -467,17 +506,9 @@
       transition: transform 0.08s ease;
       text-transform: lowercase;
     }
-    .vk-key:active {
-      transform: translateY(2px);
-      box-shadow: none;
-    }
-    .vk-key.special {
-      flex: 1.5;
-      font-size: 1.1rem;
-      background: #E2E8F0;
-    }
+    .vk-key:active { transform: translateY(2px); box-shadow: none; }
+    .vk-key.special { flex: 1.5; font-size: 1.1rem; background: #E2E8F0; }
 
-    /* Direct Typing Input */
     #type-input {
       font-size: 2rem;
       letter-spacing: 4px;
@@ -492,7 +523,6 @@
       margin: 14px 0;
     }
 
-    /* Spoken Tip Button */
     .tip-toggle {
       color: var(--primary);
       background: #EEF2FF;
@@ -508,9 +538,119 @@
       gap: 6px;
       transition: all 0.15s ease;
     }
-    .tip-toggle:active {
-      transform: scale(0.96);
-      background: #E0E7FF;
+    .tip-toggle:active { transform: scale(0.96); background: #E0E7FF; }
+
+    /* ======================================================== */
+    /* TIMES TABLES SPECIFIC UI STYLES                          */
+    /* ======================================================== */
+    .math-banner {
+      background: linear-gradient(135deg, #CCFBF1, #99F6E4);
+      border: 2px solid #5EEAD4;
+      border-radius: 16px;
+      padding: 10px 18px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #115E59;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .math-equation-box {
+      font-size: 3.2rem;
+      font-weight: 600;
+      color: #0F766E;
+      margin: 10px 0 16px 0;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .math-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 440px;
+      margin: 10px 0;
+    }
+
+    .math-choice-btn {
+      background: #F0FDFA;
+      border: 3px solid #99F6E4;
+      box-shadow: 0 4px 0 #5EEAD4;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #0F766E;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .math-choice-btn:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .sequence-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 520px;
+      margin: 14px 0;
+    }
+
+    .sequence-bubble {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E0F2FE, #BAE6FD);
+      border: 3px solid #38BDF8;
+      box-shadow: 0 4px 0 #0284C7;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: #0369A1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .sequence-bubble:active {
+      transform: scale(0.92);
+    }
+    .sequence-bubble.popped {
+      background: #DCFCE7;
+      border-color: #86EFAC;
+      box-shadow: none;
+      color: #15803D;
+      opacity: 0.35;
+      pointer-events: none;
+      transform: scale(0.9);
+    }
+
+    .math-track-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      width: 100%;
+      max-width: 440px;
+    }
+    .math-track-step {
+      flex: 1;
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      transition: background 0.2s ease;
+    }
+    .math-track-step.done {
+      background: var(--teal);
     }
 
     /* Modals */
@@ -558,7 +698,6 @@
       justify-content: center;
     }
 
-    /* Sticker Album Filters & Header */
     .sticker-filter-bar {
       display: flex;
       gap: 6px;
@@ -599,7 +738,6 @@
       margin-bottom: 10px;
     }
 
-    /* Sticker Grid */
     .sticker-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
@@ -661,21 +799,11 @@
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
     }
 
-    .sticker-card.unaffordable {
-      opacity: 0.75;
-      background: #F8FAFC;
-    }
+    .sticker-card.unaffordable { opacity: 0.75; background: #F8FAFC; }
 
-    .sticker-card .icon {
-      font-size: 2.8rem;
-      margin-bottom: 4px;
-      transition: transform 0.2s ease;
-    }
+    .sticker-card .icon { font-size: 2.8rem; margin-bottom: 4px; transition: transform 0.2s ease; }
     .sticker-card:hover .icon { transform: scale(1.1); }
-
-    .sticker-card.locked.unaffordable .icon {
-      filter: grayscale(80%);
-    }
+    .sticker-card.locked.unaffordable .icon { filter: grayscale(80%); }
 
     .sticker-name {
       font-weight: 600;
@@ -730,19 +858,10 @@
       overflow: hidden;
       margin-top: 3px;
     }
-    .mini-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 999px;
-    }
+    .mini-progress-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+    .sticker-badge { font-size: 0.75rem; color: var(--success); font-weight: 600; }
 
-    .sticker-badge {
-      font-size: 0.75rem;
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    /* Sticker Playground */
+    /* Playground Canvas */
     .playground-toolbar {
       display: flex;
       justify-content: space-between;
@@ -752,12 +871,7 @@
       flex-wrap: wrap;
     }
 
-    .scene-pill-group {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-    }
+    .scene-pill-group { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
 
     .scene-pill {
       padding: 6px 12px;
@@ -770,11 +884,7 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    .scene-pill.active {
-      background: var(--primary);
-      color: #FFF;
-      border-color: var(--primary);
-    }
+    .scene-pill.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
 
     .playground-stage {
       position: relative;
@@ -788,18 +898,10 @@
       user-select: none;
     }
 
-    .scene-woodland {
-      background: linear-gradient(180deg, #BAE6FD 0%, #E0F2FE 55%, #86EFAC 55%, #22C55E 100%);
-    }
-    .scene-space {
-      background: radial-gradient(ellipse at bottom, #1E1B4B 0%, #0F172A 100%);
-    }
-    .scene-castle {
-      background: linear-gradient(180deg, #FDE68A 0%, #F472B6 45%, #A855F7 75%, #34D399 75%, #059669 100%);
-    }
-    .scene-ocean {
-      background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%);
-    }
+    .scene-woodland { background: linear-gradient(180deg, #BAE6FD 0%, #E0F2FE 55%, #86EFAC 55%, #22C55E 100%); }
+    .scene-space { background: radial-gradient(ellipse at bottom, #1E1B4B 0%, #0F172A 100%); }
+    .scene-castle { background: linear-gradient(180deg, #FDE68A 0%, #F472B6 45%, #A855F7 75%, #34D399 75%, #059669 100%); }
+    .scene-ocean { background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%); }
 
     .canvas-sticker-item {
       position: absolute;
@@ -810,10 +912,7 @@
       transform: translate(-50%, -50%);
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     }
-    .canvas-sticker-item:active {
-      cursor: grabbing;
-      transform: translate(-50%, -50%) scale(1.15);
-    }
+    .canvas-sticker-item:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.15); }
 
     .sticker-shelf {
       margin-top: 14px;
@@ -823,19 +922,8 @@
       padding: 10px 14px;
     }
 
-    .sticker-shelf-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .sticker-shelf-tray {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-    }
+    .sticker-shelf-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+    .sticker-shelf-tray { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
 
     .shelf-item-btn {
       background: #FFF;
@@ -849,7 +937,7 @@
     }
     .shelf-item-btn:active { transform: scale(0.92); }
 
-    /* Certificate Modal */
+    /* Certificate */
     .certificate-card {
       border: 8px double #F59E0B;
       background: #FFFDF7;
@@ -858,23 +946,10 @@
       text-align: center;
       box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
     }
+    .certificate-title { font-size: 1.8rem; color: #92400E; margin-bottom: 6px; font-weight: 600; }
+    .certificate-name { font-size: 2.4rem; color: var(--primary); font-weight: 600; text-decoration: underline; margin: 12px 0; }
 
-    .certificate-title {
-      font-size: 1.8rem;
-      color: #92400E;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    .certificate-name {
-      font-size: 2.4rem;
-      color: var(--primary);
-      font-weight: 600;
-      text-decoration: underline;
-      margin: 12px 0;
-    }
-
-    /* Parent Settings Inputs */
+    /* Parent Settings */
     .config-section {
       background: #F8FAFC;
       border: 1px solid #E2E8F0;
@@ -883,14 +958,7 @@
       margin-bottom: 16px;
     }
 
-    .config-section label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-muted);
-    }
-
+    .config-section label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
     .config-section input, .config-section select {
       width: 100%;
       padding: 8px 12px;
@@ -900,15 +968,8 @@
       background: #FFF;
     }
 
-    #gemini-key {
-      -webkit-text-security: disc;
-      text-security: disc;
-      letter-spacing: 2px;
-    }
-
-    .word-list-manager {
-      margin-top: 14px;
-    }
+    #gemini-key { -webkit-text-security: disc; text-security: disc; letter-spacing: 2px; }
+    .word-list-manager { margin-top: 14px; }
 
     .word-row {
       display: grid;
@@ -918,13 +979,7 @@
       align-items: center;
     }
 
-    .word-row input {
-      padding: 8px 10px;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
+    .word-row input { padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem; }
     .btn-row-del {
       background: #FEE2E2;
       color: var(--danger);
@@ -936,25 +991,8 @@
       font-weight: 600;
     }
 
-    .list-actions-bar {
-      display: flex;
-      gap: 10px;
-      margin: 12px 0;
-      flex-wrap: wrap;
-    }
-
-    .progress-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      font-size: 0.9rem;
-    }
-
-    .progress-table th, .progress-table td {
-      border: 1px solid #E2E8F0;
-      padding: 8px;
-      text-align: left;
-    }
+    .progress-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+    .progress-table th, .progress-table td { border: 1px solid #E2E8F0; padding: 8px; text-align: left; }
     .progress-table th { background: #F8FAFC; }
 
     .shake { animation: shake 0.3s ease-in-out; }
@@ -975,87 +1013,145 @@
       <div class="badge cloud-badge connecting" id="cloud-badge" title="Cloud Sync">☁️ Connecting...</div>
       
       <button class="nav-action-btn sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
-        📖 Sticker Book (<span id="sticker-badge-count">1/24</span>)
+        📖 Stickers (<span id="sticker-badge-count">1/24</span>)
       </button>
 
-      <button class="nav-action-btn playground-nav-btn" onclick="openPlaygroundModal()" title="Open Sticker Scene Playground">
-        🎨 Playground
+      <button class="nav-action-btn playground-nav-btn" onclick="openPlaygroundModal()" title="Open Playground">
+        🎨 Scene
       </button>
     </div>
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
 
-  <nav class="mode-nav">
-    <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
-    <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
-    <div class="mode-tab" onclick="switchMode('lcwc')">🙈 Cover & Check</div>
-    <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
-  </nav>
+  <!-- Top-Level Quest Switcher -->
+  <div class="quest-switch-bar">
+    <button class="quest-switch-btn active" id="btn-quest-spelling" onclick="switchMainQuest('spelling')">
+      🔤 Spelling Quest
+    </button>
+    <button class="quest-switch-btn" id="btn-quest-math" onclick="switchMainQuest('math')">
+      🔢 Times Tables Quest
+    </button>
+  </div>
 
-  <main class="card">
-    <div class="word-counter" id="word-progress-label">Word 1 of 10</div>
-    
-    <!-- Distinct Word & Sentence Audio Triggers -->
-    <div class="audio-actions-row">
-      <button class="listen-btn word-btn" onclick="speakCurrentWord()">
-        🔊 Hear Word
-      </button>
-      <button class="listen-btn sentence-btn" onclick="speakCurrentSentence()">
-        📖 Hear Sentence
-      </button>
-    </div>
+  <!-- 1. SPELLING QUEST CONTAINER -->
+  <div id="spelling-quest-container" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <nav class="mode-nav">
+      <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
+      <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
+      <div class="mode-tab" onclick="switchMode('lcwc')">🙈 Cover & Check</div>
+      <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
+    </nav>
 
-    <!-- MODE 1: Tap Tiles -->
-    <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-      <div class="slots-container" id="tiles-slots"></div>
-      <div class="tile-grid" id="letters-pool"></div>
-    </div>
-
-    <!-- MODE 2: Tracing Canvas -->
-    <div id="view-trace" style="display: none;" class="trace-container">
-      <canvas id="trace-canvas" width="460" height="160"></canvas>
-      <div class="trace-actions">
-        <button class="action-btn btn-clear" onclick="initTraceCanvas()">Clear</button>
-        <button class="action-btn btn-done" onclick="completeTrace()">Done Tracing!</button>
-      </div>
-    </div>
-
-    <!-- MODE 3: Look, Cover, Write, Check -->
-    <div id="view-lcwc" style="display: none; width: 100%; flex-direction: column; align-items: center;">
-      <div class="lcwc-steps-bar">
-        <div class="lcwc-step active" id="step-1">1. Look 👁</div>
-        <div class="lcwc-step" id="step-2">2. Cover 🙈</div>
-        <div class="lcwc-step" id="step-3">3. Write ✍️</div>
-        <div class="lcwc-step" id="step-4">4. Check 🔍</div>
+    <main class="card">
+      <div class="word-counter" id="word-progress-label">Word 1 of 10</div>
+      
+      <div class="audio-actions-row">
+        <button class="listen-btn word-btn" onclick="speakCurrentWord()">
+          🔊 Hear Word
+        </button>
+        <button class="listen-btn sentence-btn" onclick="speakCurrentSentence()">
+          📖 Hear Sentence
+        </button>
       </div>
 
-      <div class="theatre-stage">
-        <div class="theatre-word" id="theatre-word-display">word</div>
-        <div class="theatre-curtain" id="theatre-curtain">
-          <span>🙈 Word Hidden!</span>
-          <span class="fringe">〰〰〰〰〰〰〰〰〰〰</span>
+      <!-- MODE: Tiles -->
+      <div id="view-tiles" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="slots-container" id="tiles-slots"></div>
+        <div class="tile-grid" id="letters-pool"></div>
+      </div>
+
+      <!-- MODE: Trace -->
+      <div id="view-trace" style="display: none;" class="trace-container">
+        <canvas id="trace-canvas" width="460" height="160"></canvas>
+        <div class="trace-actions">
+          <button class="action-btn btn-clear" onclick="initTraceCanvas()">Clear</button>
+          <button class="action-btn btn-done" onclick="completeTrace()">Done Tracing!</button>
         </div>
       </div>
 
-      <div class="slots-container" id="lcwc-slots"></div>
-      <div class="comparison-display" id="lcwc-comparison"></div>
+      <!-- MODE: Cover & Check -->
+      <div id="view-lcwc" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="lcwc-steps-bar">
+          <div class="lcwc-step active" id="step-1">1. Look 👁</div>
+          <div class="lcwc-step" id="step-2">2. Cover 🙈</div>
+          <div class="lcwc-step" id="step-3">3. Write ✍️</div>
+          <div class="lcwc-step" id="step-4">4. Check 🔍</div>
+        </div>
 
-      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        <button class="action-btn btn-gemini" id="lcwc-peek-btn" onclick="lcwcPeek()">Peek (5s)</button>
-        <button class="action-btn btn-done" id="lcwc-check-btn" onclick="lcwcCheck()">Check Spelling</button>
+        <div class="theatre-stage">
+          <div class="theatre-word" id="theatre-word-display">word</div>
+          <div class="theatre-curtain" id="theatre-curtain">
+            <span>🙈 Word Hidden!</span>
+            <span class="fringe">〰〰〰〰〰〰〰〰〰〰</span>
+          </div>
+        </div>
+
+        <div class="slots-container" id="lcwc-slots"></div>
+        <div class="comparison-display" id="lcwc-comparison"></div>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <button class="action-btn btn-gemini" id="lcwc-peek-btn" onclick="lcwcPeek()">Peek (5s)</button>
+          <button class="action-btn btn-done" id="lcwc-check-btn" onclick="lcwcCheck()">Check Spelling</button>
+        </div>
+
+        <div class="virtual-keyboard" id="lcwc-keyboard"></div>
       </div>
 
-      <div class="virtual-keyboard" id="lcwc-keyboard"></div>
-    </div>
+      <!-- MODE: Direct Typing -->
+      <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
+        <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="18" placeholder="type here">
+        <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
+      </div>
 
-    <!-- MODE 4: Direct Typing -->
-    <div id="view-type" style="display: none; flex-direction: column; align-items: center;">
-      <input type="text" id="type-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="18" placeholder="type here">
-      <button class="action-btn btn-done" onclick="checkTyping()">Submit</button>
-    </div>
+      <button class="tip-toggle" id="tip-btn" onclick="speakTip()">💡 Hear Memory Tip</button>
+    </main>
+  </div>
 
-    <button class="tip-toggle" id="tip-btn" onclick="speakTip()">💡 Hear Memory Tip</button>
-  </main>
+  <!-- 2. TIMES TABLES QUEST CONTAINER -->
+  <div id="math-quest-container" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+    <nav class="mode-nav">
+      <div class="mode-tab math-tab active" onclick="switchMathMode('sequence')">🎈 Step Count</div>
+      <div class="mode-tab math-tab" onclick="switchMathMode('quick')">⚡ Quick Fire</div>
+      <div class="mode-tab math-tab" onclick="switchMathMode('missing')">🎯 Target Hit</div>
+    </nav>
+
+    <main class="card">
+      <div class="math-banner">
+        <span>⭐ This Week's Focus:</span>
+        <strong id="active-table-title" style="font-size: 1.25rem;">5× Table</strong>
+      </div>
+
+      <div class="math-track-bar" id="math-track-bar"></div>
+
+      <!-- SUB-MODE A: Step Counting Sequence Pop -->
+      <div id="math-view-sequence" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 8px;">
+          Pop the numbers in sequence from <strong id="seq-next-target">5</strong> upwards!
+        </p>
+        <div class="sequence-pool" id="sequence-pool"></div>
+      </div>
+
+      <!-- SUB-MODE B: Quick Fire Multiple Choice -->
+      <div id="math-view-quick" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+        <button class="listen-btn math-btn" onclick="speakMathQuestion()">
+          🔊 Hear Question
+        </button>
+
+        <div class="math-equation-box" id="quick-equation-display">3 × 5 = ?</div>
+        <div class="math-choice-grid" id="quick-choice-grid"></div>
+      </div>
+
+      <!-- SUB-MODE C: Missing Factor / Target Hit -->
+      <div id="math-view-missing" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+        <button class="listen-btn math-btn" onclick="speakMathQuestion()">
+          🔊 Hear Question
+        </button>
+
+        <div class="math-equation-box" id="missing-equation-display">? × 5 = 25</div>
+        <div class="math-choice-grid" id="missing-choice-grid"></div>
+      </div>
+    </main>
+  </div>
 
   <!-- STICKER ALBUM MODAL -->
   <div id="sticker-modal" class="modal-backdrop">
@@ -1074,7 +1170,7 @@
       </div>
 
       <div class="sticker-filter-bar">
-        <button class="sticker-filter-tab active" onclick="setStickerFilter('all', this)">All Stickers</button>
+        <button class="sticker-filter-tab active" onclick="setStickerFilter('all', this)">All</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('affordable', this)">🎁 Ready to Unlock (<span id="filter-afford-count">0</span>)</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('sparkly', this)">✨ Sparkly Only</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('unlocked', this)">📖 Collected</button>
@@ -1118,16 +1214,16 @@
   <div id="certificate-modal" class="modal-backdrop">
     <div class="modal-content certificate-card">
       <div style="font-size: 3.5rem; margin-bottom: 6px;">🏆</div>
-      <h1 class="certificate-title">Spelling Superstar Award!</h1>
+      <h1 class="certificate-title">Learning Superstar Award!</h1>
       <p style="color: #B45309; font-size: 1.05rem;">This certificate is proudly awarded to:</p>
       <div class="certificate-name" id="certificate-player-name">Imogen</div>
       <p style="font-size: 1.05rem; color: #475569; margin-bottom: 22px; line-height: 1.4;">
-        For fantastic effort and mastering all weekly spelling words!
+        For fantastic effort and mastering your weekly learning goals!
       </p>
       
       <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
         <button class="action-btn btn-done" onclick="window.print()">🖨️ Print Award</button>
-        <button class="action-btn btn-clear" onclick="closeCertificate()">Practice Again</button>
+        <button class="action-btn btn-clear" onclick="closeCertificate()">Keep Going!</button>
       </div>
     </div>
   </div>
@@ -1136,7 +1232,7 @@
   <div id="parent-modal" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Parent Settings & Words</h2>
+        <h2>Parent Settings & Curriculum</h2>
         <button class="close-btn" onclick="closeParentModal()">✕</button>
       </div>
 
@@ -1147,6 +1243,24 @@
           <button class="action-btn btn-done" onclick="generateFriendLink()">📋 Copy Link</button>
         </div>
         <span id="friend-link-status" style="font-size: 0.8rem; color: #166534; margin-top: 4px; display: block;"></span>
+      </div>
+
+      <!-- Weekly Times Table Selector -->
+      <div class="config-section" style="background: #F0FDFA; border-color: #99F6E4;">
+        <label style="color: #0F766E;">🔢 This Week's Times Table (Shared to all players):</label>
+        <select id="weekly-table-select">
+          <option value="2">2× Table</option>
+          <option value="3">3× Table</option>
+          <option value="4">4× Table</option>
+          <option value="5">5× Table</option>
+          <option value="6">6× Table</option>
+          <option value="7">7× Table</option>
+          <option value="8">8× Table</option>
+          <option value="9">9× Table</option>
+          <option value="10">10× Table</option>
+          <option value="11">11× Table</option>
+          <option value="12">12× Table</option>
+        </select>
       </div>
       
       <div class="config-section">
@@ -1208,7 +1322,7 @@
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="action-btn btn-done" onclick="saveParentSettings()">Save All Words & Settings</button>
+        <button class="action-btn btn-done" onclick="saveParentSettings()">Save All Settings & Words</button>
         <button class="action-btn btn-clear" onclick="closeParentModal()">Close</button>
       </div>
 
@@ -1253,15 +1367,20 @@
     const MASTER_STORAGE_KEY = 'spelling_master_config';
     const PLAYER_STORAGE_KEY = `spelling_player_${playerId}`;
 
-    document.title = `${currentPlayer}'s Spelling Quest`;
-    document.getElementById('player-name-label').innerText = currentPlayer;
-    document.getElementById('certificate-player-name').innerText = currentPlayer;
-    document.getElementById('album-title').innerText = `${currentPlayer}'s Sticker Album`;
-    document.getElementById('playground-title').innerText = `${currentPlayer}'s Sticker Scene`;
-    document.getElementById('custom-player-title').innerText = currentPlayer;
-    document.getElementById('progress-player-name').innerText = currentPlayer;
+    function setSafeText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
 
-    /* --- 2. PHONICS MAP (UK KS1 SYNTHETIC PHONICS) --- */
+    document.title = `${currentPlayer}'s Learning Quest`;
+    setSafeText('player-name-label', currentPlayer);
+    setSafeText('certificate-player-name', currentPlayer);
+    setSafeText('album-title', `${currentPlayer}'s Sticker Album`);
+    setSafeText('playground-title', `${currentPlayer}'s Sticker Scene`);
+    setSafeText('custom-player-title', currentPlayer);
+    setSafeText('progress-player-name', currentPlayer);
+
+    /* --- 2. PHONICS MAP (UK KS1) --- */
     const PHONICS_MAP = {
       'a': 'ah', 'b': 'buh', 'c': 'kuh', 'd': 'duh', 'e': 'eh',
       'f': 'fff', 'g': 'guh', 'h': 'huh', 'i': 'ih', 'j': 'juh',
@@ -1278,13 +1397,13 @@
       return audioCtx;
     }
 
-    function playTapChime() {
+    function playTapChime(freq = 523.25) {
       try {
         const ctx = getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
         gain.gain.setValueAtTime(0.08, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
         osc.connect(gain);
@@ -1407,9 +1526,10 @@
       { id: "crown", icon: "👑", name: "Superstar Queen", cost: 30, sparkly: true }
     ];
 
-    /* --- 5. DATA MODEL: MASTER + INDIVIDUAL PLAYER --- */
+    /* --- 5. DATA MODEL --- */
     const defaultMaster = {
       apiKey: "",
+      targetTable: 5,
       words: [
         { word: "because", sentence: "I wore my warm coat because it was raining.", tip: "Big Elephants Can Always Understand Small Elephants" },
         { word: "friend", sentence: "My best friend plays with me at break time.", tip: "A fri-end stays to the end." },
@@ -1438,6 +1558,8 @@
     };
 
     let masterConfig = JSON.parse(localStorage.getItem(MASTER_STORAGE_KEY)) || defaultMaster;
+    if (typeof masterConfig.targetTable !== 'number') masterConfig.targetTable = 5;
+
     let playerState = JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || defaultPlayerState;
     if (!Array.isArray(playerState.unlockedStickers)) playerState.unlockedStickers = ["puppy"];
     if (typeof playerState.stars !== 'number') playerState.stars = 0;
@@ -1447,6 +1569,7 @@
     if (typeof playerState.audioMode !== 'string') playerState.audioMode = "names";
     if (typeof playerState.playgroundScene !== 'string') playerState.playgroundScene = "woodland";
 
+    let activeMainQuest = 'spelling';
     let currentStickerFilter = 'all';
 
     let activeWords = [];
@@ -1493,7 +1616,7 @@
         playerState.streak = 1;
         playerState.lastPlayedDate = today;
       } else if (playerState.lastPlayedDate === today) {
-        // Practiced today already
+        // Practiced today
       } else {
         const yDate = new Date();
         yDate.setDate(yDate.getDate() - 1);
@@ -1509,14 +1632,11 @@
     }
 
     function renderUIStats() {
-      document.getElementById('star-count').innerText = playerState.stars;
-      document.getElementById('streak-count').innerText = playerState.streak || 1;
-      document.getElementById('sticker-badge-count').innerText = `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
-      
-      const modalBalance = document.getElementById('modal-star-balance');
-      if (modalBalance) modalBalance.innerText = playerState.stars;
-      const modalCol = document.getElementById('modal-collected-count');
-      if (modalCol) modalCol.innerText = `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`;
+      setSafeText('star-count', playerState.stars);
+      setSafeText('streak-count', playerState.streak || 1);
+      setSafeText('sticker-badge-count', `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`);
+      setSafeText('modal-star-balance', playerState.stars);
+      setSafeText('modal-collected-count', `${playerState.unlockedStickers.length}/${STICKER_CATALOG.length}`);
     }
 
     async function savePlayerState(pushToCloud = true) {
@@ -1556,6 +1676,7 @@
         try {
           const payload = {
             apiKey: masterConfig.apiKey || "",
+            targetTable: Number(masterConfig.targetTable) || 5,
             words: (masterConfig.words || []).map(w => ({ 
               word: (w.word||"").trim().toLowerCase(), 
               sentence: (w.sentence||"").trim(),
@@ -1585,9 +1706,11 @@
             const data = snap.data();
             if (data.words && data.words.length > 0) masterConfig.words = data.words;
             if (data.apiKey) masterConfig.apiKey = data.apiKey;
+            if (data.targetTable) masterConfig.targetTable = Number(data.targetTable);
             saveMasterConfig(false);
             computeActiveWords();
             setupCurrentWord();
+            initMathGame();
           } else {
             saveMasterConfig(true);
           }
@@ -1697,7 +1820,6 @@
       return activeWords[currentIndex] || { word: "spelling", sentence: "We love spelling.", tip: "" };
     }
 
-    /* Speaks ONLY the word */
     function speakCurrentWord() {
       const obj = currentWordObj();
       const word = obj.word.toLowerCase();
@@ -1715,7 +1837,6 @@
       }
     }
 
-    /* Speaks ONLY the sentence in context */
     function speakCurrentSentence() {
       const obj = currentWordObj();
       let sentenceText = (obj.sentence && obj.sentence.trim() !== '') ? obj.sentence.trim() : `Can you spell the word ${obj.word}?`;
@@ -1733,7 +1854,6 @@
       }
     }
 
-    /* Speak Single Letter / Sound honoring Phonics vs Names */
     function speakLetter(char) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -1755,7 +1875,6 @@
       }
     }
 
-    /* Calibrated spelling recitation with comma pauses */
     function spellAndSayWord(word, onComplete) {
       if (!('speechSynthesis' in window)) {
         if (onComplete) onComplete();
@@ -1823,7 +1942,7 @@
       }
     }
 
-    /* --- 9. GEMINI API AUTO-GENERATION (SENTENCE + TIP) --- */
+    /* --- 9. GEMINI API AUTO-GENERATION --- */
     async function generateAITips() {
       const keyInput = document.getElementById('gemini-key');
       let key = keyInput.value.trim();
@@ -1898,10 +2017,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       }
     }
 
-    /* --- 10. GAME ENGINE & MODES --- */
+    /* --- 10. SPELLING GAME ENGINE --- */
     function switchMode(mode) {
       currentMode = mode;
-      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#spelling-quest-container .mode-tab').forEach(t => t.classList.remove('active'));
       event.target.classList.add('active');
 
       document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
@@ -1920,7 +2039,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       const wordObj = currentWordObj();
       const word = wordObj.word.toLowerCase();
       const tag = wordObj.isCustom ? ' (Custom)' : '';
-      document.getElementById('word-progress-label').innerText = `Word ${currentIndex + 1} of ${activeWords.length}${tag}`;
+      setSafeText('word-progress-label', `Word ${currentIndex + 1} of ${activeWords.length}${tag}`);
       
       const tipBtn = document.getElementById('tip-btn');
       if (tipBtn) tipBtn.innerHTML = "💡 Hear Memory Tip";
@@ -1933,14 +2052,17 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         setupLCWC(word);
       } else if (currentMode === 'type') {
         const inp = document.getElementById('type-input');
-        inp.value = '';
-        inp.focus();
+        if (inp) {
+          inp.value = '';
+          inp.focus();
+        }
       }
     }
 
     function setupTiles(word) {
       currentTileInput = [];
       const slotsContainer = document.getElementById('tiles-slots');
+      if (!slotsContainer) return;
       slotsContainer.innerHTML = '';
       for (let i = 0; i < word.length; i++) {
         const slot = document.createElement('div');
@@ -1978,6 +2100,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       allTiles.sort(() => Math.random() - 0.5);
 
       const pool = document.getElementById('letters-pool');
+      if (!pool) return;
       pool.innerHTML = '';
       allTiles.forEach((char) => {
         const btn = document.createElement('button');
@@ -1995,8 +2118,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         playTapChime();
         currentTileInput.push(char);
         const slot = document.getElementById(`slot-${nextIndex}`);
-        slot.innerText = char;
-        slot.classList.add('filled');
+        if (slot) {
+          slot.innerText = char;
+          slot.classList.add('filled');
+        }
         btn.classList.add('disabled');
 
         if (currentTileInput.length === targetWord.length) {
@@ -2013,6 +2138,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     let canvas, ctx, isDrawing = false;
     function initTraceCanvas() {
       canvas = document.getElementById('trace-canvas');
+      if (!canvas) return;
       ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -2042,25 +2168,27 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       const curtain = document.getElementById('theatre-curtain');
       const wordDisplay = document.getElementById('theatre-word-display');
       const comparisonBox = document.getElementById('lcwc-comparison');
-      comparisonBox.innerHTML = '';
-      wordDisplay.innerText = word;
+      if (comparisonBox) comparisonBox.innerHTML = '';
+      if (wordDisplay) wordDisplay.innerText = word;
 
-      curtain.classList.remove('closed');
+      if (curtain) curtain.classList.remove('closed');
       setLcwcStep(1);
 
       const slots = document.getElementById('lcwc-slots');
-      slots.innerHTML = '';
-      for (let i = 0; i < word.length; i++) {
-        const s = document.createElement('div');
-        s.className = 'slot';
-        s.id = `lcwc-slot-${i}`;
-        slots.appendChild(s);
+      if (slots) {
+        slots.innerHTML = '';
+        for (let i = 0; i < word.length; i++) {
+          const s = document.createElement('div');
+          s.className = 'slot';
+          s.id = `lcwc-slot-${i}`;
+          slots.appendChild(s);
+        }
       }
 
       buildVirtualKeyboard();
 
       setTimeout(() => {
-        if (currentMode === 'lcwc' && !curtain.classList.contains('closed')) {
+        if (currentMode === 'lcwc' && curtain && !curtain.classList.contains('closed')) {
           playCurtainSound();
           curtain.classList.add('closed');
           setLcwcStep(2);
@@ -2079,10 +2207,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     function lcwcPeek() {
       const curtain = document.getElementById('theatre-curtain');
       playCurtainSound();
-      curtain.classList.remove('closed');
+      if (curtain) curtain.classList.remove('closed');
       setLcwcStep(1);
       setTimeout(() => {
-        if (currentMode === 'lcwc') {
+        if (currentMode === 'lcwc' && curtain) {
           playCurtainSound();
           curtain.classList.add('closed');
           setLcwcStep(3);
@@ -2092,6 +2220,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
     function buildVirtualKeyboard() {
       const kb = document.getElementById('lcwc-keyboard');
+      if (!kb) return;
       kb.innerHTML = '';
       const rows = [
         ['q','w','e','r','t','y','u','i','o','p'],
@@ -2129,8 +2258,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         const nextIdx = lcwcInput.length;
         lcwcInput.push(ch);
         const slot = document.getElementById(`lcwc-slot-${nextIdx}`);
-        slot.innerText = ch;
-        slot.classList.add('filled');
+        if (slot) {
+          slot.innerText = ch;
+          slot.classList.add('filled');
+        }
       }
     }
 
@@ -2140,8 +2271,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         const lastIdx = lcwcInput.length - 1;
         lcwcInput.pop();
         const slot = document.getElementById(`lcwc-slot-${lastIdx}`);
-        slot.innerText = '';
-        slot.classList.remove('filled');
+        if (slot) {
+          slot.innerText = '';
+          slot.classList.remove('filled');
+        }
       }
     }
 
@@ -2153,10 +2286,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       setLcwcStep(4);
       const curtain = document.getElementById('theatre-curtain');
       playCurtainSound();
-      curtain.classList.remove('closed');
+      if (curtain) curtain.classList.remove('closed');
 
       const comparisonBox = document.getElementById('lcwc-comparison');
-      comparisonBox.innerHTML = '';
+      if (comparisonBox) comparisonBox.innerHTML = '';
 
       let isFullMatch = (enteredWord === targetWord);
 
@@ -2172,7 +2305,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
           letterDiv.className = 'cmp-letter mismatch';
           letterDiv.innerText = userChar || '_';
         }
-        comparisonBox.appendChild(letterDiv);
+        if (comparisonBox) comparisonBox.appendChild(letterDiv);
       }
 
       if (isFullMatch) {
@@ -2184,20 +2317,305 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     }
 
     function checkTyping() {
-      const val = document.getElementById('type-input').value.trim().toLowerCase();
+      const inp = document.getElementById('type-input');
+      if (!inp) return;
+      const val = inp.value.trim().toLowerCase();
       const target = currentWordObj().word.toLowerCase();
       if (val === target) {
         triggerSuccess();
       } else {
         firstAttempt = false;
         playWrongSound();
-        const inp = document.getElementById('type-input');
         inp.classList.add('shake');
         setTimeout(() => inp.classList.remove('shake'), 350);
       }
     }
 
-    /* --- 11. WIN, STREAK & CELEBRATION --- */
+    /* --- 11. TIMES TABLES GAME ENGINE --- */
+    let currentMathMode = 'sequence';
+    let mathQuestions = [];
+    let mathIndex = 0;
+    let sequenceNextTarget = 1;
+
+    function switchMainQuest(quest) {
+      activeMainQuest = quest;
+      const btnSpelling = document.getElementById('btn-quest-spelling');
+      const btnMath = document.getElementById('btn-quest-math');
+      const boxSpelling = document.getElementById('spelling-quest-container');
+      const boxMath = document.getElementById('math-quest-container');
+
+      if (quest === 'spelling') {
+        if (btnSpelling) btnSpelling.className = 'quest-switch-btn active';
+        if (btnMath) btnMath.className = 'quest-switch-btn';
+        if (boxSpelling) boxSpelling.style.display = 'flex';
+        if (boxMath) boxMath.style.display = 'none';
+        setupCurrentWord();
+      } else {
+        if (btnSpelling) btnSpelling.className = 'quest-switch-btn';
+        if (btnMath) btnMath.className = 'quest-switch-btn active math-active';
+        if (boxSpelling) boxSpelling.style.display = 'none';
+        if (boxMath) boxMath.style.display = 'flex';
+        initMathGame();
+      }
+    }
+
+    function switchMathMode(mode) {
+      currentMathMode = mode;
+      document.querySelectorAll('#math-quest-container .mode-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const vSeq = document.getElementById('math-view-sequence');
+      const vQuick = document.getElementById('math-view-quick');
+      const vMiss = document.getElementById('math-view-missing');
+
+      if (vSeq) vSeq.style.display = (mode === 'sequence') ? 'flex' : 'none';
+      if (vQuick) vQuick.style.display = (mode === 'quick') ? 'flex' : 'none';
+      if (vMiss) vMiss.style.display = (mode === 'missing') ? 'flex' : 'none';
+
+      initMathGame();
+    }
+
+    function initMathGame() {
+      const table = Number(masterConfig.targetTable) || 5;
+      setSafeText('active-table-title', `${table}× Table`);
+
+      if (currentMathMode === 'sequence') {
+        setupSequenceMode(table);
+      } else if (currentMathMode === 'quick') {
+        setupQuickFireMode(table);
+      } else if (currentMathMode === 'missing') {
+        setupMissingFactorMode(table);
+      }
+    }
+
+    function setupSequenceMode(table) {
+      sequenceNextTarget = 1;
+      setSafeText('seq-next-target', table);
+
+      const track = document.getElementById('math-track-bar');
+      if (track) {
+        track.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+          const step = document.createElement('div');
+          step.className = 'math-track-step';
+          step.id = `seq-track-${i}`;
+          track.appendChild(step);
+        }
+      }
+
+      const multiples = [];
+      for (let i = 1; i <= 12; i++) multiples.push(i * table);
+      multiples.sort(() => Math.random() - 0.5);
+
+      const pool = document.getElementById('sequence-pool');
+      if (pool) {
+        pool.innerHTML = '';
+        multiples.forEach(num => {
+          const bubble = document.createElement('button');
+          bubble.className = 'sequence-bubble';
+          bubble.innerText = num;
+          bubble.onclick = () => handleSequenceClick(num, bubble, table);
+          pool.appendChild(bubble);
+        });
+      }
+    }
+
+    function handleSequenceClick(num, bubbleEl, table) {
+      const expected = sequenceNextTarget * table;
+      if (num === expected) {
+        const freq = 300 + (sequenceNextTarget * 45);
+        playTapChime(freq);
+        bubbleEl.classList.add('popped');
+        
+        const trackStep = document.getElementById(`seq-track-${sequenceNextTarget}`);
+        if (trackStep) trackStep.classList.add('done');
+
+        sequenceNextTarget++;
+        if (sequenceNextTarget <= 12) {
+          setSafeText('seq-next-target', sequenceNextTarget * table);
+        } else {
+          triggerMathSuccess(`Fantastic! You've mastered counting in ${table}s!`);
+        }
+      } else {
+        playWrongSound();
+        bubbleEl.classList.add('shake');
+        setTimeout(() => bubbleEl.classList.remove('shake'), 350);
+      }
+    }
+
+    function setupQuickFireMode(table) {
+      mathIndex = 0;
+      mathQuestions = [];
+      for (let i = 1; i <= 12; i++) mathQuestions.push(i);
+      mathQuestions.sort(() => Math.random() - 0.5);
+      mathQuestions = mathQuestions.slice(0, 8);
+
+      renderQuickFireQuestion(table);
+    }
+
+    function renderQuickFireQuestion(table) {
+      const factor = mathQuestions[mathIndex];
+      const answer = factor * table;
+
+      const track = document.getElementById('math-track-bar');
+      if (track) {
+        track.innerHTML = '';
+        for (let i = 0; i < mathQuestions.length; i++) {
+          const step = document.createElement('div');
+          step.className = `math-track-step ${i < mathIndex ? 'done' : ''}`;
+          track.appendChild(step);
+        }
+      }
+
+      setSafeText('quick-equation-display', `${factor} × ${table} = ?`);
+
+      const choices = new Set([answer]);
+      while (choices.size < 4) {
+        const offset = (Math.floor(Math.random() * 5) - 2) * table;
+        const candidate = answer + offset;
+        if (candidate > 0 && candidate !== answer) choices.add(candidate);
+        else choices.add(Math.max(table, Math.floor(Math.random() * 12 + 1) * table));
+      }
+
+      const grid = document.getElementById('quick-choice-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        Array.from(choices).sort(() => Math.random() - 0.5).forEach(val => {
+          const btn = document.createElement('button');
+          btn.className = 'math-choice-btn';
+          btn.innerText = val;
+          btn.onclick = () => {
+            if (val === answer) {
+              playTapChime(650);
+              mathIndex++;
+              if (mathIndex < mathQuestions.length) {
+                renderQuickFireQuestion(table);
+              } else {
+                triggerMathSuccess(`Super! You know the ${table} times table inside out!`);
+              }
+            } else {
+              playWrongSound();
+              btn.classList.add('shake');
+              setTimeout(() => btn.classList.remove('shake'), 350);
+            }
+          };
+          grid.appendChild(btn);
+        });
+      }
+    }
+
+    function setupMissingFactorMode(table) {
+      mathIndex = 0;
+      mathQuestions = [];
+      for (let i = 1; i <= 12; i++) mathQuestions.push(i);
+      mathQuestions.sort(() => Math.random() - 0.5);
+      mathQuestions = mathQuestions.slice(0, 8);
+
+      renderMissingFactorQuestion(table);
+    }
+
+    function renderMissingFactorQuestion(table) {
+      const factor = mathQuestions[mathIndex];
+      const product = factor * table;
+
+      const track = document.getElementById('math-track-bar');
+      if (track) {
+        track.innerHTML = '';
+        for (let i = 0; i < mathQuestions.length; i++) {
+          const step = document.createElement('div');
+          step.className = `math-track-step ${i < mathIndex ? 'done' : ''}`;
+          track.appendChild(step);
+        }
+      }
+
+      const isFirst = Math.random() > 0.5;
+      setSafeText('missing-equation-display', isFirst ? `? × ${table} = ${product}` : `${table} × ? = ${product}`);
+
+      const choices = new Set([factor]);
+      while (choices.size < 4) {
+        const dummy = Math.floor(Math.random() * 12) + 1;
+        choices.add(dummy);
+      }
+
+      const grid = document.getElementById('missing-choice-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        Array.from(choices).sort(() => Math.random() - 0.5).forEach(val => {
+          const btn = document.createElement('button');
+          btn.className = 'math-choice-btn';
+          btn.innerText = val;
+          btn.onclick = () => {
+            if (val === factor) {
+              playTapChime(700);
+              mathIndex++;
+              if (mathIndex < mathQuestions.length) {
+                renderMissingFactorQuestion(table);
+              } else {
+                triggerMathSuccess(`Spot on! Great math detective work on the ${table}× table!`);
+              }
+            } else {
+              playWrongSound();
+              btn.classList.add('shake');
+              setTimeout(() => btn.classList.remove('shake'), 350);
+            }
+          };
+          grid.appendChild(btn);
+        });
+      }
+    }
+
+    function speakMathQuestion() {
+      const table = Number(masterConfig.targetTable) || 5;
+      let phrase = "";
+      if (currentMathMode === 'quick') {
+        const factor = mathQuestions[mathIndex] || 1;
+        phrase = `What is ${factor} times ${table}?`;
+      } else if (currentMathMode === 'missing') {
+        const factor = mathQuestions[mathIndex] || 1;
+        phrase = `What times ${table} equals ${factor * table}?`;
+      } else {
+        phrase = `Counting in ${table}s. What comes next?`;
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(phrase);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        msg.rate = 0.88;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    function triggerMathSuccess(celebrationMessage) {
+      playCorrectChime();
+      playFanfareSound();
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+      playerState.stars += 5;
+      checkAndIncrementStreak();
+      savePlayerState(true);
+
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(celebrationMessage);
+        let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
+        if (!voice) {
+          voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
+        }
+        if (voice) msg.voice = voice;
+        window.speechSynthesis.speak(msg);
+      }
+
+      setTimeout(() => {
+        showCertificate();
+        initMathGame();
+      }, 1400);
+    }
+
+    /* --- 12. WIN & CELEBRATION (SPELLING) --- */
     function triggerSuccess() {
       playCorrectChime();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
@@ -2238,14 +2656,16 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     }
 
     function showCertificate() {
-      document.getElementById('certificate-modal').style.display = 'block';
+      const modal = document.getElementById('certificate-modal');
+      if (modal) modal.style.display = 'block';
     }
 
     function closeCertificate() {
-      document.getElementById('certificate-modal').style.display = 'none';
+      const modal = document.getElementById('certificate-modal');
+      if (modal) modal.style.display = 'none';
     }
 
-    /* --- 12. ENHANCED STICKER ALBUM MODAL --- */
+    /* --- 13. STICKER ALBUM MODAL --- */
     function setStickerFilter(filter, tabBtn) {
       currentStickerFilter = filter;
       document.querySelectorAll('.sticker-filter-tab').forEach(b => b.classList.remove('active'));
@@ -2255,6 +2675,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
     function openStickersModal() {
       const grid = document.getElementById('sticker-grid');
+      if (!grid) return;
       grid.innerHTML = '';
 
       renderUIStats();
@@ -2264,8 +2685,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         const isUnlocked = playerState.unlockedStickers.includes(s.id);
         if (!isUnlocked && playerState.stars >= s.cost) readyCount++;
       });
-      const affordCountEl = document.getElementById('filter-afford-count');
-      if (affordCountEl) affordCountEl.innerText = readyCount;
+      setSafeText('filter-afford-count', readyCount);
 
       STICKER_CATALOG.forEach(sticker => {
         const isUnlocked = playerState.unlockedStickers.includes(sticker.id);
@@ -2330,11 +2750,13 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         grid.appendChild(card);
       });
 
-      document.getElementById('sticker-modal').style.display = 'block';
+      const modal = document.getElementById('sticker-modal');
+      if (modal) modal.style.display = 'block';
     }
 
     function closeStickersModal() {
-      document.getElementById('sticker-modal').style.display = 'none';
+      const modal = document.getElementById('sticker-modal');
+      if (modal) modal.style.display = 'none';
     }
 
     function unlockSticker(id, cost, canAfford) {
@@ -2352,15 +2774,17 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       openStickersModal();
     }
 
-    /* --- 13. STICKER PLAYGROUND ENGINE --- */
+    /* --- 14. PLAYGROUND CANVAS ENGINE --- */
     function openPlaygroundModal() {
       renderPlaygroundStage();
       renderPlaygroundTray();
-      document.getElementById('playground-modal').style.display = 'block';
+      const modal = document.getElementById('playground-modal');
+      if (modal) modal.style.display = 'block';
     }
 
     function closePlaygroundModal() {
-      document.getElementById('playground-modal').style.display = 'none';
+      const modal = document.getElementById('playground-modal');
+      if (modal) modal.style.display = 'none';
     }
 
     function changeScene(sceneName, tabBtn) {
@@ -2369,12 +2793,13 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       if (tabBtn) tabBtn.classList.add('active');
 
       const stage = document.getElementById('playground-stage');
-      stage.className = `playground-stage scene-${sceneName}`;
+      if (stage) stage.className = `playground-stage scene-${sceneName}`;
       savePlayerState(true);
     }
 
     function renderPlaygroundTray() {
       const tray = document.getElementById('playground-tray');
+      if (!tray) return;
       tray.innerHTML = '';
 
       STICKER_CATALOG.forEach(s => {
@@ -2392,6 +2817,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     function addStickerToScene(stickerObj) {
       playTapChime();
       const stage = document.getElementById('playground-stage');
+      if (!stage) return;
       const rect = stage.getBoundingClientRect();
 
       const posX = (rect.width / 2) + (Math.random() * 60 - 30);
@@ -2485,65 +2911,81 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       });
     }
 
-    /* --- 14. PARENT DASHBOARD --- */
+    /* --- 15. PARENT DASHBOARD --- */
     function openParentModal() {
       const code = prompt("Parent check: What is 4 + 3?");
       if (code !== "7") return;
 
       const keyInput = document.getElementById('gemini-key');
-      if (masterConfig.apiKey && masterConfig.apiKey.trim() !== '') {
-        keyInput.value = "••••••••••••••••••••••••••••••••";
-        keyInput.dataset.hasKey = "true";
-      } else {
-        keyInput.value = "";
-        keyInput.dataset.hasKey = "false";
+      if (keyInput) {
+        if (masterConfig.apiKey && masterConfig.apiKey.trim() !== '') {
+          keyInput.value = "••••••••••••••••••••••••••••••••";
+          keyInput.dataset.hasKey = "true";
+        } else {
+          keyInput.value = "";
+          keyInput.dataset.hasKey = "false";
+        }
       }
 
-      document.getElementById('audio-mode-select').value = playerState.audioMode || "names";
+      const audioSelect = document.getElementById('audio-mode-select');
+      if (audioSelect) audioSelect.value = playerState.audioMode || "names";
+
+      const tableSelect = document.getElementById('weekly-table-select');
+      if (tableSelect) tableSelect.value = String(masterConfig.targetTable || 5);
+
       populateVoiceList();
 
       const masterContainer = document.getElementById('master-word-inputs');
-      masterContainer.innerHTML = '';
-      (masterConfig.words || []).forEach(item => {
-        addMasterWordRow(item.word, item.sentence, item.tip);
-      });
+      if (masterContainer) {
+        masterContainer.innerHTML = '';
+        (masterConfig.words || []).forEach(item => {
+          addMasterWordRow(item.word, item.sentence, item.tip);
+        });
+      }
       updateCountLabels();
 
       const customContainer = document.getElementById('custom-word-inputs');
-      customContainer.innerHTML = '';
-      (playerState.customWords || []).forEach(item => {
-        addCustomWordRow(item.word, item.sentence, item.tip);
-      });
+      if (customContainer) {
+        customContainer.innerHTML = '';
+        (playerState.customWords || []).forEach(item => {
+          addCustomWordRow(item.word, item.sentence, item.tip);
+        });
+      }
       updateCountLabels();
 
       const tbody = document.getElementById('progress-table-body');
-      tbody.innerHTML = '';
-      activeWords.forEach(w => {
-        const wordKey = w.word.toLowerCase();
-        const stat = playerState.stats[wordKey] || { attempts: 0, firstTryWins: 0 };
-        const pct = stat.attempts > 0 ? Math.round((stat.firstTryWins / stat.attempts) * 100) : 0;
-        const status = pct >= 80 ? "⭐ Mastered" : (stat.attempts > 0 ? "Practicing" : "New");
-        
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${wordKey}</strong></td>
-          <td>${w.isCustom ? 'Custom' : 'Master'}</td>
-          <td>${stat.attempts}</td>
-          <td>${pct}%</td>
-          <td>${status}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      if (tbody) {
+        tbody.innerHTML = '';
+        activeWords.forEach(w => {
+          const wordKey = w.word.toLowerCase();
+          const stat = playerState.stats[wordKey] || { attempts: 0, firstTryWins: 0 };
+          const pct = stat.attempts > 0 ? Math.round((stat.firstTryWins / stat.attempts) * 100) : 0;
+          const status = pct >= 80 ? "⭐ Mastered" : (stat.attempts > 0 ? "Practicing" : "New");
+          
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${wordKey}</strong></td>
+            <td>${w.isCustom ? 'Custom' : 'Master'}</td>
+            <td>${stat.attempts}</td>
+            <td>${pct}%</td>
+            <td>${status}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
 
-      document.getElementById('parent-modal').style.display = 'block';
+      const modal = document.getElementById('parent-modal');
+      if (modal) modal.style.display = 'block';
     }
 
     function closeParentModal() {
-      document.getElementById('parent-modal').style.display = 'none';
+      const modal = document.getElementById('parent-modal');
+      if (modal) modal.style.display = 'none';
     }
 
     function addMasterWordRow(wordVal = '', sentVal = '', tipVal = '') {
       const container = document.getElementById('master-word-inputs');
+      if (!container) return;
       const row = document.createElement('div');
       row.className = 'word-row';
       row.innerHTML = `
@@ -2558,6 +3000,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
     function addCustomWordRow(wordVal = '', sentVal = '', tipVal = '') {
       const container = document.getElementById('custom-word-inputs');
+      if (!container) return;
       const row = document.createElement('div');
       row.className = 'word-row';
       row.innerHTML = `
@@ -2573,19 +3016,28 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     function updateCountLabels() {
       const mCount = document.querySelectorAll('#master-word-inputs .word-row').length;
       const cCount = document.querySelectorAll('#custom-word-inputs .word-row').length;
-      document.getElementById('master-count-label').innerText = mCount;
-      document.getElementById('custom-count-label').innerText = cCount;
+      setSafeText('master-count-label', mCount);
+      setSafeText('custom-count-label', cCount);
     }
 
     async function saveParentSettings() {
       const keyInput = document.getElementById('gemini-key');
-      const rawVal = keyInput.value.trim();
-
-      if (rawVal !== "" && !rawVal.includes("••")) {
-        masterConfig.apiKey = rawVal;
+      if (keyInput) {
+        const rawVal = keyInput.value.trim();
+        if (rawVal !== "" && !rawVal.includes("••")) {
+          masterConfig.apiKey = rawVal;
+        }
       }
 
-      playerState.audioMode = document.getElementById('audio-mode-select').value;
+      const tableSelect = document.getElementById('weekly-table-select');
+      if (tableSelect) {
+        masterConfig.targetTable = Number(tableSelect.value) || 5;
+      }
+
+      const audioSelect = document.getElementById('audio-mode-select');
+      if (audioSelect) {
+        playerState.audioMode = audioSelect.value;
+      }
 
       const voiceEl = document.getElementById('voice-select');
       if (voiceEl && voiceEl.value) {
@@ -2618,12 +3070,14 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       computeActiveWords();
       currentIndex = 0;
       setupCurrentWord();
+      initMathGame();
       closeParentModal();
     }
 
     function generateFriendLink() {
       const friendInput = document.getElementById('friend-name-input');
       const status = document.getElementById('friend-link-status');
+      if (!friendInput) return;
       const name = friendInput.value.trim();
 
       if (!name) {
@@ -2635,16 +3089,19 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       const url = `${window.location.origin}${window.location.pathname}?player=${cleanName}`;
 
       navigator.clipboard.writeText(url).then(() => {
-        status.innerText = `✅ Copied link for ${name}! Send it to their parent.`;
+        if (status) status.innerText = `✅ Copied link for ${name}! Send it to their parent.`;
       }).catch(() => {
         prompt("Copy this link:", url);
       });
     }
 
     // Window bindings
+    window.switchMainQuest = switchMainQuest;
     window.switchMode = switchMode;
+    window.switchMathMode = switchMathMode;
     window.speakCurrentWord = speakCurrentWord;
     window.speakCurrentSentence = speakCurrentSentence;
+    window.speakMathQuestion = speakMathQuestion;
     window.speakLetter = speakLetter;
     window.speakTip = speakTip;
     window.openStickersModal = openStickersModal;
@@ -2674,9 +3131,10 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     window.checkTyping = checkTyping;
     window.generateFriendLink = generateFriendLink;
 
-    // Boot
+    // Safe Boot
     renderUIStats();
     setupCurrentWord();
+    initMathGame();
     initFastCloud();
   </script>
 </body>
