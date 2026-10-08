@@ -524,20 +524,44 @@
     .tip-toggle:active { transform: scale(0.96); background: #E0E7FF; }
 
     /* ======================================================== */
-    /* TIMES TABLES STYLES                                      */
+    /* TIMES TABLES & 3 LIVES SYSTEM                            */
     /* ======================================================== */
+    .math-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 460px;
+      margin-bottom: 12px;
+    }
+
     .math-banner {
       background: linear-gradient(135deg, #CCFBF1, #99F6E4);
       border: 2px solid #5EEAD4;
       border-radius: 16px;
-      padding: 10px 18px;
-      font-size: 1.15rem;
+      padding: 8px 16px;
+      font-size: 1.1rem;
       font-weight: 600;
       color: #115E59;
-      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+    }
+
+    .math-lives-bar {
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      background: #FFF;
+      border: 2px solid #FBCFE8;
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 3px 10px rgba(236, 72, 153, 0.15);
+      animation: heartbeat 3s infinite ease-in-out;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
     }
 
     .math-equation-box {
@@ -576,6 +600,15 @@
       justify-content: center;
     }
     .math-choice-btn:active { transform: translateY(3px); box-shadow: none; }
+
+    .math-choice-btn.wrong-choice {
+      background: #FEE2E2 !important;
+      border-color: #F87171 !important;
+      color: #B91C1C !important;
+      box-shadow: none !important;
+      opacity: 0.45;
+      pointer-events: none;
+    }
 
     .sequence-pool {
       display: flex;
@@ -674,9 +707,7 @@
       justify-content: center;
     }
 
-    /* ======================================================== */
-    /* ANIMATED SPARKLE STICKERS & ALBUM                       */
-    /* ======================================================== */
+    /* Sticker Album */
     .sticker-filter-bar {
       display: flex;
       gap: 6px;
@@ -738,21 +769,18 @@
       transition: all 0.2s ease;
     }
 
-    /* Live Shimmering Hologram Effect */
     @keyframes holoFoil {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* Floating Emoji Idle Animation */
     @keyframes floatEmoji {
       0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
       25% { transform: translateY(-4px) scale(1.05) rotate(-3deg); }
       75% { transform: translateY(3px) scale(0.98) rotate(3deg); }
     }
 
-    /* Twinkling Star Particles */
     @keyframes twinkleSparkle {
       0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
       50% { opacity: 1; transform: scale(1.25) rotate(180deg); }
@@ -1132,7 +1160,7 @@
     </main>
   </div>
 
-  <!-- 2. TIMES TABLES QUEST CONTAINER -->
+  <!-- 2. TIMES TABLES QUEST CONTAINER (WITH 3 LIVES SYSTEM) -->
   <div id="math-quest-container" style="width: 100%; display: none; flex-direction: column; align-items: center;">
     <nav class="mode-nav">
       <div class="mode-tab math-tab active" data-mode="sequence" onclick="switchMathMode('sequence', this)">🎈 Step Count</div>
@@ -1141,9 +1169,12 @@
     </nav>
 
     <main class="card">
-      <div class="math-banner">
-        <span>⭐ This Week's Focus:</span>
-        <strong id="active-table-title" style="font-size: 1.25rem;">5× Table</strong>
+      <div class="math-header-bar">
+        <div class="math-banner">
+          <span>Focus:</span>
+          <strong id="active-table-title">5× Table</strong>
+        </div>
+        <div class="math-lives-bar" id="math-lives-bar" title="3 Lives Remaining">❤️❤️❤️</div>
       </div>
 
       <div class="math-track-bar" id="math-track-bar"></div>
@@ -1521,7 +1552,6 @@
 
     /* --- 4. EXPANDED STICKER CATALOG (32 STICKERS + ANIMATED SPARKLES) --- */
     const STICKER_CATALOG = [
-      // Standard Starter Tier (5 Stars)
       { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5, sparkly: false },
       { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5, sparkly: false },
       { id: "bunny", icon: "🐰", name: "Bouncy Bunny", cost: 5, sparkly: false },
@@ -1531,7 +1561,6 @@
       { id: "icecream", icon: "🍦", name: "Sweet Swirl", cost: 5, sparkly: false },
       { id: "lollipop", icon: "🍭", name: "Sugar Pop", cost: 5, sparkly: false },
 
-      // Adventurer Tier (10 Stars)
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 10, sparkly: false },
       { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10, sparkly: false },
       { id: "dolphin", icon: "🐬", name: "Ocean Dolphin", cost: 10, sparkly: false },
@@ -1545,7 +1574,6 @@
       { id: "racecar", icon: "🏎️", name: "Speedy Car", cost: 10, sparkly: false },
       { id: "palette", icon: "🎨", name: "Rainbow Paint", cost: 10, sparkly: false },
 
-      // ✨ Sparkly Animated Tier (15 Stars)
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 15, sparkly: true },
       { id: "rainbow", icon: "🌈", name: "Cosmic Rainbow", cost: 15, sparkly: true },
       { id: "fairy", icon: "🧚‍♀️", name: "Garden Fairy", cost: 15, sparkly: true },
@@ -1553,7 +1581,6 @@
       { id: "star_burst", icon: "⭐", name: "Golden Star", cost: 15, sparkly: true },
       { id: "spark", icon: "⚡", name: "Golden Spark", cost: 15, sparkly: true },
 
-      // ✨ Mythical Animated Sparkly Tier (20 - 30 Stars)
       { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 20, sparkly: true },
       { id: "mermaid", icon: "🧜‍♀️", name: "Secret Mermaid", cost: 20, sparkly: true },
       { id: "wand", icon: "🪄", name: "Cosmic Wand", cost: 20, sparkly: true },
@@ -2372,11 +2399,44 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       }
     }
 
-    /* --- 11. TIMES TABLES GAME ENGINE --- */
+    /* --- 11. TIMES TABLES ENGINE WITH 3 LIVES --- */
     let currentMathMode = 'sequence';
     let mathQuestions = [];
     let mathIndex = 0;
     let sequenceNextTarget = 1;
+    let mathLives = 3;
+
+    function renderMathLives() {
+      const bar = document.getElementById('math-lives-bar');
+      if (!bar) return;
+      let hearts = '';
+      for (let i = 1; i <= 3; i++) {
+        hearts += (i <= mathLives) ? '❤️' : '🖤';
+      }
+      bar.innerText = hearts;
+      bar.title = `${mathLives} / 3 Lives Remaining`;
+    }
+
+    function handleMathWrongAnswer(table, penaltyMessage = null) {
+      playWrongSound();
+      mathLives = Math.max(0, mathLives - 1);
+      renderMathLives();
+
+      if (mathLives <= 0) {
+        // Out of Lives!
+        setTimeout(() => {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(`Out of lives! Take your time, think about the ${table} times table, and let's try again!`);
+            let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
+            if (voice) msg.voice = voice;
+            window.speechSynthesis.speak(msg);
+          }
+          alert(`💔 Out of lives!\nTake your time to work out the answer and let's try again!`);
+          initMathGame();
+        }, 300);
+      }
+    }
 
     function switchMainQuest(quest) {
       activeMainQuest = quest;
@@ -2424,6 +2484,8 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     function initMathGame() {
       const table = Number(masterConfig.targetTable) || 5;
       setSafeText('active-table-title', `${table}× Table`);
+      mathLives = 3;
+      renderMathLives();
 
       if (currentMathMode === 'sequence') {
         setupSequenceMode(table);
@@ -2483,9 +2545,9 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
           triggerMathSuccess(`Fantastic! You've mastered counting in ${table}s!`);
         }
       } else {
-        playWrongSound();
         bubbleEl.classList.add('shake');
         setTimeout(() => bubbleEl.classList.remove('shake'), 350);
+        handleMathWrongAnswer(table);
       }
     }
 
@@ -2525,6 +2587,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
       const grid = document.getElementById('quick-choice-grid');
       if (grid) {
+        grid.style.pointerEvents = 'auto';
         grid.innerHTML = '';
         Array.from(choices).sort(() => Math.random() - 0.5).forEach(val => {
           const btn = document.createElement('button');
@@ -2540,9 +2603,17 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
                 triggerMathSuccess(`Super! You know the ${table} times table inside out!`);
               }
             } else {
-              playWrongSound();
+              btn.classList.add('wrong-choice');
               btn.classList.add('shake');
               setTimeout(() => btn.classList.remove('shake'), 350);
+
+              // 1.2s freeze so she can't immediately button mash
+              grid.style.pointerEvents = 'none';
+              setTimeout(() => {
+                if (mathLives > 0) grid.style.pointerEvents = 'auto';
+              }, 1200);
+
+              handleMathWrongAnswer(table);
             }
           };
           grid.appendChild(btn);
@@ -2585,6 +2656,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
       const grid = document.getElementById('missing-choice-grid');
       if (grid) {
+        grid.style.pointerEvents = 'auto';
         grid.innerHTML = '';
         Array.from(choices).sort(() => Math.random() - 0.5).forEach(val => {
           const btn = document.createElement('button');
@@ -2600,9 +2672,16 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
                 triggerMathSuccess(`Spot on! Great math detective work on the ${table}× table!`);
               }
             } else {
-              playWrongSound();
+              btn.classList.add('wrong-choice');
               btn.classList.add('shake');
               setTimeout(() => btn.classList.remove('shake'), 350);
+
+              grid.style.pointerEvents = 'none';
+              setTimeout(() => {
+                if (mathLives > 0) grid.style.pointerEvents = 'auto';
+              }, 1200);
+
+              handleMathWrongAnswer(table);
             }
           };
           grid.appendChild(btn);
@@ -2639,14 +2718,18 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     function triggerMathSuccess(celebrationMessage) {
       playCorrectChime();
       playFanfareSound();
-      confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+      confetti({ particleCount: 110, spread: 85, origin: { y: 0.5 } });
 
-      playerState.stars += 5;
+      // Base reward = 5 stars. Flawless 3-hearts finish = 2 bonus stars!
+      const bonus = (mathLives === 3) ? 2 : 0;
+      playerState.stars += (5 + bonus);
       checkAndIncrementStreak();
       savePlayerState(true);
 
+      const fullMessage = (bonus > 0) ? `${celebrationMessage} Incredible! Three hearts kept! You earned seven stars!` : celebrationMessage;
+
       if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance(celebrationMessage);
+        const msg = new SpeechSynthesisUtterance(fullMessage);
         let voice = availableVoices.find(v => v.name === playerState.preferredVoice);
         if (!voice) {
           voice = availableVoices.find(v => v.lang.includes('en-GB') && (v.name.includes('Enhanced') || v.name.includes('Natural') || v.name.includes('Siri')));
