@@ -141,7 +141,7 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
 
-    /* Primary Quest Switcher (Spelling vs Times Tables) */
+    /* Primary Quest Switcher */
     .quest-switch-bar {
       display: flex;
       gap: 8px;
@@ -180,7 +180,7 @@
       box-shadow: 0 4px 14px rgba(13, 148, 136, 0.15);
     }
 
-    /* Sub Navigation Tabs */
+    /* Mode Navigation Tabs */
     .mode-nav {
       display: flex;
       gap: 6px;
@@ -214,7 +214,7 @@
       box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
     }
 
-    /* Main Card Container */
+    /* Main Container */
     .card {
       background: var(--card-bg);
       width: 100%;
@@ -235,7 +235,6 @@
       font-size: 0.95rem;
     }
 
-    /* Audio Buttons */
     .audio-actions-row {
       display: flex;
       gap: 10px;
@@ -275,7 +274,7 @@
       border: 2px solid #0D9488;
     }
 
-    /* Spelling Slots */
+    /* Slots */
     .slots-container {
       display: flex;
       gap: 8px;
@@ -311,7 +310,7 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Tiles Grid */
+    /* Tiles */
     .tile-grid {
       display: flex;
       flex-wrap: wrap;
@@ -338,18 +337,10 @@
       text-transform: lowercase;
       transition: all 0.1s ease;
     }
-    .tile-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 #CBD5E1;
-    }
-    .tile-btn.disabled {
-      opacity: 0.25;
-      pointer-events: none;
-      transform: translateY(2px);
-      box-shadow: none;
-    }
+    .tile-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #CBD5E1; }
+    .tile-btn.disabled { opacity: 0.25; pointer-events: none; transform: translateY(2px); box-shadow: none; }
 
-    /* Trace Canvas */
+    /* Trace */
     #trace-canvas {
       border: 2px dashed #CBD5E1;
       border-radius: 16px;
@@ -358,12 +349,7 @@
       cursor: crosshair;
     }
 
-    .trace-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
+    .trace-actions { display: flex; gap: 12px; margin-top: 14px; }
     .action-btn {
       padding: 10px 18px;
       border: none;
@@ -377,7 +363,6 @@
       transition: transform 0.1s ease;
     }
     .action-btn:active { transform: scale(0.96); }
-
     .btn-clear { background: #E2E8F0; color: var(--text); }
     .btn-done { background: var(--success); color: #FFF; }
     .btn-gemini { background: var(--purple); color: #FFF; }
@@ -424,7 +409,6 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
       z-index: 10;
     }
-
     .theatre-curtain.closed { transform: translateY(0%); }
     .theatre-curtain .fringe { position: absolute; bottom: -14px; font-size: 1.1rem; }
 
@@ -446,7 +430,6 @@
       font-size: 0.85rem;
       font-weight: 600;
     }
-
     .lcwc-step.active {
       background: #EEF2FF;
       color: var(--primary);
@@ -541,7 +524,7 @@
     .tip-toggle:active { transform: scale(0.96); background: #E0E7FF; }
 
     /* ======================================================== */
-    /* TIMES TABLES SPECIFIC UI STYLES                          */
+    /* TIMES TABLES STYLES                                      */
     /* ======================================================== */
     .math-banner {
       background: linear-gradient(135deg, #CCFBF1, #99F6E4);
@@ -592,10 +575,7 @@
       align-items: center;
       justify-content: center;
     }
-    .math-choice-btn:active {
-      transform: translateY(3px);
-      box-shadow: none;
-    }
+    .math-choice-btn:active { transform: translateY(3px); box-shadow: none; }
 
     .sequence-pool {
       display: flex;
@@ -622,9 +602,7 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
-    .sequence-bubble:active {
-      transform: scale(0.92);
-    }
+    .sequence-bubble:active { transform: scale(0.92); }
     .sequence-bubble.popped {
       background: #DCFCE7;
       border-color: #86EFAC;
@@ -649,9 +627,7 @@
       border-radius: 999px;
       transition: background 0.2s ease;
     }
-    .math-track-step.done {
-      background: var(--teal);
-    }
+    .math-track-step.done { background: var(--teal); }
 
     /* Modals */
     .modal-backdrop {
@@ -698,6 +674,9 @@
       justify-content: center;
     }
 
+    /* ======================================================== */
+    /* ANIMATED SPARKLE STICKERS & ALBUM                       */
+    /* ======================================================== */
     .sticker-filter-bar {
       display: flex;
       gap: 6px;
@@ -755,34 +734,75 @@
       align-items: center;
       text-align: center;
       position: relative;
+      overflow: hidden;
       transition: all 0.2s ease;
     }
 
-    @keyframes sparkleHolo {
+    /* Live Shimmering Hologram Effect */
+    @keyframes holoFoil {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    .sticker-card.is-sparkly {
-      background: linear-gradient(135deg, #FFF1F2, #F5F3FF, #E0F2FE, #FEF9C3);
-      background-size: 300% 300%;
-      animation: sparkleHolo 5s ease infinite;
-      border: 2px solid #F59E0B;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+    /* Floating Emoji Idle Animation */
+    @keyframes floatEmoji {
+      0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+      25% { transform: translateY(-4px) scale(1.05) rotate(-3deg); }
+      75% { transform: translateY(3px) scale(0.98) rotate(3deg); }
     }
+
+    /* Twinkling Star Particles */
+    @keyframes twinkleSparkle {
+      0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.25) rotate(180deg); }
+    }
+
+    .sticker-card.is-sparkly {
+      background: linear-gradient(135deg, #FFF1F2, #FAF5FF, #EFF6FF, #FEF9C3);
+      background-size: 250% 250%;
+      animation: holoFoil 4.5s ease infinite;
+      border: 2px solid #F59E0B;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+    }
+
+    .sticker-card.is-sparkly .icon {
+      animation: floatEmoji 3s ease-in-out infinite;
+      display: inline-block;
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+    }
+
+    .sparkle-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .sparkle-particle {
+      position: absolute;
+      font-size: 0.9rem;
+      opacity: 0;
+      animation: twinkleSparkle 2s ease-in-out infinite;
+    }
+    .sparkle-particle.p1 { top: 6px; left: 8px; animation-delay: 0s; color: #F59E0B; }
+    .sparkle-particle.p2 { top: 8px; right: 8px; animation-delay: 0.5s; color: #EC4899; font-size: 1.1rem; }
+    .sparkle-particle.p3 { bottom: 36px; left: 10px; animation-delay: 1s; color: #8B5CF6; }
+    .sparkle-particle.p4 { bottom: 38px; right: 10px; animation-delay: 1.5s; color: #10B981; }
 
     .sparkle-tag {
       position: absolute;
       top: 6px;
       right: 6px;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       background: #FEF3C7;
       color: #B45309;
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 8px;
       border: 1px solid #FDE68A;
+      z-index: 5;
     }
 
     .sticker-card.unlocked {
@@ -861,7 +881,7 @@
     .mini-progress-fill { height: 100%; background: var(--accent); border-radius: 999px; }
     .sticker-badge { font-size: 0.75rem; color: var(--success); font-weight: 600; }
 
-    /* Playground Canvas */
+    /* Playground */
     .playground-toolbar {
       display: flex;
       justify-content: space-between;
@@ -913,6 +933,11 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     }
     .canvas-sticker-item:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.15); }
+
+    .canvas-sticker-item.sparkle-canvas-item {
+      filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.75));
+      animation: floatEmoji 3s ease-in-out infinite;
+    }
 
     .sticker-shelf {
       margin-top: 14px;
@@ -1013,7 +1038,7 @@
       <div class="badge cloud-badge connecting" id="cloud-badge" title="Cloud Sync">☁️ Connecting...</div>
       
       <button class="nav-action-btn sticker-nav-btn" onclick="openStickersModal()" title="Open Sticker Album">
-        📖 Stickers (<span id="sticker-badge-count">1/24</span>)
+        📖 Stickers (<span id="sticker-badge-count">1/32</span>)
       </button>
 
       <button class="nav-action-btn playground-nav-btn" onclick="openPlaygroundModal()" title="Open Playground">
@@ -1023,7 +1048,7 @@
     <button class="btn-icon" onclick="openParentModal()" title="Parent Settings">⚙️</button>
   </header>
 
-  <!-- Top-Level Quest Switcher -->
+  <!-- Quest Switcher -->
   <div class="quest-switch-bar">
     <button class="quest-switch-btn active" id="btn-quest-spelling" onclick="switchMainQuest('spelling')">
       🔤 Spelling Quest
@@ -1036,10 +1061,10 @@
   <!-- 1. SPELLING QUEST CONTAINER -->
   <div id="spelling-quest-container" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
     <nav class="mode-nav">
-      <div class="mode-tab active" onclick="switchMode('tiles')">🧩 Tiles</div>
-      <div class="mode-tab" onclick="switchMode('trace')">✏️ Trace</div>
-      <div class="mode-tab" onclick="switchMode('lcwc')">🙈 Cover & Check</div>
-      <div class="mode-tab" onclick="switchMode('type')">⌨️ Type</div>
+      <div class="mode-tab active" data-mode="tiles" onclick="switchMode('tiles', this)">🧩 Tiles</div>
+      <div class="mode-tab" data-mode="trace" onclick="switchMode('trace', this)">✏️ Trace</div>
+      <div class="mode-tab" data-mode="lcwc" onclick="switchMode('lcwc', this)">🙈 Cover & Check</div>
+      <div class="mode-tab" data-mode="type" onclick="switchMode('type', this)">⌨️ Type</div>
     </nav>
 
     <main class="card">
@@ -1110,9 +1135,9 @@
   <!-- 2. TIMES TABLES QUEST CONTAINER -->
   <div id="math-quest-container" style="width: 100%; display: none; flex-direction: column; align-items: center;">
     <nav class="mode-nav">
-      <div class="mode-tab math-tab active" onclick="switchMathMode('sequence')">🎈 Step Count</div>
-      <div class="mode-tab math-tab" onclick="switchMathMode('quick')">⚡ Quick Fire</div>
-      <div class="mode-tab math-tab" onclick="switchMathMode('missing')">🎯 Target Hit</div>
+      <div class="mode-tab math-tab active" data-mode="sequence" onclick="switchMathMode('sequence', this)">🎈 Step Count</div>
+      <div class="mode-tab math-tab" data-mode="quick" onclick="switchMathMode('quick', this)">⚡ Quick Fire</div>
+      <div class="mode-tab math-tab" data-mode="missing" onclick="switchMathMode('missing', this)">🎯 Target Hit</div>
     </nav>
 
     <main class="card">
@@ -1159,19 +1184,19 @@
       <div class="modal-header">
         <div>
           <h2 id="album-title">Sticker Album</h2>
-          <p style="font-size: 0.9rem; color: #64748B;">Unlock new characters & sparkly specials with your stars!</p>
+          <p style="font-size: 0.9rem; color: #64748B;">Unlock new characters & animated sparkly specials with stars!</p>
         </div>
         <button class="close-btn" onclick="closeStickersModal()">✕</button>
       </div>
 
       <div class="sticker-wallet-banner">
         <div>⭐ My Balance: <strong id="modal-star-balance" style="font-size: 1.15rem;">0</strong> Stars</div>
-        <div>🏆 Collected: <strong id="modal-collected-count">1/24</strong></div>
+        <div>🏆 Collected: <strong id="modal-collected-count">1/32</strong></div>
       </div>
 
       <div class="sticker-filter-bar">
         <button class="sticker-filter-tab active" onclick="setStickerFilter('all', this)">All</button>
-        <button class="sticker-filter-tab" onclick="setStickerFilter('affordable', this)">🎁 Ready to Unlock (<span id="filter-afford-count">0</span>)</button>
+        <button class="sticker-filter-tab" onclick="setStickerFilter('affordable', this)">🎁 Ready (<span id="filter-afford-count">0</span>)</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('sparkly', this)">✨ Sparkly Only</button>
         <button class="sticker-filter-tab" onclick="setStickerFilter('unlocked', this)">📖 Collected</button>
       </div>
@@ -1245,7 +1270,6 @@
         <span id="friend-link-status" style="font-size: 0.8rem; color: #166534; margin-top: 4px; display: block;"></span>
       </div>
 
-      <!-- Weekly Times Table Selector -->
       <div class="config-section" style="background: #F0FDFA; border-color: #99F6E4;">
         <label style="color: #0F766E;">🔢 This Week's Times Table (Shared to all players):</label>
         <select id="weekly-table-select">
@@ -1495,34 +1519,46 @@
       } catch(e) {}
     }
 
-    /* --- 4. EXPANDED STICKER CATALOG (24 STICKERS + SPARKLY) --- */
+    /* --- 4. EXPANDED STICKER CATALOG (32 STICKERS + ANIMATED SPARKLES) --- */
     const STICKER_CATALOG = [
+      // Standard Starter Tier (5 Stars)
       { id: "puppy", icon: "🐶", name: "Happy Pup", cost: 5, sparkly: false },
       { id: "kitten", icon: "🐱", name: "Fluffy Kitten", cost: 5, sparkly: false },
       { id: "bunny", icon: "🐰", name: "Bouncy Bunny", cost: 5, sparkly: false },
+      { id: "hamster", icon: "🐹", name: "Tiny Hamster", cost: 5, sparkly: false },
       { id: "fox", icon: "🦊", name: "Clever Fox", cost: 5, sparkly: false },
+      { id: "chick", icon: "🐥", name: "Baby Chick", cost: 5, sparkly: false },
       { id: "icecream", icon: "🍦", name: "Sweet Swirl", cost: 5, sparkly: false },
       { id: "lollipop", icon: "🍭", name: "Sugar Pop", cost: 5, sparkly: false },
 
+      // Adventurer Tier (10 Stars)
       { id: "rocket", icon: "🚀", name: "Star Rocket", cost: 10, sparkly: false },
       { id: "dino", icon: "🦖", name: "Friendly Dino", cost: 10, sparkly: false },
       { id: "dolphin", icon: "🐬", name: "Ocean Dolphin", cost: 10, sparkly: false },
       { id: "panda", icon: "🐼", name: "Bamboo Panda", cost: 10, sparkly: false },
       { id: "koala", icon: "🐨", name: "Cuddle Koala", cost: 10, sparkly: false },
       { id: "penguin", icon: "🐧", name: "Ice Penguin", cost: 10, sparkly: false },
+      { id: "lion", icon: "🦁", name: "Brave Lion", cost: 10, sparkly: false },
+      { id: "owl", icon: "🦉", name: "Wise Owl", cost: 10, sparkly: false },
       { id: "butterfly", icon: "🦋", name: "Sun Butterfly", cost: 10, sparkly: false },
       { id: "robot", icon: "🤖", name: "Beep Boop", cost: 10, sparkly: false },
+      { id: "racecar", icon: "🏎️", name: "Speedy Car", cost: 10, sparkly: false },
+      { id: "palette", icon: "🎨", name: "Rainbow Paint", cost: 10, sparkly: false },
 
+      // ✨ Sparkly Animated Tier (15 Stars)
       { id: "unicorn", icon: "🦄", name: "Sparkle Unicorn", cost: 15, sparkly: true },
-      { id: "rainbow", icon: "🌈", name: "Magic Rainbow", cost: 15, sparkly: true },
+      { id: "rainbow", icon: "🌈", name: "Cosmic Rainbow", cost: 15, sparkly: true },
       { id: "fairy", icon: "🧚‍♀️", name: "Garden Fairy", cost: 15, sparkly: true },
-      { id: "star_burst", icon: "⭐", name: "Golden Starburst", cost: 15, sparkly: true },
+      { id: "cupcake", icon: "🧁", name: "Glitter Cupcake", cost: 15, sparkly: true },
+      { id: "star_burst", icon: "⭐", name: "Golden Star", cost: 15, sparkly: true },
+      { id: "spark", icon: "⚡", name: "Golden Spark", cost: 15, sparkly: true },
 
+      // ✨ Mythical Animated Sparkly Tier (20 - 30 Stars)
       { id: "dragon", icon: "🐲", name: "Baby Dragon", cost: 20, sparkly: true },
       { id: "mermaid", icon: "🧜‍♀️", name: "Secret Mermaid", cost: 20, sparkly: true },
       { id: "wand", icon: "🪄", name: "Cosmic Wand", cost: 20, sparkly: true },
       { id: "saturn", icon: "🪐", name: "Glitter Planet", cost: 20, sparkly: true },
-      { id: "diamond", icon: "💎", name: "Sky Diamond", cost: 25, sparkly: true },
+      { id: "discoball", icon: "🪩", name: "Disco Party", cost: 25, sparkly: true },
       { id: "crown", icon: "👑", name: "Superstar Queen", cost: 30, sparkly: true }
     ];
 
@@ -2018,10 +2054,15 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     }
 
     /* --- 10. SPELLING GAME ENGINE --- */
-    function switchMode(mode) {
+    function switchMode(mode, targetBtn) {
       currentMode = mode;
       document.querySelectorAll('#spelling-quest-container .mode-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      if (targetBtn) {
+        targetBtn.classList.add('active');
+      } else {
+        const def = document.querySelector(`#spelling-quest-container .mode-tab[data-mode="${mode}"]`);
+        if (def) def.classList.add('active');
+      }
 
       document.getElementById('view-tiles').style.display = (mode === 'tiles') ? 'flex' : 'none';
       document.getElementById('view-trace').style.display = (mode === 'trace') ? 'flex' : 'none';
@@ -2359,10 +2400,15 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
       }
     }
 
-    function switchMathMode(mode) {
+    function switchMathMode(mode, targetBtn) {
       currentMathMode = mode;
       document.querySelectorAll('#math-quest-container .mode-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      if (targetBtn) {
+        targetBtn.classList.add('active');
+      } else {
+        const def = document.querySelector(`#math-quest-container .mode-tab[data-mode="${mode}"]`);
+        if (def) def.classList.add('active');
+      }
 
       const vSeq = document.getElementById('math-view-sequence');
       const vQuick = document.getElementById('math-view-quick');
@@ -2708,22 +2754,33 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         }
         card.className = cardClasses.join(' ');
 
-        let sparklyTag = sticker.sparkly ? `<div class="sparkle-tag">✨ Sparkly</div>` : '';
+        let sparkleMarkup = '';
+        if (sticker.sparkly) {
+          sparkleMarkup = `
+            <div class="sparkle-tag">✨ Sparkly</div>
+            <div class="sparkle-particles">
+              <span class="sparkle-particle p1">✨</span>
+              <span class="sparkle-particle p2">⭐</span>
+              <span class="sparkle-particle p3">✦</span>
+              <span class="sparkle-particle p4">✨</span>
+            </div>
+          `;
+        }
 
         if (isUnlocked) {
           card.onclick = () => {
-            playTapChime();
-            confetti({ particleCount: 25, spread: 50, origin: { y: 0.6 } });
+            playTapChime(sticker.sparkly ? 880 : 523.25);
+            confetti({ particleCount: sticker.sparkly ? 40 : 25, spread: 60, origin: { y: 0.6 } });
           };
           card.innerHTML = `
-            ${sparklyTag}
+            ${sparkleMarkup}
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
             <div class="sticker-badge">✨ Collected!</div>
           `;
         } else if (canAfford) {
           card.innerHTML = `
-            ${sparklyTag}
+            ${sparkleMarkup}
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
             <button class="sticker-btn buy-ready" 
@@ -2735,7 +2792,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
           const needed = sticker.cost - playerState.stars;
           const pct = Math.min(100, Math.round((playerState.stars / sticker.cost) * 100));
           card.innerHTML = `
-            ${sparklyTag}
+            ${sparkleMarkup}
             <div class="icon">${sticker.icon}</div>
             <div class="sticker-name">${sticker.name}</div>
             <div class="sticker-btn need-more-box" 
@@ -2815,7 +2872,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
     }
 
     function addStickerToScene(stickerObj) {
-      playTapChime();
+      playTapChime(stickerObj.sparkly ? 750 : 523);
       const stage = document.getElementById('playground-stage');
       if (!stage) return;
       const rect = stage.getBoundingClientRect();
@@ -2827,6 +2884,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
         uid: 'stk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         stickerId: stickerObj.id,
         icon: stickerObj.icon,
+        sparkly: !!stickerObj.sparkly,
         x: Math.round(posX),
         y: Math.round(posY)
       };
@@ -2862,7 +2920,7 @@ Example: [{"word": "because", "sentence": "I wore my warm coat because it was ra
 
       playerState.playgroundStickers.forEach(item => {
         const el = document.createElement('div');
-        el.className = 'canvas-sticker-item';
+        el.className = `canvas-sticker-item ${item.sparkly ? 'sparkle-canvas-item' : ''}`;
         el.innerHTML = item.icon;
         el.style.left = item.x + 'px';
         el.style.top = item.y + 'px';
